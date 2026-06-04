@@ -2,10 +2,16 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI;
+    const mongoUri =
+      process.env.MONGO_URI ||
+      process.env.MONGODB_URI ||
+      process.env.MONGO_URL ||
+      process.env.DATABASE_URL;
 
     if (!mongoUri) {
-      throw new Error("MONGO_URI is missing in .env");
+      throw new Error(
+        "MongoDB connection string is missing. Set MONGO_URI in Railway Variables."
+      );
     }
 
     await mongoose.connect(mongoUri, {

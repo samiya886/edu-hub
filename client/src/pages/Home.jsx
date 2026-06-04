@@ -6,7 +6,7 @@ import { AlertCircle, ArrowRight, BookOpen, FileText, Loader2, Star } from 'luci
 import Hero from '../components/Hero'
 import Services from '../components/Services'
 import About from '../components/About'
-import CTA from '../components/CTA'
+import CTA from '../components/Cta'
 
 const API_URL = 'http://localhost:5000/api';
 const ASSET_URL = 'http://localhost:5000';

@@ -38,4 +38,3 @@ app.use("/api/users", userRoutes);
 const PORT = process.env.PORT || 5000;
 await connectDB();
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-// mongodb+srv://samiyash:samiya786@cluster0.wzyemcx.mongodb.net/?

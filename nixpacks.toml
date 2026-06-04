@@ -1,0 +1,13 @@
+[phases.install]
+cmds = [
+  "npm --prefix Backend1 ci",
+  "npm --prefix client ci"
+]
+
+[phases.build]
+cmds = [
+  "npm --prefix client run build"
+]
+
+[start]
+cmd = "npm --prefix Backend1 start"

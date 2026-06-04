@@ -1,0 +1,13 @@
+{
+  "name": "edu-hub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm --prefix Backend1 ci && npm --prefix client ci && npm --prefix client run build",
+    "start": "npm --prefix Backend1 start"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

@@ -1,0 +1,23 @@
+# Environment
+.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Logs
+logs/
+*.log
+
+# Runtime uploads
+Backend1/uploads/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

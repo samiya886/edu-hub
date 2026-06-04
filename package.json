@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm --prefix Backend1 ci && npm --prefix client ci && npm --prefix client run build",
-    "start": "npm --prefix Backend1 start"
+    "build": "npm install --prefix Backend1 && npm install --prefix client && npm run build --prefix client",
+    "start": "npm start --prefix Backend1"
   },
   "engines": {
     "node": ">=20.19.0"

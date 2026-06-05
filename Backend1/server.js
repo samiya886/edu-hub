@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
@@ -25,7 +26,13 @@ app.use(express.json());
 app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 app.get("/api/health", (req, res) => {
-  res.json({ message: "EduHub backend is running" });
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.status(dbConnected ? 200 : 503).json({
+    status: dbConnected ? "UP" : "DOWN",
+    api: "healthy",
+    database: dbConnected ? "connected" : "disconnected",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use("/api/auth", authRoutes);

@@ -10,7 +10,13 @@ const connectDB = async () => {
 
     if (!mongoUri) {
       throw new Error(
-        "MongoDB connection string is missing. Set MONGO_URI in Railway Variables."
+        "MongoDB connection string is missing. Set MONGO_URI, MONGODB_URI, MONGO_URL, or DATABASE_URL in your deployment variables."
+      );
+    }
+
+    if (/(YOUR_|<|>|username|password|cluster-name)/i.test(mongoUri)) {
+      throw new Error(
+        "MongoDB connection string still contains placeholder text. Replace it with your real MongoDB Atlas connection string."
       );
     }
 
@@ -20,6 +26,19 @@ const connectDB = async () => {
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
+
+    if (/bad auth|authentication failed/i.test(error.message)) {
+      console.error(
+        "Check the MongoDB Atlas database user's username/password, then update your MongoDB connection string."
+      );
+    }
+
+    if (/IP.*whitelist|isn'?t whitelisted|Could not connect to any servers/i.test(error.message)) {
+      console.error(
+        "Check MongoDB Atlas Network Access and allowlist your current public IP address."
+      );
+    }
+
     process.exit(1);
   }
 };

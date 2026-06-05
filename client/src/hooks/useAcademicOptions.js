@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const fetchJson = async (path) => {
   const response = await fetch(`${API_URL}${path}`);

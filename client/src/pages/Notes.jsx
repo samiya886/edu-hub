@@ -8,8 +8,8 @@ import {
   Zap, PenTool, Loader2, AlertCircle
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
-const ASSET_URL = 'http://localhost:5000';
+const API_URL = '/api';
+const ASSET_URL = '';
 
 const categories = ['All', 'Handwritten', 'Digital PDF', 'Revision Sheets', 'Topper Special'];
 const noteImages = [

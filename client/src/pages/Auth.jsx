@@ -87,8 +87,8 @@ const Auth = () => {
 
       const response = await fetch(
         isLogin
-          ? 'http://localhost:5000/api/auth/login'
-          : 'http://localhost:5000/api/auth/signup',
+          ? '/api/auth/login'
+          : '/api/auth/signup',
         {
           method: 'POST',
           headers: {

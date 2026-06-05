@@ -19,7 +19,7 @@ import {
   X,
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const getAcademicId = (value) => value?._id || value || '';
 const getAcademicName = (value, fallback = 'Not set') => value?.name || fallback;

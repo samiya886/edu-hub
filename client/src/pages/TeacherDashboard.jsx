@@ -23,7 +23,7 @@ import {
   X,
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const getUserId = (user) => user?._id || user?.id;
 

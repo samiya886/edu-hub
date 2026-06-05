@@ -7,7 +7,7 @@ import {
   Loader2, AlertCircle
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const formatCount = (value) => {
   const count = Number(value) || 0;

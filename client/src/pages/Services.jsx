@@ -7,8 +7,8 @@ import {
   Download, Clock, CheckCircle, Loader2, AlertCircle
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
-const ASSET_URL = 'http://localhost:5000';
+const API_URL = '/api';
+const ASSET_URL = '';
 
 const formatCount = (value) => {
   const count = Number(value) || 0;

@@ -7,8 +7,8 @@ import {
   FileText, Download
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
-const ASSET_URL = 'http://localhost:5000';
+const API_URL = '/api';
+const ASSET_URL = '';
 
 const getFileUrl = (fileUrl) => {
   if (!fileUrl) return '';

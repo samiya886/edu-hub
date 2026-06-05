@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       // Call logout endpoint to invalidate token on server
       const token = localStorage.getItem('token');
       if (token) {
-        await fetch('http://localhost:5000/api/auth/logout', {
+        await fetch('/api/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

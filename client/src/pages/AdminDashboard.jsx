@@ -11,7 +11,7 @@ import {
   ShieldCheck, FileClock, Building2, Pencil, Trash2, Save, X
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 // --- SUB-COMPONENT: ENHANCED ACTION FORM ---
 const AdminActionForm = ({ activeTab }) => {
@@ -43,7 +43,7 @@ const AdminActionForm = ({ activeTab }) => {
   useEffect(() => {
     const loadDepartments = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/departments');
+        const response = await fetch('/api/departments');
         const data = await response.json();
         setDepartments(data);
       } catch (error) {
@@ -61,7 +61,7 @@ const AdminActionForm = ({ activeTab }) => {
         return;
       }
       try {
-        const response = await fetch(`http://localhost:5000/api/courses?department=${formData.department}`);
+        const response = await fetch(`/api/courses?department=${formData.department}`);
         const data = await response.json();
         setCourses(data);
       } catch (error) {
@@ -83,7 +83,7 @@ const AdminActionForm = ({ activeTab }) => {
           department: formData.department,
           course: formData.course,
         }).toString();
-        const response = await fetch(`http://localhost:5000/api/semesters?${query}`);
+        const response = await fetch(`/api/semesters?${query}`);
         const data = await response.json();
         setSemesters(data);
       } catch (error) {
@@ -106,7 +106,7 @@ const AdminActionForm = ({ activeTab }) => {
           course: formData.course,
           semester: formData.semester,
         }).toString();
-        const response = await fetch(`http://localhost:5000/api/subjects?${query}`);
+        const response = await fetch(`/api/subjects?${query}`);
         const data = await response.json();
         setSubjects(data);
       } catch (error) {
@@ -155,20 +155,20 @@ const AdminActionForm = ({ activeTab }) => {
       };
 
       if (activeTab === 'Add Courses') {
-        endpoint = 'http://localhost:5000/api/courses';
+        endpoint = '/api/courses';
         payload = {
           name: formData.name,
           department: formData.department,
         };
       } else if (activeTab === 'Add Semester') {
-        endpoint = 'http://localhost:5000/api/semesters';
+        endpoint = '/api/semesters';
         payload = {
           name: formData.name,
           department: formData.department,
           course: formData.course,
         };
       } else if (activeTab === 'Add Subject') {
-        endpoint = 'http://localhost:5000/api/subjects';
+        endpoint = '/api/subjects';
         payload = {
           name: formData.name,
           department: formData.department,
@@ -176,7 +176,7 @@ const AdminActionForm = ({ activeTab }) => {
           semester: formData.semester,
         };
       } else if (activeTab === 'Add Notes') {
-        endpoint = 'http://localhost:5000/api/notes';
+        endpoint = '/api/notes';
         if (!file) throw new Error('Please attach a PDF document');
 
         payload = new FormData();
@@ -192,7 +192,7 @@ const AdminActionForm = ({ activeTab }) => {
         payload.append('file', file);
         requestOptions = { method: 'POST', headers: authHeader };
       } else if (activeTab === 'Add Papers') {
-        endpoint = 'http://localhost:5000/api/papers';
+        endpoint = '/api/papers';
         if (!file) throw new Error('Please attach a PDF document');
 
         payload = new FormData();
@@ -1100,7 +1100,7 @@ const AdminDashboard = () => {
       setUsersErrorMessage('');
 
       try {
-        const response = await fetch('http://localhost:5000/api/users', {
+        const response = await fetch('/api/users', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

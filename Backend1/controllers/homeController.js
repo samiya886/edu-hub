@@ -39,7 +39,8 @@ const roleScopedFilter = (req) => {
     return { uploaderRole: req.user.role };
   }
 
-  return { uploaderRole: "student" };
+  // Public (unauthenticated) visitors can see all resources
+  return {};
 };
 
 export const getHomeSummary = async (req, res) => {

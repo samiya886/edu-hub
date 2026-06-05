@@ -70,8 +70,8 @@ const roleScopedFilter = (req) => {
   if (["student", "teacher", "admin"].includes(req.user?.role)) {
     return { uploaderRole: req.user.role };
   }
-
-  return { uploaderRole: "student" };
+  // Public (unauthenticated) visitors can see all papers
+  return {};
 };
 
 // Get all papers

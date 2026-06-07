@@ -238,12 +238,20 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link
-              to="/auth"
-              className="bg-[#ff9f1c] text-white w-full text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
-            >
-              <span>Login </span>
-            </Link>
+            <>
+              <Link
+                to="/auth"
+                className="hidden lg:block bg-[#ff9f1c] text-white w-full text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
+              >
+                <span>Login </span>
+              </Link>
+              <Link
+                to="/auth"
+                className="lg:hidden block w-full bg-[#ff9f1c] text-white text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
+              >
+                <span>Login </span>
+              </Link>
+            </>
           )}
 
           <button className="lg:hidden ml-1 text-gray-800" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle navigation menu">
@@ -253,7 +261,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 max-h-[calc(100vh-64px)] w-64 overflow-y-auto bg-white border-t border-gray-100 p-5 space-y-4 shadow-xl sm:p-6">
+        <div className="lg:hidden absolute top-full left-0 z-50 max-h-[calc(100vh-64px)] w-64 overflow-y-auto bg-white border-t border-gray-100 p-5 space-y-4 shadow-xl sm:p-6">
           {navLinks.map((link) => (
             <div key={link.name}>
               <Link

@@ -35,10 +35,18 @@ const resolveSubjectFilter = async ({ department, course, semester, subject }) =
 };
 
 const roleScopedFilter = (req) => {
-  if (["student", "teacher", "admin"].includes(req.user?.role)) {
-    return { uploaderRole: req.user.role };
+  // Admins should see all resources regardless of uploader role
+  if (req.user?.role === 'admin') {
+    return {};
   }
-
+  // Students and teachers see only resources uploaded by users with the same role, excluding their own uploads
+  if (req.user && ["student", "teacher"].includes(req.user.role)) {
+    const filter = { uploaderRole: req.user.role };
+    if (req.user._id) {
+      filter.uploaderId = { $ne: req.user._id };
+    }
+    return filter;
+  }
   // Public (unauthenticated) visitors can see all resources
   return {};
 };

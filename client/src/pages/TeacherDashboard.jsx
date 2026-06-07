@@ -509,10 +509,10 @@ const TeacherDashboard = () => {
   ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 6);
 
   const stats = [
-    { label: 'My Notes', value: notes.length, caption: 'Notes uploaded by you', icon: BookOpen },
-    { label: 'My Papers', value: papers.length, caption: 'Papers uploaded by you', icon: FileText },
-    { label: 'Subjects Indexed', value: subjects.length, caption: 'Current subject scope', icon: Layers },
-    { label: 'My Uploads', value: [...notes, ...papers].filter(isOwner).length, caption: 'Resources you can manage', icon: Activity },
+    { label: 'My Notes', value: notes?.length ?? 0, caption: 'Notes uploaded by you', icon: <BookOpen /> },
+    { label: 'My Papers', value: papers?.length ?? 0, caption: 'Papers uploaded by you', icon: <FileText /> },
+    { label: 'Subjects Indexed', value: subjects?.length ?? 0, caption: 'Current subject scope', icon: <Layers /> },
+    { label: 'My Uploads', value: [...notes, ...papers].filter(isOwner).length, caption: 'Resources you can manage', icon: <Activity /> },
   ];
 
   const fetchAll = async () => {

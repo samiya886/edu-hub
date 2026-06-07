@@ -835,8 +835,8 @@ const AdminOverview = ({ users, isLoadingUsers, setActiveTab, homeData }) => {
   const overviewCards = [
     { label: 'Total Users', value: totalUsers, icon: <Users size={22} />, accent: 'bg-[#0a4a44] text-white' },
     { label: 'Students', value: students, icon: <GraduationCap size={22} />, accent: 'bg-blue-50 text-blue-600' },
-    { label: 'Admin Notes', value: resourceStats.notes ?? '-', icon: <BookOpen size={22} />, accent: 'bg-green-50 text-green-600' },
-    { label: 'Admin Papers', value: resourceStats.papers ?? '-', icon: <FileText size={22} />, accent: 'bg-orange-50 text-[#ff9f1c]' },
+    { label: 'Admin Notes', value: resourceStats.notes ?? 0, icon: <BookOpen size={22} />, accent: 'bg-green-50 text-green-600' },
+    { label: 'Admin Papers', value: resourceStats.papers ?? 0, icon: <FileText size={22} />, accent: 'bg-orange-50 text-[#ff9f1c]' },
   ];
 
   const mixCards = [

@@ -114,7 +114,7 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
     <motion.aside
       animate={{
         x: sidebarOpen || window.innerWidth >= 1024 ? 0 : '-100%',
-        width: sidebarOpen ? 280 : 96,
+        width: sidebarOpen ? (window.innerWidth >= 1024 ? 280 : 200) : 96,
       }}
       transition={{ type: 'spring', stiffness: 260, damping: 30 }}
       className="fixed left-0 top-0 z-50 flex h-screen max-w-[calc(100vw-24px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:translate-x-0"
@@ -576,7 +576,8 @@ const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState('notes');
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
   const [resourceType, setResourceType] = useState('notes');
-  const [items, setItems] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [papers, setPapers] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -626,10 +627,16 @@ const StudentDashboard = () => {
       setResourceType('papers');
       if (!editingId) setUploadForm(emptyUpload);
     }
+    // Refresh resources when section changes
+    fetchResources();
   }, [activeSection]);
 
+  const fetchAll = async () => {
+    await Promise.all([fetchDepartments(), fetchResources()]);
+  };
+
   useEffect(() => {
-    fetchDepartments();
+    fetchAll();
     refreshUser?.();
   }, []);
 
@@ -648,10 +655,9 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     if (!profileComplete) return;
-    fetchItems(resourceType);
-    const interval = window.setInterval(() => fetchItems(resourceType), 15000);
+    const interval = window.setInterval(() => fetchResources(), 15000);
     return () => window.clearInterval(interval);
-  }, [resourceType, user?.department, user?.course, user?.semester, user?.subjects?.length, profileComplete]);
+  }, [profileComplete]);
 
   useEffect(() => {
     const department = filters.department || uploadForm.department || profileForm.department;
@@ -669,7 +675,8 @@ const StudentDashboard = () => {
   }, [filters.semester, uploadForm.semester, profileForm.semester]);
 
   useEffect(() => {
-    let result = items;
+    const sourceItems = resourceType === 'notes' ? notes : papers;
+    let result = sourceItems;
 
     if (filters.search) {
       result = result.filter(
@@ -690,13 +697,13 @@ const StudentDashboard = () => {
     }
 
     setFilteredItems(result);
-  }, [filters, items]);
+  }, [filters, notes, papers, resourceType]);
 
   const stats = useMemo(() => [
-    { label: 'My Notes', value: resourceType === 'notes' ? filteredItems.length : items.length, caption: 'Notes uploaded by you', icon: BookOpen },
-    { label: 'My Papers', value: resourceType === 'papers' ? filteredItems.length : items.length, caption: 'Papers uploaded by you', icon: FileText },
+    { label: 'My Notes', value: notes?.length ?? 0, caption: 'Notes uploaded by you', icon: BookOpen },
+    { label: 'My Papers', value: papers?.length ?? 0, caption: 'Papers uploaded by you', icon: FileText },
     { label: 'Search Active', value: filters.search ? 1 : 0, caption: 'Keyword search only', icon: Search },
-  ], [filteredItems.length, filters, items.length, resourceType]);
+  ], [notes.length, papers.length, filters.search]);
 
   const fetchDepartments = async () => {
     try {
@@ -734,25 +741,28 @@ const StudentDashboard = () => {
     }
   };
 
-  const fetchItems = async (type) => {
+  const fetchResources = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/users/me/resources?type=${type}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
+      const [notesRes, papersRes] = await Promise.all([
+        fetch(`${API_URL}/users/me/resources?type=notes`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/users/me/resources?type=papers`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+      const notesData = await notesRes.json();
+      const papersData = await papersRes.json();
 
-      if (!response.ok) throw new Error(data.message || `Unable to load ${type}`);
+      if (!notesRes.ok) throw new Error(notesData.message || 'Unable to load notes');
+      if (!papersRes.ok) throw new Error(papersData.message || 'Unable to load papers');
 
-      setProfileRequired(Boolean(data.profileRequired));
-      setItems(data.items || []);
-      if (data.message) setMessage(data.message);
+      setNotes(notesData.items || []);
+      setPapers(papersData.items || []);
+      setProfileRequired(Boolean(notesData.profileRequired || papersData.profileRequired));
+      if (notesData.message) setMessage(notesData.message);
     } catch (error) {
-      console.error(`Error fetching ${type}:`, error);
-      setItems([]);
+      console.error('Error fetching resources:', error);
+      setNotes([]);
+      setPapers([]);
       setProfileRequired(true);
       setMessage(error.message);
     }

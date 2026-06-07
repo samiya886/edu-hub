@@ -238,8 +238,11 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link to="/auth" className="bg-[#ff9f1c] text-white px-4 py-2.5 rounded-full font-bold text-xs hover:bg-[#f39200] transition shadow-md shadow-orange-200 sm:px-7 sm:text-sm">
-              <span className="hidden min-[420px]:inline">Login </span>
+            <Link
+              to="/auth"
+              className="bg-[#ff9f1c] text-white w-full text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
+            >
+              <span>Login </span>
             </Link>
           )}
 
@@ -250,7 +253,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 max-h-[calc(100vh-64px)] w-full overflow-y-auto bg-white border-t border-gray-100 p-5 space-y-4 shadow-xl sm:p-6">
+        <div className="lg:hidden absolute top-full left-0 max-h-[calc(100vh-64px)] w-64 overflow-y-auto bg-white border-t border-gray-100 p-5 space-y-4 shadow-xl sm:p-6">
           {navLinks.map((link) => (
             <div key={link.name}>
               <Link
@@ -274,6 +277,11 @@ const Navbar = () => {
               )}
             </div>
           ))}
+          {!isAuthenticated() && (
+            <Link to="/auth" className="bg-[#ff9f1c] text-white text-center py-3 rounded-xl font-bold">
+              Student Login
+            </Link>
+          )}
           <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
             {isAuthenticated() ? (
               <div className="flex flex-col gap-2">

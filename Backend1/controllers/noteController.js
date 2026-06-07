@@ -67,10 +67,15 @@ const canManageResource = (user, resource) => {
 };
 
 const roleScopedFilter = (req) => {
-  if (["student", "teacher", "admin"].includes(req.user?.role)) {
-    return { uploaderRole: req.user.role };
+  // For students and teachers, restrict to resources uploaded by same role excluding own uploads
+  if (req.user && ["student", "teacher"].includes(req.user.role)) {
+    const filter = { uploaderRole: req.user.role };
+    if (req.user._id) {
+      filter.uploaderId = { $ne: req.user._id };
+    }
+    return filter;
   }
-  // Public (unauthenticated) visitors can see all notes
+  // Admins and unauthenticated users see all resources without restriction
   return {};
 };
 

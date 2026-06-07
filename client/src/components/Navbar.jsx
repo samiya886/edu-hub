@@ -83,6 +83,15 @@ const Navbar = () => {
     };
   }, [showLogoutModal, isSigningOut]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Notes', path: '/notes' },
@@ -238,94 +247,126 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <>
-              <Link
-                to="/auth"
-                className="hidden lg:block bg-[#ff9f1c] text-white w-full text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
-              >
-                <span>Login </span>
-              </Link>
-              <Link
-                to="/auth"
-                className="lg:hidden block w-full bg-[#ff9f1c] text-white text-center px-4 py-3 rounded-full font-bold text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
-              >
-                <span>Login </span>
-              </Link>
-            </>
+            <Link
+              to="/auth"
+              onClick={closeMenus}
+              className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#ff9f1c] px-4 py-2 text-sm font-bold text-white shadow-md shadow-orange-200 transition hover:bg-[#e68a00] sm:px-5 sm:text-base"
+            >
+              Login
+            </Link>
           )}
 
-          <button className="lg:hidden ml-1 text-gray-800" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle navigation menu">
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm lg:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={isOpen}
+          >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
 
-      {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 z-50 max-h-[calc(100vh-64px)] w-64 overflow-y-auto bg-white border-t border-gray-100 p-5 space-y-4 shadow-xl sm:p-6">
-          {navLinks.map((link) => (
-            <div key={link.name}>
-              <Link
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`block py-2 text-lg font-medium ${isActive(link.path) ? 'text-[#ff9f1c]' : 'text-gray-700'}`}
-              >
-                {link.name}
-              </Link>
-              {(link.name === 'Notes' || link.name === 'Papers') && (
-                <div className="pl-4 space-y-2 mt-1">
-                  {departments.map((dept) => (
-                    <Link key={dept.name} to={dept.path} onClick={() => setIsOpen(false)} className="block py-1.5 text-gray-500 text-sm">
-                      {dept.name}
-                    </Link>
-                  ))}
-                  <Link to="/departments" onClick={() => setIsOpen(false)} className="block py-1.5 text-[#ff9f1c] text-sm font-bold uppercase tracking-wider">
-                    View All
-                  </Link>
-                </div>
-              )}
-            </div>
-          ))}
-          {!isAuthenticated() && (
-            <Link to="/auth" className="bg-[#ff9f1c] text-white text-center py-3 rounded-xl font-bold">
-              Student Login
-            </Link>
-          )}
-          <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
-            {isAuthenticated() ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-gray-700">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0a4a44] text-sm font-black text-white">
-                    {(user?.name || 'S').charAt(0).toUpperCase()}
-                  </span>
-                  <span className="text-sm font-medium">
-                    {user?.name || 'Student'}
-                  </span>
-                </div>
-                {profileActions.map(({ name, path, icon: Icon }) => (
-                  <Link
-                    key={name}
-                    to={path}
-                    onClick={closeMenus}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-gray-700 transition-all hover:bg-orange-50 hover:text-[#ff9f1c] focus:bg-orange-50 focus:text-[#ff9f1c] focus:outline-none"
-                  >
-                    <Icon size={18} aria-hidden="true" />
-                    {name}
-                  </Link>
-                ))}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 top-[64px] z-40 bg-[#0a1f1d]/45 backdrop-blur-sm lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) closeMenus();
+            }}
+          >
+            <motion.div
+              className="ml-auto flex h-[calc(100vh-64px)] w-full max-w-sm flex-col overflow-y-auto bg-white p-5 shadow-2xl sm:p-6"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              role="menu"
+              aria-label="Mobile navigation"
+            >
+              <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-4">
+                <span className="text-sm font-black uppercase tracking-[0.22em] text-gray-400">Menu</span>
                 <button
-                  onClick={requestLogout}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition-all hover:bg-red-50 hover:text-red-600 focus:bg-red-50 focus:text-red-600 focus:outline-none"
+                  type="button"
+                  onClick={closeMenus}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-700"
+                  aria-label="Close navigation menu"
                 >
-                  <LogOut size={18} aria-hidden="true" />
-                  Logout
+                  <X size={20} />
                 </button>
               </div>
-            ) : (
-              <Link to="/auth" className="bg-[#ff9f1c] text-white text-center py-3 rounded-xl font-bold">Student Login</Link>
-            )}
-          </div>
-        </div>
-      )}
+
+              <div className="space-y-2">
+                {navLinks.map((link) => (
+                  <div key={link.name} className="rounded-2xl bg-gray-50/70 p-2">
+                    <Link
+                      to={link.path}
+                      onClick={closeMenus}
+                      className={`block rounded-xl px-3 py-3 text-base font-black ${isActive(link.path) ? 'bg-orange-50 text-[#ff9f1c]' : 'text-gray-700'}`}
+                      role="menuitem"
+                    >
+                      {link.name}
+                    </Link>
+                    {(link.name === 'Notes' || link.name === 'Papers') && (
+                      <div className="grid gap-1 px-3 pb-2">
+                        {departments.map((dept) => (
+                          <Link key={dept.name} to={dept.path} onClick={closeMenus} className="rounded-lg py-2 text-sm font-semibold text-gray-500">
+                            {dept.name}
+                          </Link>
+                        ))}
+                        <Link to="/departments" onClick={closeMenus} className="rounded-lg py-2 text-xs font-black uppercase tracking-wider text-[#ff9f1c]">
+                          View All
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t border-gray-100 pt-5">
+                {isAuthenticated() ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-gray-700">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0a4a44] text-sm font-black text-white">
+                        {(user?.name || 'S').charAt(0).toUpperCase()}
+                      </span>
+                      <span className="truncate text-sm font-bold">{user?.name || 'Student'}</span>
+                    </div>
+                    {profileActions.map(({ name, path, icon: Icon }) => (
+                      <Link
+                        key={name}
+                        to={path}
+                        onClick={closeMenus}
+                        className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-gray-700 transition-all hover:bg-orange-50 hover:text-[#ff9f1c] focus:bg-orange-50 focus:text-[#ff9f1c] focus:outline-none"
+                        role="menuitem"
+                      >
+                        <Icon size={18} aria-hidden="true" />
+                        {name}
+                      </Link>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={requestLogout}
+                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition-all hover:bg-red-50 hover:text-red-600 focus:bg-red-50 focus:text-red-600 focus:outline-none"
+                    >
+                      <LogOut size={18} aria-hidden="true" />
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <Link to="/auth" onClick={closeMenus} className="flex min-h-12 items-center justify-center rounded-2xl bg-[#ff9f1c] px-5 py-3 text-center text-base font-black text-white">
+                    Student Login
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showLogoutModal && (

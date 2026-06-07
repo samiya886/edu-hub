@@ -90,7 +90,9 @@ const BackButton = () => {
   );
 };
 
-const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, children, user }) => (
+const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
+
+const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, children, user, isDesktop }) => (
   <div className="min-h-screen bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
     <AnimatePresence>
       {sidebarOpen && (
@@ -108,7 +110,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
 
     <motion.aside
       animate={{
-        x: sidebarOpen || window.innerWidth >= 1024 ? 0 : '-100%',
+        x: sidebarOpen || isDesktop ? 0 : '-100%',
         width: sidebarOpen ? 280 : 96,
       }}
       transition={{ type: 'spring', stiffness: 260, damping: 30 }}
@@ -132,7 +134,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
             type="button"
             onClick={() => {
               setActiveSection(key);
-              if (window.innerWidth < 1024) setSidebarOpen(false);
+              if (!isDesktop) setSidebarOpen(false);
             }}
             className={`group relative flex w-full items-center gap-4 rounded-[22px] px-5 py-3.5 text-left transition-all duration-300 ${
               activeSection === key
@@ -272,18 +274,18 @@ const ResourceForm = ({
   editingId,
   onCancel,
 }) => (
-  <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[36px] border border-gray-100 bg-white shadow-sm">
-    <div className="flex items-center justify-between bg-[#0a4a44] p-6 text-white">
+  <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm sm:rounded-[36px]">
+    <div className="flex items-center justify-between gap-3 bg-[#0a4a44] p-4 text-white sm:p-6">
       <div>
         <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">{editingId ? 'Edit Resource' : 'New Upload'}</p>
-        <h3 className="mt-1 text-2xl font-black tracking-tighter">{editingId ? 'Update' : 'Upload'} {type === 'notes' ? 'Note' : 'Paper'}</h3>
+        <h3 className="mt-1 text-xl font-black tracking-tighter sm:text-2xl">{editingId ? 'Update' : 'Upload'} {type === 'notes' ? 'Note' : 'Paper'}</h3>
       </div>
       <button type="button" onClick={onCancel} className="rounded-2xl bg-white/10 p-3 text-white transition hover:bg-white/20" aria-label="Close form">
         <X size={20} />
       </button>
     </div>
 
-    <form onSubmit={onSubmit} className="space-y-6 p-6">
+    <form onSubmit={onSubmit} className="space-y-5 p-4 sm:space-y-6 sm:p-6">
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Title">
           <input
@@ -342,7 +344,7 @@ const ResourceForm = ({
         />
       </Field>
 
-      <div className="relative cursor-pointer rounded-[36px] border-4 border-dashed border-gray-100 bg-gray-50/20 p-10 text-center transition hover:border-[#ff9f1c]">
+      <div className="relative cursor-pointer rounded-[26px] border-4 border-dashed border-gray-100 bg-gray-50/20 p-5 text-center transition hover:border-[#ff9f1c] sm:rounded-[36px] sm:p-10">
         <input
           required={!editingId && !form.existingFileUrl}
           type="file"
@@ -351,14 +353,14 @@ const ResourceForm = ({
           className="absolute inset-0 z-20 cursor-pointer opacity-0"
         />
         <div className="space-y-5">
-          <motion.div whileHover={{ scale: 1.08, rotate: 4 }} className="mx-auto flex h-24 w-24 items-center justify-center rounded-[32px] bg-white shadow-xl">
-            <Upload className={form.file ? 'text-green-500' : 'text-[#ff9f1c]'} size={36} />
+          <motion.div whileHover={{ scale: 1.08, rotate: 4 }} className="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-white shadow-xl sm:h-24 sm:w-24 sm:rounded-[32px]">
+            <Upload className={form.file ? 'text-green-500' : 'text-[#ff9f1c]'} size={32} />
           </motion.div>
           <div>
-            <p className="text-2xl font-black text-[#0a4a44]">
+            <p className="break-words text-lg font-black text-[#0a4a44] sm:text-2xl">
               {form.file ? form.file.name : editingId ? 'Replace PDF Document' : 'Attach PDF Document'}
             </p>
-            <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-gray-400">
+            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400 sm:text-xs sm:tracking-[0.2em]">
               {form.file
                 ? `${(form.file.size / 1024 / 1024).toFixed(2)} MB - Ready`
                 : editingId
@@ -372,7 +374,7 @@ const ResourceForm = ({
       <button
         type="submit"
         disabled={loading}
-        className="flex w-full items-center justify-center gap-3 rounded-3xl bg-[#ff9f1c] py-5 text-lg font-black text-white shadow-[0_24px_50px_-18px_rgba(255,159,28,0.65)] transition hover:bg-[#e68a00] disabled:bg-gray-300"
+        className="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#ff9f1c] px-4 py-4 text-base font-black text-white shadow-[0_24px_50px_-18px_rgba(255,159,28,0.65)] transition hover:bg-[#e68a00] disabled:bg-gray-300 sm:rounded-3xl sm:py-5 sm:text-lg"
       >
         <Upload size={20} /> {loading ? 'Saving...' : editingId ? 'Update Resource' : 'Publish Resource'}
       </button>
@@ -431,7 +433,8 @@ const ResourceCard = ({ item, type, onEdit, onDelete, canManage = true }) => (
 const TeacherDashboard = () => {
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isDesktop, setIsDesktop] = useState(getIsDesktop);
+  const [sidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [resourceType, setResourceType] = useState('notes');
   const [notes, setNotes] = useState([]);
   const [papers, setPapers] = useState([]);
@@ -447,6 +450,19 @@ const TeacherDashboard = () => {
   const [subjects, setSubjects] = useState([]);
   const [formData, setFormData] = useState(emptyResource);
   const [academicForm, setAcademicForm] = useState(emptyAcademic);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const nextIsDesktop = getIsDesktop();
+      setIsDesktop(nextIsDesktop);
+      setSidebarOpen(nextIsDesktop);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -1086,6 +1102,7 @@ const TeacherDashboard = () => {
       sidebarOpen={sidebarOpen}
       setSidebarOpen={setSidebarOpen}
       user={user}
+      isDesktop={isDesktop}
     >
       <AnimatePresence mode="wait">
         <motion.div key={activeSection} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>

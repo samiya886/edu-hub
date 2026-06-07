@@ -133,7 +133,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden font-sans bg-[#0a4a44]">
+    <div className="min-h-screen relative flex items-center justify-center p-3 overflow-hidden font-sans bg-[#0a4a44] sm:p-4">
       {/* BACKGROUND IMAGE */}
       <div
         className="absolute inset-0 z-0 opacity-120"
@@ -164,10 +164,10 @@ const Auth = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-5xl lg:min-h-[700px] bg-white/95 backdrop-blur-xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col lg:flex-row relative z-20 border border-white/20"
+        className="w-full max-w-5xl bg-white/95 backdrop-blur-xl rounded-[26px] shadow-2xl overflow-hidden flex flex-col lg:min-h-[700px] lg:flex-row lg:rounded-[40px] relative z-20 border border-white/20"
       >
         {/* LEFT SIDE */}
-        <div className="lg:w-[40%] bg-[#0a4a44] relative p-10 flex flex-col justify-between overflow-hidden">
+        <div className="lg:w-[40%] bg-[#0a4a44] relative p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff9f1c]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
           {/* LOGO */}
@@ -183,7 +183,7 @@ const Auth = () => {
           </div>
 
           {/* TEXT */}
-          <div className="relative z-10 py-12">
+          <div className="relative z-10 py-8 lg:py-12">
             <AnimatePresence mode="wait">
               <motion.div
                 key={
@@ -197,7 +197,7 @@ const Auth = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-5xl font-black text-white leading-tight mb-6 whitespace-pre-line">
+                <h2 className="text-3xl font-black text-white leading-tight mb-4 whitespace-pre-line sm:text-4xl lg:text-5xl lg:mb-6">
                   {isForgot
                     ? 'Reset \nPassword.'
                     : isLogin
@@ -205,7 +205,7 @@ const Auth = () => {
                     : 'Start Your \nJourney.'}
                 </h2>
 
-                <p className="text-teal-100/60 text-sm leading-relaxed max-w-[260px]">
+                <p className="text-teal-100/70 text-sm leading-relaxed max-w-[280px]">
                   {isForgot
                     ? "Don't worry, it happens to the best of us. Let's get you back in."
                     : isLogin
@@ -216,7 +216,7 @@ const Auth = () => {
             </AnimatePresence>
 
             {/* BADGE */}
-            <div className="mt-12 bg-white/5 border border-white/10 p-5 rounded-2xl inline-flex items-center gap-4">
+            <div className="mt-6 bg-white/5 border border-white/10 p-4 rounded-2xl inline-flex items-center gap-3 sm:mt-12 sm:p-5 sm:gap-4">
               <div className="bg-[#ff9f1c] p-2 rounded-xl">
                 <CheckCircle2 className="text-white" size={20} />
               </div>
@@ -239,11 +239,11 @@ const Auth = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="lg:w-[60%] p-8 md:p-16 flex flex-col justify-center bg-white">
+        <div className="lg:w-[60%] p-5 sm:p-8 md:p-16 flex flex-col justify-center bg-white">
           <div className="max-w-sm mx-auto w-full">
             {/* HEADER */}
-            <div className="mb-10">
-              <h3 className="text-3xl font-black text-[#0a4a44]">
+            <div className="mb-7 sm:mb-10">
+              <h3 className="text-2xl font-black text-[#0a4a44] sm:text-3xl">
                 {isForgot
                   ? 'Forgot Password'
                   : isLogin
@@ -452,7 +452,7 @@ const Auth = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                   <button className="flex items-center justify-center gap-2 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-xs text-[#0a4a44]">
                     <Globe
                       size={14}

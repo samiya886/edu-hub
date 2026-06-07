@@ -95,7 +95,9 @@ const BackButton = () => {
   );
 };
 
-const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, children, user }) => (
+const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
+
+const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, children, user, isDesktop }) => (
   <div className="min-h-screen bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
     <AnimatePresence>
       {sidebarOpen && (
@@ -113,8 +115,8 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
 
     <motion.aside
       animate={{
-        x: sidebarOpen || window.innerWidth >= 1024 ? 0 : '-100%',
-        width: sidebarOpen ? (window.innerWidth >= 1024 ? 280 : 200) : 96,
+        x: sidebarOpen || isDesktop ? 0 : '-100%',
+        width: sidebarOpen || !isDesktop ? 280 : 96,
       }}
       transition={{ type: 'spring', stiffness: 260, damping: 30 }}
       className="fixed left-0 top-0 z-50 flex h-screen max-w-[calc(100vw-24px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:translate-x-0"
@@ -137,7 +139,7 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
             type="button"
             onClick={() => {
               setActiveSection(key);
-              if (window.innerWidth < 1024) setSidebarOpen(false);
+              if (!isDesktop) setSidebarOpen(false);
             }}
             className={`group relative flex w-full items-center gap-4 rounded-[22px] px-5 py-3.5 text-left transition-all duration-300 ${
               activeSection === key
@@ -330,18 +332,18 @@ const UploadForm = ({
   onCancel,
   onSubmit,
 }) => (
-  <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl overflow-hidden rounded-[40px] border border-gray-100 bg-white shadow-sm">
-    <div className="bg-[#0a4a44] p-8 text-white md:p-10">
+  <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm sm:rounded-[40px]">
+    <div className="bg-[#0a4a44] p-5 text-white sm:p-8 md:p-10">
       <p className="mb-3 inline-flex rounded-full bg-[#ff9f1c] px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em]">
         Student Upload
       </p>
-      <h2 className="text-3xl font-black tracking-tighter md:text-4xl">{editingId ? 'Edit' : 'Upload'} {type === 'notes' ? 'Notes' : 'Papers'}</h2>
+      <h2 className="text-2xl font-black tracking-tighter sm:text-3xl md:text-4xl">{editingId ? 'Edit' : 'Upload'} {type === 'notes' ? 'Notes' : 'Papers'}</h2>
       <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">
         Add a verified resource link and tag it to the right academic path so other learners can find it quickly.
       </p>
     </div>
 
-    <form onSubmit={onSubmit} className="space-y-6 p-6 md:p-10">
+    <form onSubmit={onSubmit} className="space-y-5 p-4 sm:space-y-6 sm:p-6 md:p-10">
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Title">
           <input
@@ -407,7 +409,7 @@ const UploadForm = ({
         />
       </Field>
 
-      <div className="relative cursor-pointer rounded-[40px] border-4 border-dashed border-gray-100 bg-gray-50/20 p-10 text-center transition hover:border-[#ff9f1c] md:p-14">
+      <div className="relative cursor-pointer rounded-[26px] border-4 border-dashed border-gray-100 bg-gray-50/20 p-5 text-center transition hover:border-[#ff9f1c] sm:rounded-[40px] sm:p-10 md:p-14">
         <input
           required={!editingId && !form.existingFileUrl}
           type="file"
@@ -416,14 +418,14 @@ const UploadForm = ({
           className="absolute inset-0 z-20 cursor-pointer opacity-0"
         />
         <div className="space-y-5">
-          <motion.div whileHover={{ scale: 1.08, rotate: 4 }} className="mx-auto flex h-24 w-24 items-center justify-center rounded-[32px] bg-white shadow-xl">
-            <Upload className={form.file ? 'text-green-500' : 'text-[#ff9f1c]'} size={36} />
+          <motion.div whileHover={{ scale: 1.08, rotate: 4 }} className="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-white shadow-xl sm:h-24 sm:w-24 sm:rounded-[32px]">
+            <Upload className={form.file ? 'text-green-500' : 'text-[#ff9f1c]'} size={32} />
           </motion.div>
           <div>
-            <p className="text-2xl font-black text-[#0a4a44] md:text-3xl">
+            <p className="break-words text-lg font-black text-[#0a4a44] sm:text-2xl md:text-3xl">
               {form.file ? form.file.name : editingId ? 'Replace PDF Document' : 'Attach PDF Document'}
             </p>
-            <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-gray-400">
+            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400 sm:text-xs sm:tracking-[0.2em]">
               {form.file
                 ? `${(form.file.size / 1024 / 1024).toFixed(2)} MB - Ready`
                 : editingId
@@ -438,7 +440,7 @@ const UploadForm = ({
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center justify-center gap-3 rounded-3xl bg-[#ff9f1c] py-5 text-lg font-black text-white shadow-[0_24px_50px_-18px_rgba(255,159,28,0.65)] transition hover:bg-[#e68a00] disabled:bg-gray-300"
+          className="flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#ff9f1c] px-4 py-4 text-base font-black text-white shadow-[0_24px_50px_-18px_rgba(255,159,28,0.65)] transition hover:bg-[#e68a00] disabled:bg-gray-300 sm:rounded-3xl sm:py-5 sm:text-lg"
         >
           <Upload size={20} /> {loading ? 'Saving...' : editingId ? 'Update Resource' : `Publish ${type === 'notes' ? 'Notes' : 'Paper'}`}
         </button>
@@ -574,7 +576,8 @@ const StudentDashboard = () => {
   const { user, updateUser, refreshUser } = useAuth();
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('notes');
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isDesktop, setIsDesktop] = useState(getIsDesktop);
+  const [sidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [resourceType, setResourceType] = useState('notes');
   const [notes, setNotes] = useState([]);
   const [papers, setPapers] = useState([]);
@@ -590,6 +593,19 @@ const StudentDashboard = () => {
   const [subjects, setSubjects] = useState([]);
   const [uploadForm, setUploadForm] = useState(emptyUpload);
   const [profileForm, setProfileForm] = useState(emptyProfile);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const nextIsDesktop = getIsDesktop();
+      setIsDesktop(nextIsDesktop);
+      setSidebarOpen(nextIsDesktop);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState('');
   const [profileRequired, setProfileRequired] = useState(false);
@@ -1104,6 +1120,7 @@ const StudentDashboard = () => {
       sidebarOpen={sidebarOpen}
       setSidebarOpen={setSidebarOpen}
       user={user}
+      isDesktop={isDesktop}
     >
       <AnimatePresence mode="wait">
         <motion.div key={activeSection} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>

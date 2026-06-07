@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 
 const API_URL = '/api';
+const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
 // --- SUB-COMPONENT: ENHANCED ACTION FORM ---
 const AdminActionForm = ({ activeTab }) => {
@@ -249,13 +250,13 @@ const AdminActionForm = ({ activeTab }) => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
-      <div className="bg-white rounded-[50px] shadow-2xl border border-gray-100 overflow-hidden relative">
-        <div className="bg-[#0a4a44] p-12 text-white relative overflow-hidden">
+      <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden relative sm:rounded-[50px]">
+        <div className="bg-[#0a4a44] p-5 text-white relative overflow-hidden sm:p-8 lg:p-12">
           <div className="relative z-10">
             <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#ff9f1c] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6 inline-block shadow-lg shadow-orange-950/20">
               System Entry Mode
             </motion.span>
-            <h2 className="text-4xl font-black mb-2 flex items-center gap-4">
+            <h2 className="text-2xl font-black mb-2 flex items-center gap-3 sm:text-4xl sm:gap-4">
               {activeTab === 'Add Notes' ? <PenTool className="text-[#ff9f1c]" /> : activeTab === 'Add Papers' ? <FileText className="text-[#ff9f1c]" /> : <BookOpen className="text-[#ff9f1c]" />}
               {activeTab}
             </h2>
@@ -264,8 +265,8 @@ const AdminActionForm = ({ activeTab }) => {
           <Layers className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5 rotate-12" />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-12 space-y-10">
-          <div className="grid md:grid-cols-2 gap-10">
+        <form onSubmit={handleSubmit} className="p-4 space-y-6 sm:p-8 sm:space-y-8 lg:p-12 lg:space-y-10">
+          <div className="grid gap-5 md:grid-cols-2 lg:gap-10">
             {renderInputField(
               <><GraduationCap size={14} /> Department</>,
               <div className="relative">
@@ -496,15 +497,15 @@ const AdminActionForm = ({ activeTab }) => {
           )}
 
           {(activeTab === 'Add Notes' || activeTab === 'Add Papers') && (
-            <motion.div custom={11} variants={fieldVariants} initial="hidden" animate="visible" className="relative border-4 border-dashed border-gray-100 rounded-[50px] p-16 text-center group hover:border-[#ff9f1c] bg-gray-50/20 transition-all cursor-pointer">
+            <motion.div custom={11} variants={fieldVariants} initial="hidden" animate="visible" className="relative border-4 border-dashed border-gray-100 rounded-[26px] p-5 text-center group hover:border-[#ff9f1c] bg-gray-50/20 transition-all cursor-pointer sm:rounded-[50px] sm:p-10 lg:p-16">
               <input type="file" accept=".pdf" className="absolute inset-0 opacity-0 cursor-pointer z-20" onChange={(e) => setFile(e.target.files[0])} />
               <div className="space-y-6">
-                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center mx-auto shadow-2xl">
-                  <Upload className={file ? 'text-green-500' : 'text-[#ff9f1c]'} size={44} />
+                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-16 h-16 bg-white rounded-[24px] flex items-center justify-center mx-auto shadow-2xl sm:h-28 sm:w-28 sm:rounded-[40px]">
+                  <Upload className={file ? 'text-green-500' : 'text-[#ff9f1c]'} size={34} />
                 </motion.div>
                 <div className="space-y-2">
-                  <p className="text-[#0a4a44] font-black text-3xl">{file ? file.name : 'Attach PDF Document'}</p>
-                  <p className="text-gray-400 text-sm font-bold uppercase tracking-[0.2em]">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB • READY` : 'Max File Size: 15MB • PDF only'}</p>
+                  <p className="break-words text-[#0a4a44] font-black text-lg sm:text-3xl">{file ? file.name : 'Attach PDF Document'}</p>
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.12em] sm:text-sm sm:tracking-[0.2em]">{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB - READY` : 'Max File Size: 15MB - PDF only'}</p>
                 </div>
               </div>
             </motion.div>
@@ -519,7 +520,7 @@ const AdminActionForm = ({ activeTab }) => {
           <div className="pt-6">
             <button
               disabled={isProcessing}
-              className={`w-full py-7 rounded-[35px] font-black text-2xl shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all flex items-center justify-center gap-4 ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
+              className={`w-full min-h-14 px-4 py-4 rounded-2xl font-black text-base shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all flex items-center justify-center gap-3 sm:rounded-[35px] sm:py-7 sm:text-2xl sm:gap-4 ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
             >
               {isProcessing ? <Loader2 className="animate-spin" /> : <CheckCircle size={28} />}
               {isProcessing ? 'Processing...' : activeTab === 'Add Courses' ? 'Add Course' : activeTab === 'Add Semester' ? 'Add Semester' : activeTab === 'Add Subject' ? 'Add Subject' : activeTab === 'Add Notes' ? 'Upload Notes' : 'Upload Paper'}
@@ -738,8 +739,8 @@ const DepartmentManagement = () => {
             <p className="font-bold text-gray-400">No departments found.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left">
+          <div className="overflow-x-auto mobile-table-wrap">
+            <table className="responsive-table department-table w-full min-w-[760px] text-left">
               <thead className="bg-gray-50 text-[10px] uppercase tracking-[0.22em] text-gray-400">
                 <tr>
                   <th className="px-5 py-4 font-black">Department</th>
@@ -998,8 +999,8 @@ const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
             <p className="font-bold text-gray-400">No users found.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-              <table className="w-full min-w-[850px] text-left">
+          <div className="overflow-x-auto mobile-table-wrap">
+              <table className="responsive-table w-full min-w-[850px] text-left">
                 <thead className="bg-gray-50 text-[10px] uppercase tracking-[0.22em] text-gray-400">
                   <tr>
                     <th className="px-5 py-4 font-black">User</th>
@@ -1060,7 +1061,8 @@ const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
 
 // --- MAIN ADMIN DASHBOARD ---
 const AdminDashboard = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [isDesktop, setIsDesktop] = useState(getIsDesktop);
+  const [isSidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [users, setUsers] = useState([]);
   const [homeData, setHomeData] = useState(null);
@@ -1079,6 +1081,19 @@ const AdminDashboard = () => {
     scrollToTop();
     requestAnimationFrame(scrollToTop);
   }, [activeTab]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const nextIsDesktop = getIsDesktop();
+      setIsDesktop(nextIsDesktop);
+      setSidebarOpen(nextIsDesktop);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -1162,7 +1177,7 @@ const AdminDashboard = () => {
       {/* SIDEBAR */}
       <motion.aside
         animate={{
-          x: isSidebarOpen || window.innerWidth >= 1024 ? 0 : '-100%',
+          x: isSidebarOpen || isDesktop ? 0 : '-100%',
           width: isSidebarOpen ? 280 : 100,
         }}
         transition={{ type: 'spring', stiffness: 260, damping: 30 }}
@@ -1179,7 +1194,7 @@ const AdminDashboard = () => {
               key={item.name}
               onClick={() => {
                 setActiveTab(item.name);
-                if (window.innerWidth < 1024) setSidebarOpen(false);
+                if (!isDesktop) setSidebarOpen(false);
               }}
               className={`w-full flex items-center gap-5 px-5 py-3.5 rounded-[22px] transition-all duration-300 relative group ${activeTab === item.name ? "bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.3)]" : "text-teal-100/40 hover:bg-white/5 hover:text-white"}`}
             >

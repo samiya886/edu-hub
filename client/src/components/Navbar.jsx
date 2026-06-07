@@ -247,7 +247,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/auth"
-                className="lg:hidden block w-full bg-[#ff9f1c] text-white text-center px-3 py-2 rounded-full font-bold text-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
+                className="lg:hidden block w-full bg-[#ff9f1c] text-white text-center px-4 py-3 rounded-full font-bold text-base hover:bg-[#e68a00] transition shadow-md shadow-orange-200"
               >
                 <span>Login </span>
               </Link>

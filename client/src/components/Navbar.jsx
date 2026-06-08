@@ -275,20 +275,17 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 top-[64px] z-40 bg-[#0a1f1d]/45 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 top-[64px] z-40 bg-white lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget) closeMenus();
-            }}
           >
             <motion.div
-              className="ml-auto flex h-[calc(100vh-64px)] w-full max-w-sm flex-col overflow-y-auto bg-white p-5 shadow-2xl sm:p-6"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              className="flex h-[calc(100vh-64px)] w-full flex-col overflow-y-auto bg-white p-5 sm:p-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
               role="menu"
               aria-label="Mobile navigation"
             >

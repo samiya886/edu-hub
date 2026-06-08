@@ -36,9 +36,6 @@ const getFileUrl = (fileUrl) => {
   return `${ASSET_URL}/uploads/${fileUrl}`;
 };
 
-const getUploaderName = (item) => item.uploaderId?.name || item.author?.name || 'EduHub contributor';
-const getSemesterName = (item) => item.semester?.name || item.subject?.semester?.name || 'Semester';
-
 const sectionReveal = {
   hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: 'easeOut' } },
@@ -71,25 +68,12 @@ const NotesPage = () => {
   const academicOptions = useAcademicOptions(academicFilters);
 
   useEffect(() => {
-    setActiveCategory(searchParams.get('category') || 'All');
-    setSearchQuery(searchParams.get('search') || '');
-    setSubmittedSearch(searchParams.get('search') || '');
-    setAcademicFilters({
-      department: searchParams.get('department') || '',
-      course: searchParams.get('course') || '',
-      semester: searchParams.get('semester') || '',
-      subject: searchParams.get('subject') || '',
-    });
-  }, [searchParams]);
-
-  useEffect(() => {
     let isMounted = true;
 
     const loadNotes = async () => {
       setIsLoading(true);
       try {
         const params = new URLSearchParams();
-        params.set('isApproved', 'true');
         if (activeCategory !== 'All') params.set('category', activeCategory);
         if (submittedSearch.trim()) params.set('search', submittedSearch.trim());
         Object.entries(academicFilters).forEach(([key, value]) => {
@@ -304,9 +288,9 @@ const NotesPage = () => {
             <div className="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertCircle size={40} className="text-gray-300" />
             </div>
-            <h3 className="text-2xl font-black text-[#0a4a44] mb-2">No Notes or Papers Available Yet</h3>
+            <h3 className="text-2xl font-black text-[#0a4a44] mb-2">No Notes Found</h3>
             <p className="text-gray-400 mb-8">
-              Approved notes for this category or filter path will appear here after they are uploaded.
+              Try another search or category.
             </p>
             <button onClick={resetFilters} className="text-[#ff9f00] font-black hover:underline">
               Reset filters
@@ -358,14 +342,6 @@ const NotesPage = () => {
                       <p className="text-xs font-bold text-gray-400 mb-4">
                         {note.subject?.name || 'General Subject'}
                       </p>
-                      <div className="mb-4 grid gap-2 text-[11px] font-bold text-gray-400">
-                        <div className="rounded-2xl bg-gray-50 px-3 py-2">
-                          <span className="text-[#0a4a44]">{getSemesterName(note)}</span> Semester
-                        </div>
-                        <div className="rounded-2xl bg-gray-50 px-3 py-2">
-                          Uploaded by <span className="text-[#0a4a44]">{getUploaderName(note)}</span>
-                        </div>
-                      </div>
 
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                         <div className="flex gap-4">
@@ -375,7 +351,7 @@ const NotesPage = () => {
                           </div>
                         </div>
                         {fileUrl ? (
-                          <a href={fileUrl} target="_blank" rel="noreferrer" className="bg-[#ff9f00] text-white p-4 rounded-3xl shadow-lg shadow-orange-100 hover:scale-110 transition-transform" title="View or download PDF">
+                          <a href={fileUrl} target="_blank" rel="noreferrer" className="bg-[#ff9f00] text-white p-4 rounded-3xl shadow-lg shadow-orange-100 hover:scale-110 transition-transform" title="Open PDF">
                             <Download size={24} />
                           </a>
                         ) : (

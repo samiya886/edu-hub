@@ -82,14 +82,13 @@ const roleScopedFilter = (req) => {
 // Get all notes
 export const getNotes = async (req, res) => {
   try {
-    const { subject, department, course, semester, category, isPremium, isApproved, search } = req.query;
+    const { subject, department, course, semester, category, isPremium, search } = req.query;
     let filter = roleScopedFilter(req);
     const subjectFilter = await resolveSubjectFilter({ department, course, semester, subject });
 
     if (subjectFilter) filter.subject = subjectFilter;
     if (category) filter.category = category;
     if (isPremium !== undefined) filter.isPremium = isPremium === 'true';
-    if (isApproved !== undefined) filter.isApproved = isApproved === 'true';
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -126,7 +125,7 @@ export const getNote = async (req, res) => {
 // Create note
 export const createNote = async (req, res) => {
   try {
-    const { title, description, department, course, semester, subject, category, isPremium, isApproved, chapters } = req.body;
+    const { title, description, department, course, semester, subject, category, isPremium, chapters } = req.body;
     const authorId = req.user?._id;
     const academic = await resolveAcademicFields({ department, course, semester, subject });
 
@@ -153,7 +152,6 @@ export const createNote = async (req, res) => {
       uploaderRole: req.user?.role,
       category,
       isPremium: isPremium || false,
-      isApproved: isApproved === undefined ? true : isApproved === 'true' || isApproved === true,
       chapters: chapters || 1,
       fileUrl: getUploadedFileUrl(req),
     });
@@ -169,9 +167,9 @@ export const createNote = async (req, res) => {
 // Update note
 export const updateNote = async (req, res) => {
   try {
-    const { title, description, department, course, semester, subject, category, isPremium, isApproved, chapters } = req.body;
+    const { title, description, department, course, semester, subject, category, isPremium, chapters } = req.body;
     const academic = await resolveAcademicFields({ department, course, semester, subject });
-    const update = { title, description, subject, ...academic, category, isPremium, isApproved, chapters };
+    const update = { title, description, subject, ...academic, category, isPremium, chapters };
     const existingNote = await Note.findById(req.params.id).select("author uploaderId uploaderRole");
 
     if (!existingNote) {

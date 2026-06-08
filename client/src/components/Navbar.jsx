@@ -4,8 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GraduationCap, Menu, X, ChevronDown, ArrowRight, LogOut, LayoutDashboard, UserCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const API_URL = '/api';
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
@@ -15,7 +13,6 @@ const Navbar = () => {
   const [mobilePapersOpen, setMobilePapersOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [departments, setDepartments] = useState([]);
   const profileMenuRef = useRef(null);
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
@@ -111,31 +108,13 @@ const Navbar = () => {
     { name: 'About', path: '/about' },
   ];
 
-  useEffect(() => {
-    let active = true;
-
-    const loadDepartments = async () => {
-      try {
-        const response = await fetch(`${API_URL}/departments`);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Unable to load departments');
-        if (active) setDepartments(Array.isArray(data) ? data : []);
-      } catch {
-        if (active) setDepartments([]);
-      }
-    };
-
-    loadDepartments();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const getDepartmentPath = (section, departmentId) => {
-    const path = section === 'Papers' ? '/papers' : '/notes';
-    return departmentId ? `${path}?department=${departmentId}` : path;
-  };
+  const departments = [
+    { name: 'Engineering', path: '/subjects/engineering' },
+    { name: 'Management', path: '/subjects/management' },
+    { name: 'Commerce', path: '/subjects/commerce' },
+    { name: 'Computer Science', path: '/subjects/cs' },
+    { name: 'Humanities', path: '/subjects/humanities' },
+  ];
 
   const profileActions = [
     { name: 'My Dashboard', path: '/student', icon: LayoutDashboard },
@@ -190,10 +169,10 @@ const Navbar = () => {
               {((link.name === 'Notes' && isNotesOpen) || (link.name === 'Papers' && isPapersOpen)) && (
                 <div className="absolute top-full left-0 pt-4 w-52 animate-in fade-in slide-in-from-top-2">
                   <div className="bg-white shadow-xl rounded-2xl border border-gray-100 p-2 overflow-hidden">
-                    {departments.slice(0, 6).map((dept) => (
+                    {departments.map((dept) => (
                       <Link
-                        key={dept._id}
-                        to={getDepartmentPath(link.name, dept._id)}
+                        key={dept.name}
+                        to={dept.path}
                         className="block px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-orange-50 hover:text-[#ff9f1c] rounded-xl transition-colors"
                       >
                         {dept.name}
@@ -202,7 +181,7 @@ const Navbar = () => {
 
                     <div className="mt-1 pt-1 border-t border-gray-100">
                       <Link
-                        to={link.path}
+                        to="/departments"
                         className="flex items-center justify-between px-4 py-3 text-[11px] font-bold text-[#ff9f1c] hover:bg-orange-50 rounded-xl transition-all uppercase tracking-wider"
                       >
                         View All <ArrowRight size={14} />
@@ -362,10 +341,10 @@ const Navbar = () => {
                       )}
                       {isDropdown && isExpanded && (
                         <div className="grid gap-1 px-3 pb-2 animate-in fade-in slide-in-from-top-1">
-                          {departments.slice(0, 6).map((dept) => (
+                          {departments.map((dept) => (
                             <Link
-                              key={dept._id}
-                              to={getDepartmentPath(link.name, dept._id)}
+                              key={dept.name}
+                              to={dept.path}
                               onClick={closeMenus}
                               className="rounded-lg py-2 text-sm font-semibold text-gray-500 hover:text-[#ff9f1c]"
                             >

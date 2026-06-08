@@ -149,11 +149,11 @@ const Auth = () => {
         {(errorMessage || successMessage) && (
           <motion.div
             key="popup"
-            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            initial={{ opacity: 0, y: -50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 18, scale: 0.96 }}
+            exit={{ opacity: 0, y: -50, scale: 0.95 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4"
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/35 p-4 pt-10 sm:pt-16"
           >
             <div className="flex w-full max-w-sm items-center gap-4 rounded-2xl border border-white/10 bg-[#061826]/95 px-5 py-4 text-white shadow-2xl shadow-black/30 backdrop-blur-xl sm:min-w-[350px]">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-teal-200/30 bg-[#0a4a44]/70">

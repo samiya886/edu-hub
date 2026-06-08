@@ -14,13 +14,15 @@ import {
   Globe,
   LogIn,
   ArrowLeft,
+  X,
 } from 'lucide-react';
 
-const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [isForgot, setIsForgot] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [isForgot, setIsForgot] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const { login } = useAuth();
@@ -75,11 +77,13 @@ const Auth = () => {
     e.preventDefault();
 
     setIsLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
 
     try {
       // FORGOT PASSWORD
       if (isForgot) {
-        alert('Reset link sent to your email!');
+        setSuccessMessage('Reset link sent to your email!');
         setIsForgot(false);
         setIsLoading(false);
         return;
@@ -101,11 +105,11 @@ const Auth = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.message);
+        setSuccessMessage(data.message);
 
         if (data.token && data.user) {
           if (isLogin && data.user.role !== formData.role) {
-            alert(`This account is registered as a ${data.user.role}. Please select ${data.user.role} to login.`);
+            setErrorMessage(`This account is registered as a ${data.user.role}. Please select ${data.user.role} to login.`);
             setIsLoading(false);
             return;
           }
@@ -122,11 +126,11 @@ const Auth = () => {
           role: 'student',
         });
       } else {
-        alert(data.message);
+        setErrorMessage(data.message);
       }
     } catch (error) {
       console.log(error);
-      alert('Server Error');
+      setErrorMessage('Server Error');
     }
 
     setIsLoading(false);
@@ -134,11 +138,30 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-3 overflow-hidden font-sans bg-[#0a4a44] sm:p-4">
-      {/* BACKGROUND IMAGE */}
-      <div
-        className="absolute inset-0 z-0 opacity-120"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=2070')`,
+      {(errorMessage || successMessage) && (
+        <AnimatePresence>
+          <motion.div
+            key="popup"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed inset-0 flex items-center justify-center bg-black/40"
+          >
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <p className="text-gray-800">{errorMessage || successMessage}</p>
+              <button
+                onClick={() => {
+                  setErrorMessage('');
+                  setSuccessMessage('');
+                }}
+                className="mt-4 px-4 py-2 bg-[#ff9f1c] text-white rounded hover:bg-[#e68a00]"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      )}>
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

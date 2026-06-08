@@ -30,8 +30,7 @@ const BackButton = () => {
       className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:px-4"
       aria-label="Go back"
     >
-      <ArrowLeft size={18} aria-hidden="true" />
-      <span className="hidden md:inline">Back</span>
+      <span>Back</span>
     </button>
   );
 };

@@ -38,6 +38,14 @@ const BackButton = () => {
 const API_URL = '/api';
 const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
+const adminFormIcons = {
+  'Add Courses': BookOpen,
+  'Add Semester': Calendar,
+  'Add Subject': LayoutGrid,
+  'Add Papers': FileText,
+  'Add Notes': PenTool,
+};
+
 // --- SUB-COMPONENT: ENHANCED ACTION FORM ---
 const AdminActionForm = ({ activeTab }) => {
   const [file, setFile] = useState(null);
@@ -282,7 +290,7 @@ const AdminActionForm = ({ activeTab }) => {
               System Entry Mode
             </motion.span>
             <h2 className="mb-2 flex min-w-0 items-center gap-3 text-2xl font-black sm:gap-4 sm:text-4xl">
-              {activeTab === 'Add Notes' ? <PenTool className="text-[#ff9f1c]" /> : activeTab === 'Add Papers' ? <FileText className="text-[#ff9f1c]" /> : <BookOpen className="text-[#ff9f1c]" />}
+              {React.createElement(adminFormIcons[activeTab] || BookOpen, { className: 'text-[#ff9f1c]' })}
               {activeTab}
             </h2>
             <p className="text-sm font-medium leading-relaxed text-teal-100/60 sm:text-lg">Manage semester, course, and subject relationships with MongoDB.</p>
@@ -1177,10 +1185,10 @@ const AdminDashboard = () => {
     { name: 'Dashboard', icon: <LayoutDashboard size={22} /> },
     { name: 'Departments', icon: <Building2 size={22} /> },
     { name: 'Add Courses', icon: <BookOpen size={22} /> },
+    { name: 'Add Semester', icon: <Calendar size={22} /> },
+    { name: 'Add Subject', icon: <LayoutGrid size={22} /> },
     { name: 'Add Papers', icon: <FileText size={22} /> },
     { name: 'Add Notes', icon: <PenTool size={22} /> },
-    { name: 'Add Subject', icon: <LayoutGrid size={22} /> },
-    { name: 'Add Semester', icon: <Calendar size={22} /> },
     { name: 'Users', icon: <Users size={22} /> },
   ];
 

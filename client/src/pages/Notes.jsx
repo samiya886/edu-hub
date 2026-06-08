@@ -178,14 +178,16 @@ const NotesPage = () => {
 
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto relative group flex flex-col gap-3 sm:block">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-2xl rounded-3xl -m-2 opacity-0 group-focus-within:opacity-100 transition-opacity" />
-            <input
-              type="text"
-              placeholder="Ex: Data Structures or Economics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="relative w-full bg-white rounded-3xl py-5 pl-14 pr-5 shadow-2xl focus:outline-none text-[#0a4a44] font-bold text-base placeholder:text-gray-300 sm:py-6 sm:pr-44 sm:text-xl"
-            />
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#ff9f00] transition-colors" size={28} />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ex: Data Structures or Economics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="relative w-full bg-white rounded-3xl py-5 pl-14 pr-5 shadow-2xl focus:outline-none text-[#0a4a44] font-bold text-base placeholder:text-gray-300 sm:py-6 sm:pr-44 sm:text-xl"
+              />
+              <Search className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#ff9f00] transition-colors" size={28} />
+            </div>
             <button type="submit" className="relative w-full bg-[#0a4a44] text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-xl hover:bg-[#083a35] transition-all sm:absolute sm:right-4 sm:top-1/2 sm:w-auto sm:-translate-y-1/2">
               Find Notes
             </button>

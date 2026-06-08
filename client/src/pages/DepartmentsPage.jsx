@@ -240,17 +240,17 @@ const DepartmentsPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-2xl px-6 py-3 rounded-3xl text-[#ff9f1c] text-sm font-bold tracking-widest mb-8 border border-white/10"
+            className="inline-flex items-center gap-2 rounded-3xl border border-white/10 bg-white/10 px-4 py-3 text-xs font-bold tracking-wider text-[#ff9f1c] backdrop-blur-2xl sm:gap-3 sm:px-6 sm:text-sm sm:tracking-widest mb-8"
           >
             <Star size={18} fill="currentColor" /> WORLD-CLASS EDUCATION DIRECTORY
           </motion.div>
 
-          <h1 className="text-6xl md:text-7xl lg:text-[92px] font-black text-white leading-[0.95] tracking-tighter mb-8">
+          <h1 className="mb-8 text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl sm:tracking-tighter md:text-7xl lg:text-[92px] lg:leading-[0.95]">
             Discover Your<br />
             <span className="bg-gradient-to-r from-[#ff9f1c] via-amber-300 to-[#ff9f1c] bg-clip-text text-transparent">Academic Universe</span>
           </h1>
 
-          <p className="text-xl text-white/70 max-w-xl mx-auto mb-12">
+          <p className="mx-auto mb-12 max-w-xl text-base text-white/70 sm:text-xl">
             18,000+ resources across 50+ disciplines. Find your perfect department.
           </p>
 
@@ -262,7 +262,7 @@ const DepartmentsPage = () => {
             <div className="absolute -inset-2 bg-gradient-to-r from-[#ff9f1c]/30 via-white/10 to-[#ff9f1c]/30 rounded-[28px] blur-2xl opacity-70 group-focus-within:opacity-100 transition-all" />
 
             <div className="relative flex flex-col gap-3 bg-white rounded-3xl p-3 shadow-2xl sm:flex-row sm:items-center">
-              <Search className="ml-8 text-zinc-400" size={28} />
+              <Search className="text-zinc-400 sm:ml-4" size={24} />
               <input
                 type="text"
                 placeholder="Search departments or keywords..."

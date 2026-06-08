@@ -96,6 +96,10 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    closeMenus();
+  }, [location.pathname, location.search]);
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Notes', path: '/notes' },
@@ -118,7 +122,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white text-gray-800 px-3 py-3 sticky top-0 z-50 shadow-sm border-b border-gray-100 sm:px-5 lg:px-6">
+    <nav className="bg-white text-gray-800 px-3 py-3 sticky top-0 z-50 w-full max-w-full shadow-sm border-b border-gray-100 sm:px-5 lg:px-6">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
         <Link to="/" className="flex min-w-0 items-center gap-2 group">
           <div className="bg-[#10b981] p-2 rounded-full transition-transform group-hover:scale-105">
@@ -275,13 +279,13 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 top-[64px] z-40 bg-white lg:hidden"
+            className="fixed inset-0 z-[90] bg-white lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="flex h-[calc(100vh-64px)] w-full flex-col overflow-y-auto bg-white p-5 sm:p-6"
+              className="flex h-dvh w-full max-w-full flex-col overflow-y-auto bg-white p-4 sm:p-6"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -317,7 +321,7 @@ const Navbar = () => {
                               setMobilePapersOpen(!mobilePapersOpen);
                             }
                           }}
-                          className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-base font-black text-gray-700"
+                          className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left text-base font-black text-gray-700"
                         >
                           <span>{link.name}</span>
                           <ChevronDown

@@ -144,7 +144,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-3 overflow-hidden font-sans bg-[#0a4a44] sm:p-4">
+    <div className="min-h-screen relative flex w-full items-center justify-center p-3 overflow-hidden font-sans bg-[#0a4a44] sm:p-4">
       <AnimatePresence>
         {(errorMessage || successMessage) && (
           <motion.div
@@ -201,7 +201,7 @@ const Auth = () => {
 
       {/* MOUSE GLOW */}
       <motion.div
-        className="pointer-events-none absolute z-10 w-[400px] h-[400px] rounded-full opacity-30 blur-[100px]"
+        className="pointer-events-none absolute z-10 h-[260px] w-[260px] rounded-full opacity-30 blur-[90px] sm:h-[400px] sm:w-[400px] sm:blur-[100px]"
         animate={{
           x: mousePos.x - 200,
           y: mousePos.y - 200,
@@ -216,10 +216,10 @@ const Auth = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md sm:max-w-xl lg:max-w-5xl bg-white/95 backdrop-blur-xl rounded-[26px] shadow-2xl overflow-hidden flex flex-col lg:min-h-[700px] lg:flex-row lg:rounded-[40px] relative z-20 border border-white/20"
+        className="relative z-20 flex w-full max-w-md flex-col overflow-hidden rounded-[24px] border border-white/20 bg-white/95 shadow-2xl backdrop-blur-xl sm:max-w-xl sm:rounded-[26px] lg:min-h-[700px] lg:max-w-5xl lg:flex-row lg:rounded-[40px]"
       >
         {/* LEFT SIDE */}
-        <div className="lg:w-[40%] bg-[#0a4a44] relative p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden">
+        <div className="relative flex flex-col justify-between overflow-hidden bg-[#0a4a44] p-5 sm:p-8 lg:w-[40%] lg:p-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff9f1c]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
           {/* LOGO */}
@@ -249,7 +249,7 @@ const Auth = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-3xl font-black text-white leading-tight mb-4 whitespace-pre-line sm:text-4xl lg:text-5xl lg:mb-6">
+                <h2 className="mb-4 whitespace-pre-line text-3xl font-black leading-tight text-white sm:text-4xl lg:mb-6 lg:text-5xl">
                   {isForgot
                     ? 'Reset \nPassword.'
                     : isLogin
@@ -257,7 +257,7 @@ const Auth = () => {
                     : 'Start Your \nJourney.'}
                 </h2>
 
-                <p className="text-teal-100/70 text-sm leading-relaxed max-w-[280px]">
+                <p className="max-w-[280px] text-sm leading-relaxed text-teal-100/70">
                   {isForgot
                     ? "Don't worry, it happens to the best of us. Let's get you back in."
                     : isLogin
@@ -291,7 +291,7 @@ const Auth = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="lg:w-[60%] p-5 sm:p-8 md:p-16 flex flex-col justify-center bg-white">
+        <div className="flex flex-col justify-center bg-white p-5 sm:p-8 md:p-16 lg:w-[60%]">
           <div className="max-w-sm mx-auto w-full">
             {/* HEADER */}
             <div className="mb-7 sm:mb-10">
@@ -377,7 +377,7 @@ const Auth = () => {
                   <div
                     role="radiogroup"
                     aria-label="Select account role"
-                    className="grid grid-cols-2 gap-2 rounded-xl bg-gray-50 p-1 border border-gray-100"
+                    className="grid grid-cols-2 gap-2 rounded-xl border border-gray-100 bg-gray-50 p-1"
                   >
                     {['student', 'teacher'].map((role) => {
                       const isSelected = formData.role === role;
@@ -389,7 +389,7 @@ const Auth = () => {
                           role="radio"
                           aria-checked={isSelected}
                           onClick={() => handleRoleChange(role)}
-                          className={`py-3 rounded-lg text-sm font-black capitalize transition-all ${
+                          className={`rounded-lg px-2 py-3 text-sm font-black capitalize transition-all ${
                             isSelected
                               ? 'bg-[#ff9f1c] text-white shadow-md shadow-[#ff9f1c]/20'
                               : 'text-gray-500 hover:text-[#0a4a44] hover:bg-white'
@@ -473,7 +473,7 @@ const Auth = () => {
               {/* SUBMIT BUTTON */}
               <button
                 disabled={isLoading}
-                className="w-full bg-[#ff9f1c] text-white py-4 rounded-xl font-black text-sm shadow-lg hover:shadow-[#ff9f1c]/20 hover:bg-[#e68a00] transition-all flex items-center justify-center gap-2 mt-6"
+                className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#ff9f1c] px-4 py-4 text-center text-sm font-black text-white shadow-lg transition-all hover:bg-[#e68a00] hover:shadow-[#ff9f1c]/20"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

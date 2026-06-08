@@ -92,7 +92,7 @@ const BackButton = () => {
 const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
 const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, children, user, isDesktop }) => (
-  <div className="min-h-screen bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
+  <div className="min-h-screen w-full overflow-x-hidden bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
     <AnimatePresence>
       {sidebarOpen && (
         <motion.button
@@ -113,9 +113,9 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
         width: sidebarOpen ? 280 : 96,
       }}
       transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-      className="fixed left-0 top-0 z-50 flex h-screen max-w-[calc(100vw-24px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:translate-x-0"
+      className="fixed left-0 top-0 z-50 flex h-dvh max-w-[calc(100vw-16px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:h-screen lg:translate-x-0"
     >
-      <div className="flex shrink-0 items-center gap-4 p-7">
+      <div className="flex shrink-0 items-center gap-4 p-5 sm:p-7">
         <div className="rounded-2xl bg-[#ff9f1c] p-2.5 shadow-xl shadow-orange-950/20">
           <GraduationCap size={24} />
         </div>
@@ -135,7 +135,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
               setActiveSection(key);
               if (!isDesktop) setSidebarOpen(false);
             }}
-            className={`group relative flex w-full items-center gap-4 rounded-[22px] px-5 py-3.5 text-left transition-all duration-300 ${
+            className={`group relative flex w-full items-center gap-4 rounded-[22px] px-4 py-3.5 text-left transition-all duration-300 sm:px-5 ${
               activeSection === key
                 ? 'bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.35)]'
                 : 'text-teal-100/50 hover:bg-white/5 hover:text-white'
@@ -165,13 +165,13 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
       </div>
     </motion.aside>
 
-    <main className={`${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[96px]'} min-w-0 transition-[margin] duration-300`}>
-      <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-2xl md:px-8 lg:h-24 lg:px-10">
-        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+    <main className={`${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[96px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
+      <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/80 px-3 backdrop-blur-2xl sm:px-4 md:px-8 lg:h-24 lg:px-10">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <button
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-2xl border border-gray-100 bg-gray-50 p-3 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
             aria-label="Toggle sidebar"
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -184,7 +184,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <BackButton />
           <div className="hidden items-center gap-3 rounded-3xl border border-gray-100 bg-gray-50 p-2 pr-5 sm:flex">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">
@@ -198,7 +198,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
         </div>
       </header>
 
-      <div className="p-4 sm:p-6 md:p-8 lg:p-10">{children}</div>
+      <div className="min-w-0 p-3 sm:p-6 md:p-8 lg:p-10">{children}</div>
     </main>
   </div>
 );
@@ -232,7 +232,7 @@ const StatCard = ({ icon: Icon, label, value, caption }) => (
     animate={{ opacity: 1, y: 0 }}
     whileHover={{ y: -8, scale: 1.015 }}
     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-    className="group relative overflow-hidden rounded-[32px] border border-gray-100 bg-white p-6 shadow-sm hover:shadow-[0_30px_80px_-35px_rgba(10,74,68,0.45)]"
+    className="group relative overflow-hidden rounded-[26px] border border-gray-100 bg-white p-4 shadow-sm hover:shadow-[0_30px_80px_-35px_rgba(10,74,68,0.45)] sm:rounded-[32px] sm:p-6"
   >
     <div className="absolute inset-0 bg-gradient-to-br from-orange-50/0 to-orange-50 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
     <div className="absolute inset-x-6 top-0 h-1 rounded-full bg-[#ff9f1c]/70 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
@@ -241,18 +241,18 @@ const StatCard = ({ icon: Icon, label, value, caption }) => (
     </motion.div>
     <div className="relative">
       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">{label}</p>
-      <p className="mt-1 text-3xl font-black tracking-tighter text-[#0a4a44]">{value}</p>
+      <p className="mt-1 text-2xl font-black tracking-tight text-[#0a4a44] sm:text-3xl sm:tracking-tighter">{value}</p>
       <p className="mt-2 text-sm font-semibold text-gray-400">{caption}</p>
     </div>
   </motion.div>
 );
 
 const HeroPanel = ({ title, caption, action }) => (
-  <div className="rounded-[40px] bg-[#0a4a44] p-8 text-white md:p-10">
+  <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
     <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">EduAdmin Faculty</p>
     <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <h2 className="text-4xl font-black tracking-tighter md:text-5xl">{title}</h2>
+        <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">{title}</h2>
         <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">{caption}</p>
       </div>
       {action}
@@ -764,7 +764,7 @@ const TeacherDashboard = () => {
               setResourceType('notes');
               setShowForm(true);
             }}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-6 py-4 text-sm font-black text-white transition hover:bg-[#e68a00]"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 py-4 text-sm font-black text-white transition hover:bg-[#e68a00] sm:w-auto sm:px-6"
           >
             <Plus size={18} /> New Resource
           </button>
@@ -775,10 +775,10 @@ const TeacherDashboard = () => {
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-[40px] border border-gray-100 bg-white p-8 shadow-sm">
-          <div className="mb-8 flex items-center justify-between">
-            <h3 className="flex items-center gap-3 text-2xl font-black tracking-tighter text-[#0a4a44]">
+      <div className="grid gap-5 sm:gap-8 xl:grid-cols-[1.4fr_1fr]">
+        <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
+          <div className="mb-8 flex items-center justify-between gap-3">
+            <h3 className="flex min-w-0 items-center gap-3 text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl sm:tracking-tighter">
               <BarChart3 className="text-[#ff9f1c]" /> Resource Activity
             </h3>
             <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-600">Live</span>
@@ -796,7 +796,7 @@ const TeacherDashboard = () => {
           </div>
         </div>
 
-        <div className="rounded-[40px] bg-[#0a4a44] p-8 text-white shadow-xl">
+        <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white shadow-xl sm:rounded-[40px] sm:p-8">
           <h3 className="mb-6 text-2xl font-black tracking-tighter">Recent Activity</h3>
           <div className="space-y-4">
             {activity.length ? activity.map((item) => (
@@ -826,7 +826,7 @@ const TeacherDashboard = () => {
               setFormData(emptyResource);
               setShowForm(true);
             }}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-6 py-4 text-sm font-black text-white transition hover:bg-[#e68a00]"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 py-4 text-sm font-black text-white transition hover:bg-[#e68a00] sm:w-auto sm:px-6"
           >
             <Plus size={18} /> Add {resourceType === 'notes' ? 'Note' : 'Paper'}
           </button>
@@ -892,7 +892,7 @@ const TeacherDashboard = () => {
           ))}
         </motion.div>
       ) : (
-        <div className="rounded-[32px] border border-dashed border-gray-200 bg-white p-12 text-center">
+        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12">
           <AlertCircle className="mx-auto mb-4 text-gray-300" size={48} />
           <h3 className="text-2xl font-black text-[#0a4a44]">No {resourceType} yet</h3>
           <p className="mt-2 font-medium text-gray-400">Create one to start building your resource library.</p>
@@ -1065,7 +1065,7 @@ const TeacherDashboard = () => {
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
-      <div className="rounded-[40px] border border-gray-100 bg-white p-8 shadow-sm">
+      <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
         <h3 className="mb-6 text-2xl font-black text-[#0a4a44]">Activity Feed</h3>
         <div className="space-y-4">
           {activity.length ? activity.map((item) => (

@@ -273,7 +273,7 @@ const AdminActionForm = ({ activeTab }) => {
   );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-5xl">
       <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden relative sm:rounded-[50px]">
         <div className="bg-[#0a4a44] p-5 text-white relative overflow-hidden sm:p-8 lg:p-12">
         <BackButton />
@@ -281,11 +281,11 @@ const AdminActionForm = ({ activeTab }) => {
             <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#ff9f1c] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6 inline-block shadow-lg shadow-orange-950/20">
               System Entry Mode
             </motion.span>
-            <h2 className="text-2xl font-black mb-2 flex items-center gap-3 sm:text-4xl sm:gap-4">
+            <h2 className="mb-2 flex min-w-0 items-center gap-3 text-2xl font-black sm:gap-4 sm:text-4xl">
               {activeTab === 'Add Notes' ? <PenTool className="text-[#ff9f1c]" /> : activeTab === 'Add Papers' ? <FileText className="text-[#ff9f1c]" /> : <BookOpen className="text-[#ff9f1c]" />}
               {activeTab}
             </h2>
-            <p className="text-teal-100/60 font-medium text-lg">Manage semester, course, and subject relationships with MongoDB.</p>
+            <p className="text-sm font-medium leading-relaxed text-teal-100/60 sm:text-lg">Manage semester, course, and subject relationships with MongoDB.</p>
           </div>
           <Layers className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5 rotate-12" />
         </div>
@@ -545,9 +545,9 @@ const AdminActionForm = ({ activeTab }) => {
           <div className="pt-6">
             <button
               disabled={isProcessing}
-              className={`w-full min-h-14 px-4 py-4 rounded-2xl font-black text-base shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all flex items-center justify-center gap-3 sm:rounded-[35px] sm:py-7 sm:text-2xl sm:gap-4 ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
+              className={`flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center text-base font-black shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all sm:gap-4 sm:rounded-[35px] sm:py-7 sm:text-2xl ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
             >
-              {isProcessing ? <Loader2 className="animate-spin" /> : <CheckCircle size={28} />}
+              {isProcessing ? <Loader2 className="animate-spin" size={22} /> : <CheckCircle size={22} className="sm:h-7 sm:w-7" />}
               {isProcessing ? 'Processing...' : activeTab === 'Add Courses' ? 'Add Course' : activeTab === 'Add Semester' ? 'Add Semester' : activeTab === 'Add Subject' ? 'Add Subject' : activeTab === 'Add Notes' ? 'Upload Notes' : 'Upload Paper'}
             </button>
           </div>
@@ -1185,7 +1185,7 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#fcfdfe] font-sans selection:bg-[#ff9f1c]/30">
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.button
@@ -1207,9 +1207,9 @@ const AdminDashboard = () => {
           width: isSidebarOpen ? 280 : 100,
         }}
         transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-        className="fixed left-0 top-0 z-50 flex h-screen max-w-[calc(100vw-24px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:translate-x-0"
+        className="fixed left-0 top-0 z-50 flex h-dvh max-w-[calc(100vw-16px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:h-screen lg:translate-x-0"
       >
-        <div className="flex shrink-0 items-center gap-4 p-6 sm:p-8">
+        <div className="flex shrink-0 items-center gap-4 p-5 sm:p-8">
           <div className="bg-[#ff9f1c] p-2.5 rounded-2xl shadow-xl shadow-orange-950/20"><PlusCircle className="text-white" size={24} /></div>
           {isSidebarOpen && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-2xl font-black tracking-tighter">EduAdmin<span className="text-[#ff9f1c]">.</span></motion.span>}
         </div>
@@ -1222,7 +1222,7 @@ const AdminDashboard = () => {
                 setActiveTab(item.name);
                 if (!isDesktop) setSidebarOpen(false);
               }}
-              className={`w-full flex items-center gap-5 px-5 py-3.5 rounded-[22px] transition-all duration-300 relative group ${activeTab === item.name ? "bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.3)]" : "text-teal-100/40 hover:bg-white/5 hover:text-white"}`}
+              className={`group relative flex w-full items-center gap-4 rounded-[22px] px-4 py-3.5 transition-all duration-300 sm:gap-5 sm:px-5 ${activeTab === item.name ? "bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.3)]" : "text-teal-100/40 hover:bg-white/5 hover:text-white"}`}
             >
               <span className="shrink-0">{item.icon}</span>
               {isSidebarOpen && <span className="font-bold text-sm tracking-tight">{item.name}</span>}
@@ -1236,12 +1236,12 @@ const AdminDashboard = () => {
 
       {/* MAIN CONTENT */}
       <main ref={mainContentRef} className={`${isSidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[100px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
-        <header className="bg-white/70 backdrop-blur-2xl border-b border-gray-100 h-20 px-4 flex items-center justify-between sticky top-0 z-30 sm:px-6 lg:h-24 lg:px-10">
-           <div className="flex min-w-0 items-center gap-4 lg:gap-6">
-              <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-3 bg-gray-50 rounded-2xl text-[#0a4a44] hover:bg-gray-100 transition-all border border-gray-100 shadow-sm">{isSidebarOpen ? <X size={20}/> : <Menu size={20}/>}</button><button onClick={() => navigate(-1)} aria-label="Back" className="p-2 bg-gray-50 rounded-2xl text-[#0a4a44] hover:bg-gray-100 transition"><ArrowLeft size={20} /></button>
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/70 px-3 backdrop-blur-2xl sm:px-6 lg:h-24 lg:px-10">
+           <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4 lg:gap-6">
+              <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition-all hover:bg-gray-100">{isSidebarOpen ? <X size={20}/> : <Menu size={20}/>}</button><button onClick={() => navigate(-1)} aria-label="Back" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-[#0a4a44] transition hover:bg-gray-100"><ArrowLeft size={20} /></button>
               <h2 className="truncate font-black text-[#0a4a44] text-lg tracking-tighter sm:text-xl lg:text-2xl">{activeTab} Hub</h2>
            </div>
-           <div className="flex items-center gap-2 sm:gap-5">
+           <div className="flex shrink-0 items-center gap-2 sm:gap-5">
               <div className="hidden bg-gray-50 p-3 rounded-2xl text-gray-400 hover:text-[#ff9f1c] cursor-pointer transition-all sm:block"><Bell size={22}/></div>
               <div className="hidden h-10 w-[1.5px] bg-gray-100 mx-2 sm:block" />
               <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-3xl border border-gray-100 sm:gap-4 sm:pr-6">
@@ -1254,7 +1254,7 @@ const AdminDashboard = () => {
            </div>
         </header>
 
-        <div className="p-4 sm:p-6 lg:p-12">
+        <div className="min-w-0 p-3 sm:p-6 lg:p-12">
           <AnimatePresence mode="wait">
             
             {activeTab === 'Dashboard' ? (

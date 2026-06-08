@@ -77,7 +77,7 @@ const roleScopedFilter = (req) => {
 // Get all papers
 export const getPapers = async (req, res) => {
   try {
-    const { subject, department, course, semester, year, examType, isPremium, search } = req.query;
+    const { subject, department, course, semester, year, examType, isPremium, isApproved, search } = req.query;
     let filter = roleScopedFilter(req);
     const subjectFilter = await resolveSubjectFilter({ department, course, semester, subject });
 
@@ -85,6 +85,7 @@ export const getPapers = async (req, res) => {
     if (year) filter.year = parseInt(year);
     if (examType) filter.examType = examType;
     if (isPremium !== undefined) filter.isPremium = isPremium === 'true';
+    if (isApproved !== undefined) filter.isApproved = isApproved === 'true';
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -121,7 +122,7 @@ export const getPaper = async (req, res) => {
 // Create paper
 export const createPaper = async (req, res) => {
   try {
-    const { title, description, department, course, semester, subject, year, examType, isPremium } = req.body;
+    const { title, description, department, course, semester, subject, year, examType, isPremium, isApproved } = req.body;
     const authorId = req.user?._id;
     const academic = await resolveAcademicFields({ department, course, semester, subject });
 
@@ -149,6 +150,7 @@ export const createPaper = async (req, res) => {
       year,
       examType,
       isPremium: isPremium || false,
+      isApproved: isApproved === undefined ? true : isApproved === 'true' || isApproved === true,
       fileUrl: getUploadedFileUrl(req),
     });
 
@@ -163,9 +165,9 @@ export const createPaper = async (req, res) => {
 // Update paper
 export const updatePaper = async (req, res) => {
   try {
-    const { title, description, department, course, semester, subject, year, examType, isPremium } = req.body;
+    const { title, description, department, course, semester, subject, year, examType, isPremium, isApproved } = req.body;
     const academic = await resolveAcademicFields({ department, course, semester, subject });
-    const update = { title, description, subject, ...academic, year, examType, isPremium };
+    const update = { title, description, subject, ...academic, year, examType, isPremium, isApproved };
     const existingPaper = await Paper.findById(req.params.id).select("author uploaderId uploaderRole");
 
     if (!existingPaper) {

@@ -6,6 +6,7 @@ import {
   Search, ArrowRight, Zap, Star, TrendingUp, Loader2, AlertCircle,
   FileText, Download
 } from 'lucide-react';
+import useAcademicOptions from '../hooks/useAcademicOptions';
 
 const API_URL = '/api';
 const ASSET_URL = '';
@@ -15,6 +16,13 @@ const getFileUrl = (fileUrl) => {
   if (fileUrl.startsWith('http')) return fileUrl;
   if (fileUrl.startsWith('/uploads')) return `${ASSET_URL}${fileUrl}`;
   return `${ASSET_URL}/uploads/${fileUrl}`;
+};
+
+const getUploaderName = (item) => item.uploaderId?.name || item.author?.name || 'EduHub contributor';
+const getSemesterName = (item) => item.semester?.name || item.subject?.semester?.name || 'Semester';
+const formatUploadDate = (date) => {
+  if (!date) return 'Recently';
+  return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date));
 };
 
 const DepartmentsPage = () => {
@@ -27,6 +35,12 @@ const DepartmentsPage = () => {
   const [materials, setMaterials] = useState([]);
   const [materialsLoading, setMaterialsLoading] = useState(false);
   const [materialsError, setMaterialsError] = useState('');
+  const [materialFilters, setMaterialFilters] = useState({ course: '', semester: '', subject: '' });
+  const academicOptions = useAcademicOptions({
+    department: selectedDepartment?.id || '',
+    course: materialFilters.course,
+    semester: materialFilters.semester,
+  });
 
   const departmentMeta = [
     {
@@ -180,39 +194,64 @@ const DepartmentsPage = () => {
       return matchesSearch && d.name.toLowerCase().includes(activeFilter.toLowerCase());
     });
 
-  const handleDepartmentClick = async (department) => {
+  useEffect(() => {
+    if (!selectedDepartment) return undefined;
+
+    let isMounted = true;
+
+    const loadMaterials = async () => {
+      setMaterialsLoading(true);
+      setMaterialsError('');
+
+      try {
+        const params = new URLSearchParams({ department: selectedDepartment.id, isApproved: 'true' });
+        Object.entries(materialFilters).forEach(([key, value]) => {
+          if (value) params.set(key, value);
+        });
+
+        const [notesResponse, papersResponse] = await Promise.all([
+          fetch(`${API_URL}/notes?${params.toString()}`),
+          fetch(`${API_URL}/papers?${params.toString()}`),
+        ]);
+
+        const [notesData, papersData] = await Promise.all([
+          notesResponse.json(),
+          papersResponse.json(),
+        ]);
+
+        if (!notesResponse.ok) throw new Error(notesData.message || 'Unable to load department notes');
+        if (!papersResponse.ok) throw new Error(papersData.message || 'Unable to load department papers');
+
+        const noteItems = Array.isArray(notesData) ? notesData.map((item) => ({ ...item, materialType: 'note' })) : [];
+        const paperItems = Array.isArray(papersData) ? papersData.map((item) => ({ ...item, materialType: 'paper' })) : [];
+
+        if (isMounted) {
+          setMaterials([...noteItems, ...paperItems].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        }
+      } catch (error) {
+        if (isMounted) {
+          setMaterials([]);
+          setMaterialsError(error.message);
+        }
+      } finally {
+        if (isMounted) setMaterialsLoading(false);
+      }
+    };
+
+    loadMaterials();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedDepartment, materialFilters]);
+
+  const handleDepartmentClick = (department) => {
     setSelectedDepartment(department);
-    setMaterialsLoading(true);
-    setMaterialsError('');
+    setMaterialFilters({ course: '', semester: '', subject: '' });
 
     setTimeout(() => {
       document.getElementById('department-materials')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 0);
-
-    try {
-      const [notesResponse, papersResponse] = await Promise.all([
-        fetch(`${API_URL}/notes?department=${department.id}`),
-        fetch(`${API_URL}/papers?department=${department.id}`),
-      ]);
-
-      const [notesData, papersData] = await Promise.all([
-        notesResponse.json(),
-        papersResponse.json(),
-      ]);
-
-      if (!notesResponse.ok) throw new Error(notesData.message || 'Unable to load department notes');
-      if (!papersResponse.ok) throw new Error(papersData.message || 'Unable to load department papers');
-
-      const noteItems = Array.isArray(notesData) ? notesData.map((item) => ({ ...item, materialType: 'note' })) : [];
-      const paperItems = Array.isArray(papersData) ? papersData.map((item) => ({ ...item, materialType: 'paper' })) : [];
-
-      setMaterials([...noteItems, ...paperItems].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-    } catch (error) {
-      setMaterials([]);
-      setMaterialsError(error.message);
-    } finally {
-      setMaterialsLoading(false);
-    }
   };
 
   const containerVariants = {
@@ -458,11 +497,41 @@ const DepartmentsPage = () => {
                     setSelectedDepartment(null);
                     setMaterials([]);
                     setMaterialsError('');
+                    setMaterialFilters({ course: '', semester: '', subject: '' });
                   }}
                   className="rounded-2xl bg-zinc-100 px-5 py-3 text-sm font-black text-[#0a4a44] hover:bg-zinc-200"
                 >
                   Clear Selection
                 </button>
+              </div>
+
+              <div className="mb-8 grid gap-3 rounded-[28px] border border-zinc-100 bg-zinc-50 p-4 md:grid-cols-3">
+                <select
+                  value={materialFilters.course}
+                  onChange={(e) => setMaterialFilters({ course: e.target.value, semester: '', subject: '' })}
+                  className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#0a4a44] outline-none focus:ring-2 focus:ring-[#ff9f1c]"
+                >
+                  <option value="">All Courses</option>
+                  {academicOptions.courses.map((course) => <option key={course._id} value={course._id}>{course.name}</option>)}
+                </select>
+                <select
+                  value={materialFilters.semester}
+                  disabled={!materialFilters.course}
+                  onChange={(e) => setMaterialFilters({ ...materialFilters, semester: e.target.value, subject: '' })}
+                  className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#0a4a44] outline-none focus:ring-2 focus:ring-[#ff9f1c] disabled:opacity-50"
+                >
+                  <option value="">All Semesters</option>
+                  {academicOptions.semesters.map((semester) => <option key={semester._id} value={semester._id}>{semester.name}</option>)}
+                </select>
+                <select
+                  value={materialFilters.subject}
+                  disabled={!materialFilters.semester}
+                  onChange={(e) => setMaterialFilters({ ...materialFilters, subject: e.target.value })}
+                  className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#0a4a44] outline-none focus:ring-2 focus:ring-[#ff9f1c] disabled:opacity-50"
+                >
+                  <option value="">All Subjects</option>
+                  {academicOptions.subjects.map((subject) => <option key={subject._id} value={subject._id}>{subject.name}</option>)}
+                </select>
               </div>
 
               {materialsError && (
@@ -515,8 +584,16 @@ const DepartmentsPage = () => {
                             <p>Subject</p>
                           </div>
                           <div className="rounded-2xl bg-white p-3">
-                            <p className="text-[#0a4a44]">{isPaper ? item.year || 'Year' : item.category || 'Notes'}</p>
-                            <p>{isPaper ? 'Year' : 'Category'}</p>
+                            <p className="text-[#0a4a44]">{getSemesterName(item)}</p>
+                            <p>Semester</p>
+                          </div>
+                          <div className="rounded-2xl bg-white p-3">
+                            <p className="text-[#0a4a44]">{getUploaderName(item)}</p>
+                            <p>Uploader</p>
+                          </div>
+                          <div className="rounded-2xl bg-white p-3">
+                            <p className="text-[#0a4a44]">{formatUploadDate(item.createdAt)}</p>
+                            <p>Uploaded</p>
                           </div>
                         </div>
 
@@ -527,7 +604,7 @@ const DepartmentsPage = () => {
                             rel="noreferrer"
                             className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] py-4 text-sm font-black text-white transition hover:bg-[#e68a00]"
                           >
-                            <Download size={18} /> Open PDF
+                            <Download size={18} /> View / Download
                           </a>
                         ) : (
                           <button disabled className="mt-6 w-full rounded-2xl bg-zinc-200 py-4 text-sm font-black text-zinc-400">
@@ -541,9 +618,9 @@ const DepartmentsPage = () => {
               ) : (
                 <div className="rounded-[30px] border border-dashed border-zinc-200 bg-zinc-50 p-12 text-center">
                   <AlertCircle className="mx-auto mb-4 text-zinc-300" size={44} />
-                  <h3 className="text-2xl font-black text-[#0a4a44]">No materials found</h3>
+                  <h3 className="text-2xl font-black text-[#0a4a44]">No Notes or Papers Available Yet</h3>
                   <p className="mt-2 font-semibold text-zinc-400">
-                    This department does not have notes or papers uploaded yet.
+                    Approved notes and papers for this category will appear here after they are uploaded.
                   </p>
                 </div>
               )}

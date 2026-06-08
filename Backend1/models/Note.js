@@ -58,6 +58,11 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isApproved: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
     rating: {
       type: Number,
       min: 0,

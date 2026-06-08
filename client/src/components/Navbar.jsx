@@ -9,6 +9,8 @@ const Navbar = () => {
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isPapersOpen, setIsPapersOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [mobileNotesOpen, setMobileNotesOpen] = useState(false);
+  const [mobilePapersOpen, setMobilePapersOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const profileMenuRef = useRef(null);
@@ -45,6 +47,8 @@ const Navbar = () => {
   const closeMenus = () => {
     setIsOpen(false);
     setIsProfileOpen(false);
+    setMobileNotesOpen(false);
+    setMobilePapersOpen(false);
   };
 
   const requestLogout = () => {
@@ -301,30 +305,63 @@ const Navbar = () => {
               </div>
 
               <div className="space-y-2">
-                {navLinks.map((link) => (
-                  <div key={link.name} className="rounded-2xl bg-gray-50/70 p-2">
-                    <Link
-                      to={link.path}
-                      onClick={closeMenus}
-                      className={`block rounded-xl px-3 py-3 text-base font-black ${isActive(link.path) ? 'bg-orange-50 text-[#ff9f1c]' : 'text-gray-700'}`}
-                      role="menuitem"
-                    >
-                      {link.name}
-                    </Link>
-                    {(link.name === 'Notes' || link.name === 'Papers') && (
-                      <div className="grid gap-1 px-3 pb-2">
-                        {departments.map((dept) => (
-                          <Link key={dept.name} to={dept.path} onClick={closeMenus} className="rounded-lg py-2 text-sm font-semibold text-gray-500">
-                            {dept.name}
-                          </Link>
-                        ))}
-                        <Link to="/departments" onClick={closeMenus} className="rounded-lg py-2 text-xs font-black uppercase tracking-wider text-[#ff9f1c]">
-                          View All
+                {navLinks.map((link) => {
+                  const isDropdown = link.name === 'Notes' || link.name === 'Papers';
+                  const isExpanded = link.name === 'Notes' ? mobileNotesOpen : mobilePapersOpen;
+                  return (
+                    <div key={link.name} className="rounded-2xl bg-gray-50/70 p-2">
+                      {isDropdown ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (link.name === 'Notes') {
+                              setMobileNotesOpen(!mobileNotesOpen);
+                            } else {
+                              setMobilePapersOpen(!mobilePapersOpen);
+                            }
+                          }}
+                          className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-base font-black text-gray-700"
+                        >
+                          <span>{link.name}</span>
+                          <ChevronDown
+                            size={18}
+                            className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          to={link.path}
+                          onClick={closeMenus}
+                          className={`block rounded-xl px-3 py-3 text-base font-black ${isActive(link.path) ? 'bg-orange-50 text-[#ff9f1c]' : 'text-gray-700'}`}
+                          role="menuitem"
+                        >
+                          {link.name}
                         </Link>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                      {isDropdown && isExpanded && (
+                        <div className="grid gap-1 px-3 pb-2 animate-in fade-in slide-in-from-top-1">
+                          {departments.map((dept) => (
+                            <Link
+                              key={dept.name}
+                              to={dept.path}
+                              onClick={closeMenus}
+                              className="rounded-lg py-2 text-sm font-semibold text-gray-500 hover:text-[#ff9f1c]"
+                            >
+                              {dept.name}
+                            </Link>
+                          ))}
+                          <Link
+                            to={link.path}
+                            onClick={closeMenus}
+                            className="rounded-lg py-2 text-xs font-black uppercase tracking-wider text-[#ff9f1c]"
+                          >
+                            View All
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="mt-5 border-t border-gray-100 pt-5">

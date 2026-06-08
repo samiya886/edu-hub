@@ -18,7 +18,7 @@ const Hero = () => {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center">
           
           {/* LEFT CONTENT - UPDATED AS PER YOUR REQUEST */}
-          <div className="max-w-2xl space-y-6 sm:space-y-8">
+          <div className="max-w-md sm:max-w-xl lg:max-w-2xl mx-auto lg:mx-0 space-y-6 sm:space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-xs font-bold tracking-wider uppercase">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -28,7 +28,7 @@ const Hero = () => {
             </div>
 
             <h1 className="text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl lg:text-7xl">
-              Empowering You <br />
+              Empowering You <br className="hidden sm:block" />
               with Digital <span className="text-[#ff9f1c] relative">
                 Skills
                 <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -82,7 +82,7 @@ const Hero = () => {
           </div>
 
           {/* RIGHT SIDE - UNCHANGED */}
-          <div className="relative">
+          <div className="relative max-w-md sm:max-w-xl lg:max-w-none mx-auto w-full">
             {/* Main Large Image */}
             <div className="relative z-20 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/30">
               <img 

@@ -216,7 +216,7 @@ const Auth = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-5xl bg-white/95 backdrop-blur-xl rounded-[26px] shadow-2xl overflow-hidden flex flex-col lg:min-h-[700px] lg:flex-row lg:rounded-[40px] relative z-20 border border-white/20"
+        className="w-full max-w-md sm:max-w-xl lg:max-w-5xl bg-white/95 backdrop-blur-xl rounded-[26px] shadow-2xl overflow-hidden flex flex-col lg:min-h-[700px] lg:flex-row lg:rounded-[40px] relative z-20 border border-white/20"
       >
         {/* LEFT SIDE */}
         <div className="lg:w-[40%] bg-[#0a4a44] relative p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden">

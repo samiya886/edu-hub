@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 
+const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -105,8 +106,6 @@ import {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessMessage(data.message);
-
         if (data.token && data.user) {
           if (isLogin && data.user.role !== formData.role) {
             setErrorMessage(`This account is registered as a ${data.user.role}. Please select ${data.user.role} to login.`);
@@ -114,9 +113,17 @@ import {
             return;
           }
 
+          const firstName = data.user?.name?.split(' ')[0] || 'there';
+          setSuccessMessage(isLogin ? `Welcome back, ${firstName}.` : `Welcome to EduHub, ${firstName}.`);
           login(data.token, data.user);
-          navigate(getDashboardPath(data.user?.role), { replace: true });
+          setIsLoading(false);
+          window.setTimeout(() => {
+            navigate(getDashboardPath(data.user?.role), { replace: true });
+          }, 1200);
+          return;
         }
+
+        setSuccessMessage(data.message || 'Done successfully.');
 
         // CLEAR FORM
         setFormData({
@@ -138,30 +145,52 @@ import {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-3 overflow-hidden font-sans bg-[#0a4a44] sm:p-4">
-      {(errorMessage || successMessage) && (
-        <AnimatePresence>
+      <AnimatePresence>
+        {(errorMessage || successMessage) && (
           <motion.div
             key="popup"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 flex items-center justify-center bg-black/40"
+            initial={{ opacity: 0, y: -18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -18, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="fixed left-3 right-3 top-4 z-50 sm:left-5 sm:right-auto sm:top-5"
           >
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-              <p className="text-gray-800">{errorMessage || successMessage}</p>
+            <div className="flex w-full max-w-sm items-center gap-4 rounded-2xl border border-white/10 bg-[#061826]/95 px-5 py-4 text-white shadow-2xl shadow-black/30 backdrop-blur-xl sm:min-w-[350px]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-teal-200/30 bg-[#0a4a44]/70">
+                {errorMessage ? (
+                  <X className="text-[#ff9f1c]" size={18} />
+                ) : (
+                  <span className="h-4 w-4 rounded-full border-2 border-teal-200/40 border-t-teal-200 animate-spin" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-black">
+                  {errorMessage || successMessage}
+                </p>
+                <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-100/45">
+                  {errorMessage ? 'Action needed' : isLogin ? 'Student portal' : 'Account ready'}
+                </p>
+              </div>
               <button
+                type="button"
                 onClick={() => {
                   setErrorMessage('');
                   setSuccessMessage('');
                 }}
-                className="mt-4 px-4 py-2 bg-[#ff9f1c] text-white rounded hover:bg-[#e68a00]"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-teal-100/60 transition hover:bg-white/10 hover:text-white"
+                aria-label="Close notification"
               >
-                Close
+                <X size={16} />
               </button>
             </div>
           </motion.div>
-        </AnimatePresence>
-      )}>
+        )}
+      </AnimatePresence>
+
+      <div
+        className="absolute inset-0 z-0 opacity-35"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=2070')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

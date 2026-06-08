@@ -1,15 +1,40 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, BookOpen, FileText, PenTool, 
-  LayoutGrid, Calendar, Users, Bell, 
-  Search, Settings, LogOut, Menu, 
+import {
+  GraduationCap, Menu, ArrowRight, ArrowLeft, LogOut,
+  LayoutDashboard, UserCircle, BookOpen, FileText, PenTool,
+  LayoutGrid, Calendar, Users, Bell,
   TrendingUp, PlusCircle, Clock, CheckCircle,
   Upload, Loader2, AlertCircle, Plus, ChevronRight, ChevronDown,
-  GraduationCap, Layers, Hash, Activity,
+  Layers, Hash, Activity,
   Briefcase, Code, BarChart3, File, Star, Eye,
   ShieldCheck, FileClock, Building2, Pencil, Trash2, Save, X
 } from 'lucide-react';
+
+const BackButton = () => {
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+    navigate('/');
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={goBack}
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:px-4"
+      aria-label="Go back"
+    >
+      <ArrowLeft size={18} aria-hidden="true" />
+      <span className="hidden md:inline">Back</span>
+    </button>
+  );
+};
 
 const API_URL = '/api';
 const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
@@ -252,6 +277,7 @@ const AdminActionForm = ({ activeTab }) => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto">
       <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden relative sm:rounded-[50px]">
         <div className="bg-[#0a4a44] p-5 text-white relative overflow-hidden sm:p-8 lg:p-12">
+        <BackButton />
           <div className="relative z-10">
             <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#ff9f1c] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6 inline-block shadow-lg shadow-orange-950/20">
               System Entry Mode
@@ -1061,6 +1087,7 @@ const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
 
 // --- MAIN ADMIN DASHBOARD ---
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [isDesktop, setIsDesktop] = useState(getIsDesktop);
   const [isSidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -1212,7 +1239,7 @@ const AdminDashboard = () => {
       <main ref={mainContentRef} className={`${isSidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[100px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
         <header className="bg-white/70 backdrop-blur-2xl border-b border-gray-100 h-20 px-4 flex items-center justify-between sticky top-0 z-30 sm:px-6 lg:h-24 lg:px-10">
            <div className="flex min-w-0 items-center gap-4 lg:gap-6">
-              <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-3 bg-gray-50 rounded-2xl text-[#0a4a44] hover:bg-gray-100 transition-all border border-gray-100 shadow-sm">{isSidebarOpen ? <X size={20}/> : <Menu size={20}/>}</button>
+              <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-3 bg-gray-50 rounded-2xl text-[#0a4a44] hover:bg-gray-100 transition-all border border-gray-100 shadow-sm">{isSidebarOpen ? <X size={20}/> : <Menu size={20}/>}</button><button onClick={() => navigate(-1)} aria-label="Back" className="p-2 bg-gray-50 rounded-2xl text-[#0a4a44] hover:bg-gray-100 transition"><ArrowLeft size={20} /></button>
               <h2 className="truncate font-black text-[#0a4a44] text-lg tracking-tighter sm:text-xl lg:text-2xl">{activeTab} Hub</h2>
            </div>
            <div className="flex items-center gap-2 sm:gap-5">

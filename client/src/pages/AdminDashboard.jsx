@@ -8,7 +8,7 @@ import {
   TrendingUp, PlusCircle, Clock, CheckCircle,
   Upload, Loader2, AlertCircle, Plus, ChevronRight, ChevronDown,
   Layers, Hash, Activity,
-  Briefcase, Code, BarChart3, File, Star, Eye,
+  Briefcase, Code, BarChart3, File, Eye,
   ShieldCheck, FileClock, Building2, Pencil, Trash2, Save, X
 } from 'lucide-react';
 
@@ -68,7 +68,7 @@ const AdminActionForm = ({ activeTab }) => {
     description: '',
     year: '',
     examType: '',
-    category: '',
+    category: 'Digital PDF',
     chapters: 1,
     isPremium: false,
   });
@@ -160,7 +160,7 @@ const AdminActionForm = ({ activeTab }) => {
       description: '',
       year: '',
       examType: '',
-      category: '',
+      category: 'Digital PDF',
       chapters: 1,
       isPremium: false,
     });
@@ -359,19 +359,6 @@ const AdminActionForm = ({ activeTab }) => {
               3
             )}
 
-            {activeTab === 'Add Subject' && renderInputField(
-              <><Hash size={14} /> Subject Name</>,
-              <input
-                type="text"
-                required
-                placeholder="Example: Data Structures"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
-              />,
-              4
-            )}
-
             {activeTab === 'Add Courses' && renderInputField(
               <><BookOpen size={14} /> Course Name</>,
               <input
@@ -391,6 +378,19 @@ const AdminActionForm = ({ activeTab }) => {
                 type="text"
                 required
                 placeholder="Example: 3rd Semester"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+              />,
+              4
+            )}
+
+            {activeTab === 'Add Subject' && renderInputField(
+              <><Hash size={14} /> Subject Name</>,
+              <input
+                type="text"
+                required
+                placeholder="Example: Data Structures"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
@@ -473,59 +473,20 @@ const AdminActionForm = ({ activeTab }) => {
               8
             )}
 
-            {(activeTab === 'Add Notes' || activeTab === 'Add Papers') && renderInputField(
-              <><Star size={14} /> Category</>,
-              <select
-                required
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
-              >
-                <option value="" disabled>Select Category</option>
-                <option value="Handwritten">Handwritten</option>
-                <option value="Digital PDF">Digital PDF</option>
-                <option value="Revision Sheets">Revision Sheets</option>
-                <option value="Topper Special">Topper Special</option>
-              </select>,
-              9
-            )}
           </div>
 
-          {(activeTab === 'Add Notes' || activeTab === 'Add Papers') && (
+          {activeTab === 'Add Notes' && (
             <motion.div custom={10} variants={fieldVariants} initial="hidden" animate="visible" className="grid md:grid-cols-3 gap-6">
               <div className="space-y-3">
-                <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest ml-2">Chapters</label>
+                <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest ml-2">Publish Year</label>
                 <input
                   type="number"
-                  min="1"
-                  value={formData.chapters}
-                  onChange={(e) => setFormData({ ...formData, chapters: Number(e.target.value) })}
+                  min="2000"
+                  value={formData.year}
+                  onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                   className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest ml-2">Premium</label>
-                <select
-                  value={formData.isPremium ? 'true' : 'false'}
-                  onChange={(e) => setFormData({ ...formData, isPremium: e.target.value === 'true' })}
-                  className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
-                >
-                  <option value="false">Standard</option>
-                  <option value="true">Premium</option>
-                </select>
-              </div>
-              {activeTab === 'Add Notes' && (
-                <div className="space-y-3">
-                  <label className="text-[11px] font-black uppercase text-gray-400 tracking-widest ml-2">Publish Year</label>
-                  <input
-                    type="number"
-                    min="2000"
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                    className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
-                  />
-                </div>
-              )}
             </motion.div>
           )}
 

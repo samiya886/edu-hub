@@ -6,7 +6,7 @@ import useAcademicOptions from '../hooks/useAcademicOptions';
 import {
   Search, FileText, Download, Filter,
   ChevronRight, Calendar, BookOpen,
-  Star, Share2, AlertCircle, Zap, Loader2
+  Star, Share2, AlertCircle, Loader2
 } from 'lucide-react';
 
 const API_URL = '/api';
@@ -356,15 +356,6 @@ const PapersPage = () => {
                     <p className="text-gray-400 text-xs font-bold flex items-center gap-2 mb-4">
                       <BookOpen size={12} /> {paper.subject?.name || 'General Subject'}
                     </p>
-
-                    <div className="flex items-center gap-4 mb-5">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
-                        <Calendar size={12} /> {paper.year}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
-                        <Zap size={12} className="text-[#ff9f00] fill-[#ff9f00]" /> {paper.examType}
-                      </div>
-                    </div>
 
                     {fileUrl && (
                       <a

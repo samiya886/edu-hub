@@ -310,11 +310,7 @@ const ResourceForm = ({
           <option value="">Select Subject</option>
           {subjects.map((subject) => <option key={subject._id} value={subject._id}>{subject.name}</option>)}
         </SelectField>
-        {type === 'notes' ? (
-          <SelectField label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-            {['Digital PDF', 'Handwritten', 'Revision Sheets', 'Topper Special'].map((category) => <option key={category} value={category}>{category}</option>)}
-          </SelectField>
-        ) : (
+        {type === 'papers' && (
           <>
             <Field label="Year">
               <input
@@ -398,14 +394,6 @@ const ResourceCard = ({ item, type, onEdit, onDelete, canManage = true }) => (
       </div>
     </div>
     <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">{item.description || 'No description added yet.'}</p>
-    <div className="mb-3 flex flex-wrap gap-2">
-      <span className="rounded-lg bg-gray-50 px-2.5 py-1.5 text-[11px] font-black text-[#0a4a44]">
-        {type === 'notes' ? item.category || 'Digital PDF' : item.examType || 'Final'}
-      </span>
-      <span className="rounded-lg bg-gray-50 px-2.5 py-1.5 text-[11px] font-black text-[#0a4a44]">
-        {type === 'papers' ? item.year || 'Year' : `${item.chapters || 1} chapter`}
-      </span>
-    </div>
     <div className="grid grid-cols-2 gap-2">
       <button
         type="button"

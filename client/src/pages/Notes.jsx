@@ -5,7 +5,7 @@ import useAcademicOptions from '../hooks/useAcademicOptions';
 import {
   Search, BookOpen, Download, Star,
   Calendar, Eye, ShieldCheck, ArrowRight,
-  Zap, PenTool, Loader2, AlertCircle
+  Loader2, AlertCircle
 } from 'lucide-react';
 
 const API_URL = '/api';
@@ -313,11 +313,6 @@ const NotesPage = () => {
                     className="group bg-white rounded-[36px] border border-gray-100 p-3 transition-all hover:shadow-[0_44px_100px_-30px_rgba(10,74,68,0.42)] hover:-translate-y-2 relative overflow-hidden"
                   >
                     <div className="absolute inset-x-10 bottom-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
-                    <div className="absolute top-10 left-10 z-20 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black text-[#0a4a44] uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                      {note.category === 'Handwritten' ? <PenTool size={12} /> : <Zap size={12} />}
-                      {note.category || 'Digital PDF'}
-                    </div>
-
                     <div className="relative h-48 w-full rounded-[28px] overflow-hidden mb-4">
                       <img src={noteImages[i % noteImages.length]} alt={note.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0a4a44]/60 via-[#0a4a44]/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -351,10 +346,6 @@ const NotesPage = () => {
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                         <div className="flex gap-4">
                           <div className="text-center">
-                            <p className="text-lg font-black text-[#0a4a44]">{note.chapters || 1}</p>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase">Chapters</p>
-                          </div>
-                          <div className="text-center border-l border-gray-100 pl-4">
                             <p className="text-lg font-black text-[#0a4a44]">{formatViews(note.views)}</p>
                             <p className="text-[10px] font-bold text-gray-400 uppercase">Views</p>
                           </div>

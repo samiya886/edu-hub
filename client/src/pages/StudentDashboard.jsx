@@ -271,9 +271,6 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
           <p className="mt-1 truncate text-xs font-bold text-gray-400">{item.subject?.name || 'Unassigned subject'}</p>
         </div>
       </div>
-      <span className="shrink-0 rounded-lg bg-gray-50 px-2.5 py-1 text-[10px] font-black uppercase text-gray-400">
-        {type === 'notes' ? item.category || 'Note' : item.year || 'Paper'}
-      </span>
     </div>
 
     <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">
@@ -374,11 +371,7 @@ const UploadForm = ({
           {subjects.map((subject) => <option key={subject._id} value={subject._id}>{subject.name}</option>)}
         </SelectField>
 
-        {type === 'notes' ? (
-          <SelectField label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-            {['Digital PDF', 'Handwritten', 'Revision Sheets', 'Topper Special'].map((category) => <option key={category} value={category}>{category}</option>)}
-          </SelectField>
-        ) : (
+        {type === 'papers' && (
           <>
             <Field label="Year">
               <input

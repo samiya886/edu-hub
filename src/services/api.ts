@@ -35,6 +35,36 @@ type RawProfileResponse = RawUser & {
   user?: RawUser;
 };
 
+type RawNamedEntity = {
+  id?: string;
+  _id?: string;
+  name?: string;
+  code?: string;
+  department?: RawNamedEntity;
+  course?: RawNamedEntity;
+};
+
+type RawMaterial = {
+  id?: string;
+  _id?: string;
+  title?: string;
+  subject?: string | RawNamedEntity;
+  course?: string | RawNamedEntity;
+  department?: string | RawNamedEntity;
+  year?: number | string;
+  examYear?: number | string;
+  fileUrl?: string;
+  file?: string;
+  url?: string;
+  downloadsCount?: number;
+  downloads?: number;
+  views?: number;
+  uploadedBy?: { id?: string; _id?: string; name?: string };
+  uploaderId?: { id?: string; _id?: string; name?: string };
+  author?: { id?: string; _id?: string; name?: string };
+  createdAt?: string;
+};
+
 export interface Note {
   id: string;
   title: string;
@@ -99,7 +129,7 @@ export interface TeacherStats {
   totalNotes: number;
   totalPapers: number;
   totalDownloads: number;
-  recentUploads: Array<{ id: string; title: string; type: 'note' | 'paper'; downloads: number }>;
+  recentUploads: { id: string; title: string; type: 'note' | 'paper'; downloads: number }[];
 }
 
 export interface AdminAnalytics {
@@ -113,7 +143,7 @@ export interface AdminAnalytics {
     totalNotes: number;
     totalPapers: number;
   };
-  downloadsOverTime: Array<{ date: string; count: number }>;
+  downloadsOverTime: { date: string; count: number }[];
   flaggedReports: number;
 }
 
@@ -135,6 +165,73 @@ function normalizeUser(rawUser: RawUser | undefined): User {
     name: rawUser.name ?? '',
     email: rawUser.email ?? '',
     role,
+  };
+}
+
+function getEntityId(entity: string | RawNamedEntity | undefined) {
+  if (!entity) return '';
+  return typeof entity === 'string' ? entity : entity.id ?? entity._id ?? '';
+}
+
+function getEntityName(entity: string | RawNamedEntity | undefined) {
+  if (!entity) return '';
+  return typeof entity === 'string' ? entity : entity.name ?? entity.code ?? entity.id ?? entity._id ?? '';
+}
+
+function normalizeNamedEntity(raw: RawNamedEntity): Department {
+  const id = raw.id ?? raw._id ?? '';
+  const name = raw.name ?? raw.code ?? id;
+
+  return {
+    id,
+    name,
+    code: raw.code ?? name,
+  };
+}
+
+function normalizeCourse(raw: RawNamedEntity): Course {
+  const normalized = normalizeNamedEntity(raw);
+
+  return {
+    ...normalized,
+    departmentId: getEntityId(raw.department),
+  };
+}
+
+function normalizeSubject(raw: RawNamedEntity): Subject {
+  const normalized = normalizeNamedEntity(raw);
+
+  return {
+    ...normalized,
+    courseId: getEntityId(raw.course),
+  };
+}
+
+function normalizeMaterial(raw: RawMaterial): Note {
+  const uploader = raw.uploadedBy ?? raw.uploaderId ?? raw.author;
+
+  return {
+    id: raw.id ?? raw._id ?? '',
+    title: raw.title ?? 'Untitled',
+    subject: getEntityName(raw.subject) || 'General',
+    course: getEntityName(raw.course),
+    department: getEntityName(raw.department),
+    fileUrl: raw.fileUrl ?? raw.file ?? raw.url ?? '',
+    uploadedBy: {
+      id: uploader?.id ?? uploader?._id ?? '',
+      name: uploader?.name ?? 'Unknown',
+    },
+    downloadsCount: raw.downloadsCount ?? raw.downloads ?? raw.views ?? 0,
+    createdAt: raw.createdAt ?? new Date().toISOString(),
+  };
+}
+
+function normalizePaper(raw: RawMaterial): Paper {
+  const material = normalizeMaterial(raw);
+
+  return {
+    ...material,
+    year: Number(raw.year ?? raw.examYear ?? new Date().getFullYear()),
   };
 }
 
@@ -181,8 +278,8 @@ export const authService = {
 
 export const notesService = {
   list: async (filters?: { department?: string; course?: string; subject?: string; search?: string }): Promise<Note[]> => {
-    const response = await apiClient.get<Note[]>('/notes', { params: filters });
-    return response.data;
+    const response = await apiClient.get<RawMaterial[]>('/notes', { params: filters });
+    return response.data.map(normalizeMaterial);
   },
 
   upload: async (payload: { title: string; subject: string; course: string; department: string; fileUrl: string }): Promise<Note> => {
@@ -203,8 +300,8 @@ export const notesService = {
 
 export const papersService = {
   list: async (filters?: { department?: string; course?: string; subject?: string; search?: string; year?: number }): Promise<Paper[]> => {
-    const response = await apiClient.get<Paper[]>('/papers', { params: filters });
-    return response.data;
+    const response = await apiClient.get<RawMaterial[]>('/papers', { params: filters });
+    return response.data.map(normalizePaper);
   },
 
   upload: async (payload: { title: string; subject: string; course: string; department: string; year: number; fileUrl: string }): Promise<Paper> => {
@@ -225,18 +322,18 @@ export const papersService = {
 
 export const filterService = {
   getDepartments: async (): Promise<Department[]> => {
-    const response = await apiClient.get<Department[]>('/departments');
-    return response.data;
+    const response = await apiClient.get<RawNamedEntity[]>('/departments');
+    return response.data.map(normalizeNamedEntity);
   },
 
   getCourses: async (departmentId: string): Promise<Course[]> => {
-    const response = await apiClient.get<Course[]>(`/departments/${departmentId}/courses`);
-    return response.data;
+    const response = await apiClient.get<RawNamedEntity[]>('/courses', { params: { department: departmentId } });
+    return response.data.map(normalizeCourse);
   },
 
   getSubjects: async (courseId: string): Promise<Subject[]> => {
-    const response = await apiClient.get<Subject[]>(`/courses/${courseId}/subjects`);
-    return response.data;
+    const response = await apiClient.get<RawNamedEntity[]>('/subjects', { params: { course: courseId } });
+    return response.data.map(normalizeSubject);
   },
 };
 
@@ -253,19 +350,46 @@ export const notificationService = {
 
 export const statsService = {
   getTeacherStats: async (): Promise<TeacherStats> => {
-    const response = await apiClient.get<TeacherStats>('/teacher/stats');
-    return response.data;
+    const [notes, papers] = await Promise.all([notesService.list(), papersService.list()]);
+
+    return {
+      totalNotes: notes.length,
+      totalPapers: papers.length,
+      totalDownloads: [...notes, ...papers].reduce((total, item) => total + item.downloadsCount, 0),
+      recentUploads: [
+        ...notes.map((note) => ({ id: note.id, title: note.title, type: 'note' as const, downloads: note.downloadsCount })),
+        ...papers.map((paper) => ({ id: paper.id, title: paper.title, type: 'paper' as const, downloads: paper.downloadsCount })),
+      ].slice(0, 5),
+    };
   },
   getAdminAnalytics: async (): Promise<AdminAnalytics> => {
-    const response = await apiClient.get<AdminAnalytics>('/admin/analytics');
-    return response.data;
+    const [users, notes, papers] = await Promise.all([
+      apiClient.get<RawUser[]>('/users').then((response) => response.data.map(normalizeUser)),
+      notesService.list(),
+      papersService.list(),
+    ]);
+
+    return {
+      usersCount: {
+        total: users.length,
+        students: users.filter((user) => user.role === 'student').length,
+        teachers: users.filter((user) => user.role === 'teacher').length,
+        admins: users.filter((user) => user.role === 'admin').length,
+      },
+      contentCount: {
+        totalNotes: notes.length,
+        totalPapers: papers.length,
+      },
+      downloadsOverTime: [],
+      flaggedReports: 0,
+    };
   },
 };
 
 export const adminService = {
   getUsers: async (): Promise<User[]> => {
-    const response = await apiClient.get<User[]>('/admin/users');
-    return response.data;
+    const response = await apiClient.get<RawUser[]>('/users');
+    return response.data.map(normalizeUser);
   },
   updateUserRole: async (userId: string, role: UserRole): Promise<User> => {
     const response = await apiClient.put<User>(`/admin/users/${userId}/role`, { role });

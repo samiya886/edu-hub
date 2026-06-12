@@ -11,13 +11,17 @@ export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchNotifications = async () => {
     try {
-      const list = await notificationService.getNotifications().catch(() => getMockNotifications());
+      setError('');
+      const list = await notificationService.getNotifications();
       setNotifications(list);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching notifications', err);
+      setNotifications([]);
+      setError(err.response?.data?.message || err.message || 'Notifications are not available right now.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -35,44 +39,20 @@ export default function NotificationsScreen() {
 
   const handleMarkAsRead = async (id: string) => {
     try {
-      await notificationService.markAsRead(id).catch(() => {});
+      await notificationService.markAsRead(id);
       setNotifications(prev =>
         prev.map(n => n.id === id ? { ...n, read: true } : n)
       );
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Failed to mark notification as read', err);
+      setError(err.response?.data?.message || err.message || 'Failed to update notification.');
     }
   };
 
-  const getMockNotifications = (): Notification[] => [
-    {
-      id: 'n1',
-      title: 'New Study Guide Uploaded',
-      message: 'Dr. Sarah Jenkins uploaded a new study guide "Intro to Computer Networks".',
-      type: 'upload',
-      createdAt: new Date().toISOString(),
-      read: false,
-    },
-    {
-      id: 'n2',
-      title: 'Midterm Announcement',
-      message: 'All midterm papers for CSE department have been uploaded. Good luck with your preparation!',
-      type: 'announcement',
-      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-      read: false,
-    },
-    {
-      id: 'n3',
-      title: 'System Update Completed',
-      message: 'EduHub mobile application version 1.0.0 is live with offline support features.',
-      type: 'system',
-      createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-      read: true,
-    }
-  ];
-
   return (
     <View style={styles.container}>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
       {loading && !refreshing ? (
         <Loader message="Loading Notifications..." />
       ) : (
@@ -126,6 +106,18 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    margin: 16,
+    marginBottom: 0,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   card: {
     marginBottom: 12,

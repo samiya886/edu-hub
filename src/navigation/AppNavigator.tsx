@@ -15,7 +15,7 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer key={user?.role ?? 'guest'}>
       {user === null ? (
         <AuthStack />
       ) : user.role === 'student' ? (

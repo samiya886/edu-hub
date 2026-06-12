@@ -13,18 +13,21 @@ export default function ManageContentScreen() {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchData = async () => {
     try {
+      setError('');
       if (activeTab === 'notes') {
-        const list = await notesService.list().catch(() => getMockNotes());
+        const list = await notesService.list();
         setNotes(list);
       } else {
-        const list = await papersService.list().catch(() => getMockPapers());
+        const list = await papersService.list();
         setPapers(list);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching admin content', err);
+      setError(err.response?.data?.message || err.message || 'Unable to load content.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -50,16 +53,17 @@ export default function ManageContentScreen() {
           setLoading(true);
           try {
             if (type === 'note') {
-              await notesService.delete(id).catch(() => {});
+              await notesService.delete(id);
               setNotes(prev => prev.filter(n => n.id !== id));
             } else {
-              await papersService.delete(id).catch(() => {});
+              await papersService.delete(id);
               setPapers(prev => prev.filter(p => p.id !== id));
             }
             Alert.alert('Success', 'Resource removed successfully.');
             fetchData();
-          } catch {
-            Alert.alert('Error', 'Failed to remove content');
+          } catch (err: any) {
+            console.error('Failed to remove content', err);
+            Alert.alert('Error', err.response?.data?.message || err.message || 'Failed to remove content');
           } finally {
             setLoading(false);
           }
@@ -67,31 +71,6 @@ export default function ManageContentScreen() {
       }
     ]);
   };
-
-  const getMockNotes = (): Note[] => [
-    {
-      id: 'mock-n1',
-      title: 'Intro to Computer Networks',
-      subject: 'Computer Networks',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't1', name: 'Dr. Sarah Jenkins' },
-      downloadsCount: 12,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
-  const getMockPapers = (): Paper[] => [
-    {
-      id: 'mock-p1',
-      title: 'Advanced Calculus 2025 Midterm',
-      subject: 'Mathematics',
-      year: 2025,
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't3', name: 'Dr. Alan Turing' },
-      downloadsCount: 45,
-      createdAt: new Date().toISOString(),
-    }
-  ];
 
   return (
     <View style={styles.container}>
@@ -112,6 +91,8 @@ export default function ManageContentScreen() {
           <Text style={[styles.tabText, activeTab === 'papers' && styles.activeTabText]}>Papers</Text>
         </TouchableOpacity>
       </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       {loading && !refreshing ? (
         <Loader message={`Loading ${activeTab}...`} />
@@ -202,6 +183,18 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    margin: 16,
+    marginBottom: 0,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   deleteBtn: {
     padding: 6,

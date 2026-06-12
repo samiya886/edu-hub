@@ -16,16 +16,20 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
   const [recentPapers, setRecentPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchData = async () => {
     try {
+      setError('');
       const [notes, papers] = await Promise.all([
-        notesService.list().catch(() => getMockNotes()),
-        papersService.list().catch(() => getMockPapers()),
+        notesService.list(),
+        papersService.list(),
       ]);
       setRecentNotes(notes.slice(0, 3));
       setRecentPapers(papers.slice(0, 3));
-    } catch {
+    } catch (err: any) {
+      console.error('Error loading student dashboard', err);
+      setError(err.response?.data?.message || err.message || 'Unable to load dashboard data.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -44,40 +48,6 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
   const handleSearch = () => {
     navigation.navigate('NotesPapers', { searchQuery: search });
   };
-
-  const getMockNotes = (): Note[] => [
-    {
-      id: 'mock-n1',
-      title: 'Intro to Computer Networks',
-      subject: 'Computer Science',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't1', name: 'Dr. Sarah Jenkins' },
-      downloadsCount: 12,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'mock-n2',
-      title: 'Organic Chemistry Basics',
-      subject: 'Chemistry',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't2', name: 'Prof. Mark Wood' },
-      downloadsCount: 8,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
-  const getMockPapers = (): Paper[] => [
-    {
-      id: 'mock-p1',
-      title: 'Advanced Calculus 2025 Midterm',
-      subject: 'Mathematics',
-      year: 2025,
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't3', name: 'Dr. Alan Turing' },
-      downloadsCount: 45,
-      createdAt: new Date().toISOString(),
-    }
-  ];
 
   if (loading) return <Loader fullScreen message="Loading Dashboard..." />;
 
@@ -104,6 +74,8 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
         onSubmit={handleSearch}
         placeholder="Search notes, subjects, papers..."
       />
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       {/* Quick Actions */}
       <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -268,6 +240,17 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: COLORS.text,
     marginBottom: 12,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 14,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   sectionHeader: {
     flexDirection: 'row',

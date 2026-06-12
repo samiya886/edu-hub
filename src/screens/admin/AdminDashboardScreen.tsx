@@ -13,13 +13,16 @@ export default function AdminDashboardScreen({ navigation }: { navigation: any }
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchAnalytics = async () => {
     try {
-      const data = await statsService.getAdminAnalytics().catch(() => getMockAnalytics());
+      setError('');
+      const data = await statsService.getAdminAnalytics();
       setAnalytics(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching admin analytics', err);
+      setError(err.response?.data?.message || err.message || 'Unable to load admin analytics.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -35,13 +38,6 @@ export default function AdminDashboardScreen({ navigation }: { navigation: any }
     fetchAnalytics();
   };
 
-  const getMockAnalytics = (): AdminAnalytics => ({
-    usersCount: { total: 124, students: 98, teachers: 22, admins: 4 },
-    contentCount: { totalNotes: 54, totalPapers: 31 },
-    downloadsOverTime: [],
-    flaggedReports: 3,
-  });
-
   if (loading) return <Loader fullScreen message="Loading System Overview..." />;
 
   return (
@@ -55,6 +51,8 @@ export default function AdminDashboardScreen({ navigation }: { navigation: any }
         <Text style={styles.helloText}>System Control</Text>
         <Text style={styles.subText}>Logged in as Administrator: {user?.name}</Text>
       </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       {/* Warnings & Alerts */}
       {analytics && analytics.flaggedReports > 0 && (
@@ -151,6 +149,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginBottom: 20,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 14,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   warningText: {
     fontSize: 13,

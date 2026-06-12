@@ -19,15 +19,13 @@ export default function ProfileScreen() {
     }
     setLoading(true);
     try {
-      await authService.updateProfile({ name }).catch(() => {
-        // Fallback simulate local update if API not fully implemented
-        return { ...user, name };
-      });
-      await updateUser({ name });
+      const updatedUser = await authService.updateProfile({ name });
+      await updateUser(updatedUser);
       setEditing(false);
       Alert.alert('Success', 'Profile updated successfully!');
-    } catch {
-      Alert.alert('Error', 'Failed to update profile');
+    } catch (err: any) {
+      console.error('Failed to update profile', err);
+      Alert.alert('Error', err.response?.data?.message || err.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }

@@ -11,13 +11,16 @@ export default function ManageUsersScreen() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchUsers = async () => {
     try {
-      const data = await adminService.getUsers().catch(() => getMockUsers());
+      setError('');
+      const data = await adminService.getUsers();
       setUsers(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching users', err);
+      setError(err.response?.data?.message || err.message || 'Unable to load users.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -42,11 +45,12 @@ export default function ManageUsersScreen() {
         onPress: async () => {
           setLoading(true);
           try {
-            await adminService.updateUserRole(userId, nextRole).catch(() => {});
+            await adminService.updateUserRole(userId, nextRole);
             setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: nextRole } : u));
             Alert.alert('Success', 'Role updated successfully.');
-          } catch {
-            Alert.alert('Error', 'Failed to update role');
+          } catch (err: any) {
+            console.error('Failed to update user role', err);
+            Alert.alert('Error', err.response?.data?.message || err.message || 'Failed to update role');
           } finally {
             setLoading(false);
           }
@@ -64,11 +68,12 @@ export default function ManageUsersScreen() {
         onPress: async () => {
           setLoading(true);
           try {
-            await adminService.deleteUser(userId).catch(() => {});
+            await adminService.deleteUser(userId);
             setUsers(prev => prev.filter(u => u.id !== userId));
             Alert.alert('Success', 'User deleted successfully.');
-          } catch {
-            Alert.alert('Error', 'Failed to delete user');
+          } catch (err: any) {
+            console.error('Failed to delete user', err);
+            Alert.alert('Error', err.response?.data?.message || err.message || 'Failed to delete user');
           } finally {
             setLoading(false);
           }
@@ -77,14 +82,10 @@ export default function ManageUsersScreen() {
     ]);
   };
 
-  const getMockUsers = (): User[] => [
-    { id: 'u1', name: 'Alice Smith', email: 'alice@example.com', role: 'student' },
-    { id: 'u2', name: 'Dr. Sarah Jenkins', email: 'sarah@example.com', role: 'teacher' },
-    { id: 'u3', name: 'Super Admin', email: 'admin@example.com', role: 'admin' },
-  ];
-
   return (
     <View style={styles.container}>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
       {loading && !refreshing ? (
         <Loader message="Loading User Accounts..." />
       ) : (
@@ -139,6 +140,18 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    margin: 16,
+    marginBottom: 0,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   roleContainer: {
     flexDirection: 'row',

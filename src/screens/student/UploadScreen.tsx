@@ -25,7 +25,7 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
   const [showCourses, setShowCourses] = useState(false);
   const [showSubjects, setShowSubjects] = useState(false);
 
-  const [fileUrl, setFileUrl] = useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'); // Preset default for testing
+  const [fileUrl, setFileUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,10 +33,10 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
   useEffect(() => {
     filterService.getDepartments()
       .then(setDepartments)
-      .catch(() => setDepartments([
-        { id: 'cs', name: 'Computer Science', code: 'CS' },
-        { id: 'ee', name: 'Electrical Engineering', code: 'EE' },
-      ]));
+      .catch((err: any) => {
+        console.error('Failed to load departments for upload', err);
+        setError(err.response?.data?.message || err.message || 'Failed to load departments.');
+      });
   }, []);
 
   // Fetch courses when dept changes
@@ -48,15 +48,10 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
     }
     filterService.getCourses(selectedDept)
       .then(setCourses)
-      .catch(() => {
-        if (selectedDept === 'cs') {
-          setCourses([
-            { id: 'cs-se', departmentId: 'cs', name: 'Software Engineering', code: 'CS-SE' },
-            { id: 'cs-ai', departmentId: 'cs', name: 'Artificial Intelligence', code: 'CS-AI' },
-          ]);
-        } else {
-          setCourses([{ id: 'ee-power', departmentId: 'ee', name: 'Power Systems', code: 'EE-PS' }]);
-        }
+      .catch((err: any) => {
+        console.error('Failed to load courses for upload', err);
+        setCourses([]);
+        setError(err.response?.data?.message || err.message || 'Failed to load courses.');
       });
   }, [selectedDept]);
 
@@ -69,15 +64,10 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
     }
     filterService.getSubjects(selectedCourse)
       .then(setSubjects)
-      .catch(() => {
-        if (selectedCourse === 'cs-se') {
-          setSubjects([
-            { id: 'subj-cn', courseId: 'cs-se', name: 'Computer Networks', code: 'CN' },
-            { id: 'subj-oops', courseId: 'cs-se', name: 'Object Oriented Programming', code: 'OOPS' },
-          ]);
-        } else {
-          setSubjects([{ id: 'subj-ml', courseId: 'cs-ai', name: 'Machine Learning', code: 'ML' }]);
-        }
+      .catch((err: any) => {
+        console.error('Failed to load subjects for upload', err);
+        setSubjects([]);
+        setError(err.response?.data?.message || err.message || 'Failed to load subjects.');
       });
   }, [selectedCourse]);
 
@@ -91,27 +81,27 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
       setError('Please specify the paper exam year');
       return;
     }
+    if (!fileUrl) {
+      setError('Please enter a document URL');
+      return;
+    }
 
     setLoading(true);
     try {
-      const deptName = departments.find(d => d.id === selectedDept)?.name || selectedDept;
-      const courseName = courses.find(c => c.id === selectedCourse)?.name || selectedCourse;
-      const subjectName = subjects.find(s => s.id === selectedSubject)?.name || selectedSubject;
-
       if (docType === 'note') {
         await notesService.upload({
           title,
-          subject: subjectName,
-          course: courseName,
-          department: deptName,
+          subject: selectedSubject,
+          course: selectedCourse,
+          department: selectedDept,
           fileUrl,
         });
       } else {
         await papersService.upload({
           title,
-          subject: subjectName,
-          course: courseName,
-          department: deptName,
+          subject: selectedSubject,
+          course: selectedCourse,
+          department: selectedDept,
           year: parseInt(year) || new Date().getFullYear(),
           fileUrl,
         });
@@ -257,9 +247,9 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
           </>
         )}
 
-        {/* PDF Link Field (Mock upload) */}
         <Input
-          label="PDF Link (Or document URI)"
+          label="PDF Link (Or document URI) *"
+          placeholder="Paste the uploaded document URL"
           value={fileUrl}
           onChangeText={setFileUrl}
           style={{ marginTop: 12 }}

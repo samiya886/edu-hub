@@ -30,15 +30,17 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   // Load Filters on Mount
   useEffect(() => {
     const loadFilters = async () => {
       try {
-        const depts = await filterService.getDepartments().catch(() => getMockDepts());
+        const depts = await filterService.getDepartments();
         setDepartments(depts);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load departments', err);
+        setError(err.response?.data?.message || err.message || 'Failed to load departments.');
       }
     };
     loadFilters();
@@ -55,12 +57,13 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
     }
     const loadCourses = async () => {
       try {
-        const list = await filterService.getCourses(selectedDept).catch(() => getMockCourses(selectedDept));
+        const list = await filterService.getCourses(selectedDept);
         setCourses(list);
         setSelectedCourse('');
         setSelectedSubject('');
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load courses', err);
+        setError(err.response?.data?.message || err.message || 'Failed to load courses.');
       }
     };
     loadCourses();
@@ -75,11 +78,12 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
     }
     const loadSubjects = async () => {
       try {
-        const list = await filterService.getSubjects(selectedCourse).catch(() => getMockSubjects(selectedCourse));
+        const list = await filterService.getSubjects(selectedCourse);
         setSubjects(list);
         setSelectedSubject('');
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load subjects', err);
+        setError(err.response?.data?.message || err.message || 'Failed to load subjects.');
       }
     };
     loadSubjects();
@@ -89,6 +93,7 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
   const fetchData = async () => {
     setLoading(true);
     try {
+      setError('');
       const filters = {
         department: selectedDept || undefined,
         course: selectedCourse || undefined,
@@ -97,23 +102,23 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
       };
 
       if (activeTab === 'notes') {
-        const list = await notesService.list(filters).catch(() => getMockNotes());
-        // Frontend search simulation if backend list fails
+        const list = await notesService.list(filters);
         const filteredList = list.filter(n =>
           n.title.toLowerCase().includes(search.toLowerCase()) ||
           n.subject.toLowerCase().includes(search.toLowerCase())
         );
         setNotes(filteredList);
       } else {
-        const list = await papersService.list(filters).catch(() => getMockPapers());
+        const list = await papersService.list(filters);
         const filteredList = list.filter(p =>
           p.title.toLowerCase().includes(search.toLowerCase()) ||
           p.subject.toLowerCase().includes(search.toLowerCase())
         );
         setPapers(filteredList);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching materials', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load materials.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -129,76 +134,6 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
     fetchData();
   };
 
-  // --- Mock Fallback Data ---
-  const getMockDepts = (): Department[] => [
-    { id: 'cs', name: 'Computer Science', code: 'CS' },
-    { id: 'ee', name: 'Electrical Engineering', code: 'EE' },
-  ];
-
-  const getMockCourses = (deptId: string): Course[] => {
-    if (deptId === 'cs') {
-      return [
-        { id: 'cs-se', departmentId: 'cs', name: 'Software Engineering', code: 'CS-SE' },
-        { id: 'cs-ai', departmentId: 'cs', name: 'Artificial Intelligence', code: 'CS-AI' },
-      ];
-    }
-    return [
-      { id: 'ee-power', departmentId: 'ee', name: 'Power Systems', code: 'EE-PS' }
-    ];
-  };
-
-  const getMockSubjects = (courseId: string): Subject[] => {
-    if (courseId === 'cs-se') {
-      return [
-        { id: 'subj-cn', courseId: 'cs-se', name: 'Computer Networks', code: 'CN' },
-        { id: 'subj-oops', courseId: 'cs-se', name: 'Object Oriented Programming', code: 'OOPS' },
-      ];
-    }
-    return [
-      { id: 'subj-ml', courseId: 'cs-ai', name: 'Machine Learning', code: 'ML' }
-    ];
-  };
-
-  const getMockNotes = (): Note[] => [
-    {
-      id: 'mock-n1',
-      title: 'Intro to Computer Networks',
-      subject: 'Computer Networks',
-      department: 'CS',
-      course: 'Software Engineering',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't1', name: 'Dr. Sarah Jenkins' },
-      downloadsCount: 12,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'mock-n2',
-      title: 'OOP Design Patterns',
-      subject: 'Object Oriented Programming',
-      department: 'CS',
-      course: 'Software Engineering',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't2', name: 'Prof. Mark Wood' },
-      downloadsCount: 8,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
-  const getMockPapers = (): Paper[] => [
-    {
-      id: 'mock-p1',
-      title: 'Computer Networks 2025 Midterm',
-      subject: 'Computer Networks',
-      department: 'CS',
-      course: 'Software Engineering',
-      year: 2025,
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: 't3', name: 'Dr. Alan Turing' },
-      downloadsCount: 45,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
   return (
     <View style={styles.container}>
       <View style={styles.hero}>
@@ -210,6 +145,8 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
       <View style={styles.searchSection}>
         <SearchBar value={search} onChangeText={setSearch} placeholder={`Search ${activeTab}...`} />
       </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       {/* Tabs */}
       <View style={styles.tabContainer}>
@@ -419,6 +356,18 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     paddingVertical: 12,
     gap: 8,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    marginHorizontal: 16,
+    marginBottom: 10,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   filterScroll: {
     paddingHorizontal: 16,

@@ -16,22 +16,25 @@ export default function TeacherDashboardScreen({ navigation }: { navigation: any
   const [myPapers, setMyPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchData = async () => {
     try {
+      setError('');
       const [tStats, notesList, papersList] = await Promise.all([
-        statsService.getTeacherStats().catch(() => getMockStats()),
-        notesService.list().catch(() => getMockNotes()),
-        papersService.list().catch(() => getMockPapers()),
+        statsService.getTeacherStats(),
+        notesService.list(),
+        papersService.list(),
       ]);
 
       setStats(tStats);
       // Filter materials uploaded by current user
       const currentUserId = user?.id || '';
-      setMyNotes(notesList.filter(n => n.uploadedBy.id === currentUserId || n.id.startsWith('mock')));
-      setMyPapers(papersList.filter(p => p.uploadedBy.id === currentUserId || p.id.startsWith('mock')));
-    } catch (err) {
+      setMyNotes(notesList.filter(n => n.uploadedBy.id === currentUserId));
+      setMyPapers(papersList.filter(p => p.uploadedBy.id === currentUserId));
+    } catch (err: any) {
       console.error('Error loading teacher stats', err);
+      setError(err.response?.data?.message || err.message || 'Unable to load teacher dashboard.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -57,16 +60,17 @@ export default function TeacherDashboardScreen({ navigation }: { navigation: any
           setLoading(true);
           try {
             if (type === 'note') {
-              await notesService.delete(id).catch(() => {});
+              await notesService.delete(id);
               setMyNotes(prev => prev.filter(n => n.id !== id));
             } else {
-              await papersService.delete(id).catch(() => {});
+              await papersService.delete(id);
               setMyPapers(prev => prev.filter(p => p.id !== id));
             }
             Alert.alert('Success', 'Resource deleted successfully.');
             fetchData();
-          } catch {
-            Alert.alert('Error', 'Failed to delete resource');
+          } catch (err: any) {
+            console.error('Failed to delete teacher resource', err);
+            Alert.alert('Error', err.response?.data?.message || err.message || 'Failed to delete resource');
           } finally {
             setLoading(false);
           }
@@ -74,41 +78,6 @@ export default function TeacherDashboardScreen({ navigation }: { navigation: any
       }
     ]);
   };
-
-  const getMockStats = (): TeacherStats => ({
-    totalNotes: 8,
-    totalPapers: 5,
-    totalDownloads: 184,
-    recentUploads: [
-      { id: 'mock-n1', title: 'Intro to Computer Networks', type: 'note', downloads: 12 },
-      { id: 'mock-p1', title: 'Calculus Midterm 2025', type: 'paper', downloads: 45 },
-    ]
-  });
-
-  const getMockNotes = (): Note[] => [
-    {
-      id: 'mock-n1',
-      title: 'Intro to Computer Networks',
-      subject: 'Computer Networks',
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: user?.id || 't1', name: user?.name || 'Dr. Jenkins' },
-      downloadsCount: 12,
-      createdAt: new Date().toISOString(),
-    }
-  ];
-
-  const getMockPapers = (): Paper[] => [
-    {
-      id: 'mock-p1',
-      title: 'Advanced Calculus 2025 Midterm',
-      subject: 'Mathematics',
-      year: 2025,
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      uploadedBy: { id: user?.id || 't1', name: user?.name || 'Dr. Jenkins' },
-      downloadsCount: 45,
-      createdAt: new Date().toISOString(),
-    }
-  ];
 
   if (loading) return <Loader fullScreen message="Loading Dashboard..." />;
 
@@ -123,6 +92,8 @@ export default function TeacherDashboardScreen({ navigation }: { navigation: any
         <Text style={styles.helloText}>Welcome, {user?.name}</Text>
         <Text style={styles.subText}>Publish resources, monitor downloads, and keep academic content current.</Text>
       </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       {/* Metrics Row */}
       <View style={styles.statsRow}>
@@ -261,6 +232,17 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     marginTop: 12,
     marginBottom: 12,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 14,
+    backgroundColor: COLORS.errorBg,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
+    borderRadius: 8,
+    padding: 12,
   },
   cardHeaderActions: {
     flexDirection: 'row',

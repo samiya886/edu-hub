@@ -17,6 +17,271 @@ import type { WebView as WebViewType } from 'react-native-webview';
 const WEBSITE_URL = 'https://edu-hub-production.up.railway.app';
 const WEBSITE_HOST = new URL(WEBSITE_URL).host;
 
+const MOBILE_OPTIMIZATION_CSS = `
+    @media (max-width: 640px) {
+      :root {
+        --eduhub-mobile-x: 14px;
+        --eduhub-radius: 16px;
+      }
+
+      html,
+      body,
+      #root {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+
+      body {
+        font-size: 14px !important;
+        line-height: 1.45 !important;
+        background: #f8fafc !important;
+      }
+
+      main,
+      section,
+      header,
+      footer {
+        max-width: 100vw !important;
+      }
+
+      section {
+        padding-top: 22px !important;
+        padding-bottom: 22px !important;
+      }
+
+      section > div,
+      main > div,
+      header > div,
+      footer > div {
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding-left: var(--eduhub-mobile-x) !important;
+        padding-right: var(--eduhub-mobile-x) !important;
+      }
+
+      h1,
+      .text-6xl,
+      .text-7xl,
+      .text-8xl,
+      [class*="text-[92px]"] {
+        font-size: clamp(30px, 8.6vw, 42px) !important;
+        line-height: 1.02 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      h2,
+      .text-5xl,
+      .text-4xl {
+        font-size: clamp(22px, 6.2vw, 30px) !important;
+        line-height: 1.12 !important;
+        letter-spacing: -0.01em !important;
+      }
+
+      h3,
+      .text-3xl,
+      .text-2xl {
+        font-size: clamp(18px, 4.9vw, 22px) !important;
+        line-height: 1.18 !important;
+      }
+
+      p,
+      .text-lg,
+      .text-base {
+        font-size: 14px !important;
+        line-height: 1.48 !important;
+      }
+
+      .text-sm {
+        font-size: 13px !important;
+        line-height: 1.42 !important;
+      }
+
+      .tracking-widest,
+      [class*="tracking-[0.22em]"],
+      [class*="tracking-[0.25em]"] {
+        letter-spacing: 0.12em !important;
+      }
+
+      [class*="min-h-screen"],
+      [class*="min-h-[calc"],
+      [class*="lg:min-h"] {
+        min-height: auto !important;
+      }
+
+      [class*="py-20"],
+      [class*="py-16"],
+      [class*="py-12"],
+      [class*="pt-20"],
+      [class*="pb-20"],
+      [class*="p-12"],
+      [class*="p-10"],
+      [class*="p-8"] {
+        padding-top: 22px !important;
+        padding-bottom: 22px !important;
+      }
+
+      [class*="px-10"],
+      [class*="px-8"],
+      [class*="p-7"],
+      [class*="p-6"] {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+      }
+
+      [class*="p-5"],
+      [class*="p-4"] {
+        padding: 12px !important;
+      }
+
+      [class*="mb-24"],
+      [class*="mb-20"],
+      [class*="mb-16"],
+      [class*="mb-12"],
+      [class*="mt-20"],
+      [class*="mt-16"],
+      [class*="mt-12"] {
+        margin-top: 18px !important;
+        margin-bottom: 18px !important;
+      }
+
+      [class*="gap-16"],
+      [class*="gap-12"],
+      [class*="gap-10"],
+      [class*="gap-8"],
+      [class*="gap-6"] {
+        gap: 12px !important;
+      }
+
+      [class*="rounded-[50px]"],
+      [class*="rounded-[40px]"],
+      [class*="rounded-[36px]"],
+      [class*="rounded-[35px]"],
+      [class*="rounded-[32px]"],
+      [class*="rounded-[28px]"],
+      [class*="rounded-[26px]"],
+      [class*="rounded-3xl"] {
+        border-radius: var(--eduhub-radius) !important;
+      }
+
+      [class*="shadow-2xl"],
+      [class*="shadow-xl"],
+      [class*="shadow-lg"],
+      [class*="shadow-[0_"] {
+        box-shadow: 0 12px 28px rgba(10, 74, 68, 0.10) !important;
+      }
+
+      .grid {
+        gap: 12px !important;
+      }
+
+      .grid[class*="grid-cols"],
+      [class*="sm:grid-cols"],
+      [class*="md:grid-cols"],
+      [class*="lg:grid-cols"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      section .grid:has(> :nth-child(3)),
+      main .grid:has(> :nth-child(3)) {
+        display: flex !important;
+        gap: 12px !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x proximity !important;
+        padding-bottom: 4px !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      section .grid:has(> :nth-child(3)) > *,
+      main .grid:has(> :nth-child(3)) > * {
+        flex: 0 0 min(78vw, 292px) !important;
+        min-width: min(78vw, 292px) !important;
+        scroll-snap-align: start !important;
+      }
+
+      article,
+      [class*="bg-white"][class*="border"],
+      [class*="bg-white"][class*="shadow"],
+      [class*="bg-gray-50"][class*="border"] {
+        border-radius: 14px !important;
+      }
+
+      img,
+      video {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: cover !important;
+      }
+
+      [class*="h-[520px]"],
+      [class*="h-[500px]"],
+      [class*="h-[450px]"],
+      [class*="h-[430px]"],
+      [class*="h-[400px]"],
+      [class*="h-96"],
+      [class*="h-80"],
+      [class*="h-72"],
+      [class*="h-64"] {
+        height: clamp(180px, 52vw, 240px) !important;
+      }
+
+      [class*="h-56"],
+      [class*="h-48"],
+      [class*="h-40"] {
+        height: clamp(130px, 42vw, 180px) !important;
+      }
+
+      button,
+      a[role="button"],
+      input[type="submit"] {
+        min-height: 42px !important;
+        border-radius: 12px !important;
+      }
+
+      button[class*="py-4"],
+      a[class*="py-4"],
+      button[class*="px-6"],
+      a[class*="px-6"] {
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+      }
+
+      input,
+      select,
+      textarea {
+        min-height: 44px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+      }
+
+      [class*="absolute"][class*="blur"],
+      [class*="rounded-full"][class*="blur"],
+      [class*="opacity-30"][class*="blur"] {
+        display: none !important;
+      }
+
+      nav,
+      header {
+        min-height: auto !important;
+      }
+    }
+`;
+
+const MOBILE_OPTIMIZATION_SCRIPT = `
+(function () {
+  var STYLE_ID = 'eduhub-mobile-compact-style';
+  if (document.getElementById(STYLE_ID)) return true;
+
+  var style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = ${JSON.stringify(MOBILE_OPTIMIZATION_CSS)};
+
+  document.head.appendChild(style);
+  return true;
+})();
+true;
+`;
+
 function isExternalUrl(url: string) {
   if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
     return true;
@@ -100,6 +365,8 @@ function NativeWebViewApp() {
           allowsBackForwardNavigationGestures
           originWhitelist={['*']}
           mixedContentMode="compatibility"
+          injectedJavaScriptBeforeContentLoaded={MOBILE_OPTIMIZATION_SCRIPT}
+          injectedJavaScript={MOBILE_OPTIMIZATION_SCRIPT}
           onLoadStart={() => {
             setIsLoading(true);
             setHasError(false);

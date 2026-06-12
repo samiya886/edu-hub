@@ -31,6 +31,14 @@ function isExternalUrl(url: string) {
 }
 
 export default function App() {
+  if (Platform.OS === 'web') {
+    return <WebPreview />;
+  }
+
+  return <NativeWebViewApp />;
+}
+
+function NativeWebViewApp() {
   const webViewRef = useRef<WebViewType>(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -129,6 +137,50 @@ export default function App() {
   );
 }
 
+function WebPreview() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const handleRetry = () => {
+    setHasError(false);
+    setIsLoading(true);
+    setReloadKey((key) => key + 1);
+  };
+
+  return (
+    <View style={styles.safeArea}>
+      {React.createElement('iframe', {
+        key: reloadKey,
+        src: WEBSITE_URL,
+        title: 'EduHub',
+        onLoad: () => setIsLoading(false),
+        onError: () => {
+          setHasError(true);
+          setIsLoading(false);
+        },
+        style: styles.webFrame,
+      })}
+
+      {isLoading && !hasError ? (
+        <View pointerEvents="none" style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ff9f1c" />
+        </View>
+      ) : null}
+
+      {hasError ? (
+        <View style={styles.errorOverlay}>
+          <Text style={styles.errorTitle}>Unable to load EduHub</Text>
+          <Text style={styles.errorText}>Check your internet connection and try again.</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRetry} activeOpacity={0.8}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -136,6 +188,13 @@ const styles = StyleSheet.create({
   },
   webView: {
     flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  webFrame: {
+    width: '100%',
+    height: '100%',
+    borderWidth: 0,
+    borderColor: 'transparent',
     backgroundColor: '#ffffff',
   },
   loadingOverlay: {

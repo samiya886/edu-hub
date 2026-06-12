@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "com.eduhub.app",
-      "versionCode": 4,
+      "versionCode": 7,
       "adaptiveIcon": {
         "backgroundColor": "#0a4a44",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

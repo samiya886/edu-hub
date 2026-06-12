@@ -16,6 +16,7 @@ import type { WebView as WebViewType } from 'react-native-webview';
 
 const WEBSITE_URL = 'https://edu-hub-production.up.railway.app';
 const WEBSITE_HOST = new URL(WEBSITE_URL).host;
+const WEBSITE_ORIGIN = new URL(WEBSITE_URL).origin;
 
 const MOBILE_OPTIMIZATION_CSS = `
     @media (max-width: 640px) {
@@ -272,23 +273,52 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   var STYLE_ID = 'eduhub-mobile-compact-style';
   if (document.getElementById(STYLE_ID)) return true;
 
-  var style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = ${JSON.stringify(MOBILE_OPTIMIZATION_CSS)};
+  function injectStyle() {
+    if (document.getElementById(STYLE_ID)) return true;
 
-  document.head.appendChild(style);
-  return true;
+    var target = document.head || document.documentElement || document.body;
+    if (!target) {
+      window.setTimeout(injectStyle, 50);
+      return true;
+    }
+
+    var style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = ${JSON.stringify(MOBILE_OPTIMIZATION_CSS)};
+    target.appendChild(style);
+    return true;
+  }
+
+  return injectStyle();
 })();
 true;
 `;
+
+function normalizeWebsiteUrl(url: string) {
+  if (url.startsWith('/')) {
+    return `${WEBSITE_ORIGIN}${url}`;
+  }
+
+  return url;
+}
 
 function isExternalUrl(url: string) {
   if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
     return true;
   }
 
+  if (
+    url === 'about:blank' ||
+    url.startsWith('about:') ||
+    url.startsWith('data:') ||
+    url.startsWith('blob:') ||
+    url.startsWith('javascript:')
+  ) {
+    return false;
+  }
+
   try {
-    const nextUrl = new URL(url);
+    const nextUrl = new URL(normalizeWebsiteUrl(url), WEBSITE_URL);
     return nextUrl.host !== WEBSITE_HOST;
   } catch {
     return false;
@@ -305,10 +335,26 @@ export default function App() {
 
 function NativeWebViewApp() {
   const webViewRef = useRef<WebViewType>(null);
+  const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const clearLoadingTimeout = useCallback(() => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startLoadingTimeout = useCallback(() => {
+    clearLoadingTimeout();
+    loadingTimeoutRef.current = setTimeout(() => {
+      setIsLoading(false);
+      loadingTimeoutRef.current = null;
+    }, 12000);
+  }, [clearLoadingTimeout]);
 
   useEffect(() => {
     if (Platform.OS !== 'android') return undefined;
@@ -325,14 +371,26 @@ function NativeWebViewApp() {
     return () => subscription.remove();
   }, [canGoBack]);
 
-  const handleNavigationStateChange = useCallback((event: WebViewNavigation) => {
-    setCanGoBack(event.canGoBack);
-  }, []);
+  useEffect(() => clearLoadingTimeout, [clearLoadingTimeout]);
+
+  const handleNavigationStateChange = useCallback(
+    (event: WebViewNavigation) => {
+      setCanGoBack(event.canGoBack);
+
+      if (!event.loading) {
+        clearLoadingTimeout();
+        setIsLoading(false);
+      }
+    },
+    [clearLoadingTimeout],
+  );
 
   const handleShouldStartLoad = useCallback((request: { url: string }) => {
-    if (isExternalUrl(request.url)) {
-      Linking.openURL(request.url).catch((error) => {
-        console.warn('Failed to open external URL', request.url, error);
+    const nextUrl = normalizeWebsiteUrl(request.url);
+
+    if (isExternalUrl(nextUrl)) {
+      Linking.openURL(nextUrl).catch((error) => {
+        console.warn('Failed to open external URL', nextUrl, error);
       });
       return false;
     }
@@ -341,8 +399,10 @@ function NativeWebViewApp() {
   }, []);
 
   const handleRetry = () => {
+    clearLoadingTimeout();
     setHasError(false);
     setIsLoading(true);
+    startLoadingTimeout();
     setReloadKey((key) => key + 1);
   };
 
@@ -370,10 +430,15 @@ function NativeWebViewApp() {
           onLoadStart={() => {
             setIsLoading(true);
             setHasError(false);
+            startLoadingTimeout();
           }}
-          onLoadEnd={() => setIsLoading(false)}
+          onLoadEnd={() => {
+            clearLoadingTimeout();
+            setIsLoading(false);
+          }}
           onError={(event) => {
             console.warn('Website failed to load', event.nativeEvent);
+            clearLoadingTimeout();
             setHasError(true);
             setIsLoading(false);
           }}

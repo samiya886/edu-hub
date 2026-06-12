@@ -14,6 +14,7 @@ import UploadScreen from '../screens/student/UploadScreen';
 import ProfileScreen from '../screens/student/ProfileScreen';
 import PDFViewerScreen from '../screens/common/PDFViewerScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
+import DepartmentsCoursesScreen from '../screens/common/DepartmentsCoursesScreen';
 
 // Stack param lists
 export type StudentStackParamList = {
@@ -35,6 +36,7 @@ function StudentTabNavigator() {
           if (route.name === 'Dashboard') iconName = 'grid-outline';
           else if (route.name === 'NotesPapers') iconName = 'library-outline';
           else if (route.name === 'Upload') iconName = 'cloud-upload-outline';
+          else if (route.name === 'Catalog') iconName = 'business-outline';
           else if (route.name === 'Notifications') iconName = 'notifications-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
 
@@ -62,6 +64,7 @@ function StudentTabNavigator() {
     >
       <Tab.Screen name="Dashboard" component={StudentDashboardScreen} />
       <Tab.Screen name="NotesPapers" component={NotesPapersScreen} options={{ title: 'Browse' }} />
+      <Tab.Screen name="Catalog" component={DepartmentsCoursesScreen} />
       <Tab.Screen name="Upload" component={UploadScreen} options={{ title: 'Upload' }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Alerts' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

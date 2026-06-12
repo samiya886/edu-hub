@@ -13,7 +13,7 @@ export const Loader: React.FC<LoaderProps> = ({ message = 'Loading...', fullScre
       <View style={styles.loaderMark}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
-      {message ? <Text style={styles.text}>{message}</Text> : null}
+      {message ? <Text style={[styles.text, !fullScreen && styles.inlineText]}>{message}</Text> : null}
     </View>
   );
 };
@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
     color: COLORS.white,
+  },
+  inlineText: {
+    color: COLORS.text,
   },
   loaderMark: {
     width: 76,

@@ -12,6 +12,7 @@ import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import ManageUsersScreen from '../screens/admin/ManageUsersScreen';
 import ManageContentScreen from '../screens/admin/ManageContentScreen';
 import ProfileScreen from '../screens/student/ProfileScreen';
+import DepartmentsCoursesScreen from '../screens/common/DepartmentsCoursesScreen';
 
 export type AdminStackParamList = {
   HomeTabs: undefined;
@@ -31,6 +32,7 @@ function AdminTabNavigator() {
           if (route.name === 'Dashboard') iconName = 'grid-outline';
           else if (route.name === 'Users') iconName = 'people-outline';
           else if (route.name === 'Content') iconName = 'folder-open-outline';
+          else if (route.name === 'Catalog') iconName = 'business-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -58,6 +60,7 @@ function AdminTabNavigator() {
       <Tab.Screen name="Dashboard" component={AdminDashboardScreen} />
       <Tab.Screen name="Users" component={ManageUsersScreen} options={{ title: 'Users' }} />
       <Tab.Screen name="Content" component={ManageContentScreen} options={{ title: 'Content' }} />
+      <Tab.Screen name="Catalog" component={DepartmentsCoursesScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

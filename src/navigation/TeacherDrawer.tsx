@@ -13,6 +13,8 @@ import UploadScreen from '../screens/student/UploadScreen';
 import ProfileScreen from '../screens/student/ProfileScreen';
 import NotificationsScreen from '../screens/common/NotificationsScreen';
 import PDFViewerScreen from '../screens/common/PDFViewerScreen';
+import NotesPapersScreen from '../screens/student/NotesPapersScreen';
+import DepartmentsCoursesScreen from '../screens/common/DepartmentsCoursesScreen';
 
 export type TeacherStackParamList = {
   HomeTabs: undefined;
@@ -31,6 +33,8 @@ function TeacherTabNavigator() {
         tabBarIcon: ({ color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = 'book-outline';
           if (route.name === 'Dashboard') iconName = 'grid-outline';
+          else if (route.name === 'NotesPapers') iconName = 'library-outline';
+          else if (route.name === 'Catalog') iconName = 'business-outline';
           else if (route.name === 'Upload') iconName = 'add-circle-outline';
           else if (route.name === 'Notifications') iconName = 'notifications-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
@@ -58,6 +62,8 @@ function TeacherTabNavigator() {
       })}
     >
       <Tab.Screen name="Dashboard" component={TeacherDashboardScreen} />
+      <Tab.Screen name="NotesPapers" component={NotesPapersScreen} options={{ title: 'Browse' }} />
+      <Tab.Screen name="Catalog" component={DepartmentsCoursesScreen} />
       <Tab.Screen name="Upload" component={UploadScreen} options={{ title: 'Upload' }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Alerts' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

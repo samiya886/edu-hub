@@ -30,6 +30,11 @@ type RawAuthResponse = Partial<AuthResponse> & {
   user?: RawUser;
 };
 
+type RawProfileResponse = RawUser & {
+  data?: RawUser;
+  user?: RawUser;
+};
+
 export interface Note {
   id: string;
   title: string;
@@ -119,12 +124,17 @@ function normalizeUser(rawUser: RawUser | undefined): User {
     throw new Error('Login response did not include a user profile.');
   }
 
+  const normalizedRole = String(rawUser.role ?? 'student').toLowerCase();
+  const role = ['student', 'teacher', 'admin'].includes(normalizedRole)
+    ? normalizedRole as UserRole
+    : 'student';
+
   return {
     ...rawUser,
     id: rawUser.id ?? rawUser._id ?? '',
     name: rawUser.name ?? '',
     email: rawUser.email ?? '',
-    role: String(rawUser.role ?? 'student').toLowerCase() as UserRole,
+    role,
   };
 }
 
@@ -159,8 +169,8 @@ export const authService = {
   },
 
   getProfile: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/auth/profile');
-    return response.data;
+    const response = await apiClient.get<RawProfileResponse>('/auth/me');
+    return normalizeUser(response.data.data ?? response.data.user ?? response.data);
   },
 
   updateProfile: async (payload: Partial<User>): Promise<User> => {

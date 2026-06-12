@@ -2,6 +2,8 @@ import axios from 'axios';
 import { API_BASE_URL, STORAGE_KEYS } from '../constants';
 import { appStorage } from '../utils/storage';
 
+let unauthorizedHandler: (() => void) | null = null;
+
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -42,6 +44,7 @@ apiClient.interceptors.response.use(
       try {
         await appStorage.removeItem(STORAGE_KEYS.TOKEN);
         await appStorage.removeItem(STORAGE_KEYS.USER);
+        unauthorizedHandler?.();
       } catch (storageError) {
         console.error('Error clearing storage on 401', storageError);
       }
@@ -49,5 +52,9 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  unauthorizedHandler = handler;
+}
 
 export default apiClient;

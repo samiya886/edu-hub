@@ -111,10 +111,20 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       [class*="py-20"],
+      [class*="py-32"],
+      [class*="py-28"],
+      [class*="py-24"],
       [class*="py-16"],
       [class*="py-12"],
+      [class*="pt-32"],
+      [class*="pt-28"],
+      [class*="pt-24"],
       [class*="pt-20"],
+      [class*="pb-32"],
+      [class*="pb-28"],
+      [class*="pb-24"],
       [class*="pb-20"],
+      [class*="p-16"],
       [class*="p-12"],
       [class*="p-10"],
       [class*="p-8"] {
@@ -139,6 +149,9 @@ const MOBILE_OPTIMIZATION_CSS = `
       [class*="mb-20"],
       [class*="mb-16"],
       [class*="mb-12"],
+      [class*="mt-32"],
+      [class*="mt-28"],
+      [class*="mt-24"],
       [class*="mt-20"],
       [class*="mt-16"],
       [class*="mt-12"] {
@@ -265,27 +278,193 @@ const MOBILE_OPTIMIZATION_CSS = `
       header {
         min-height: auto !important;
       }
+
+      body[data-eduhub-route="resources"] {
+        background: #ffffff !important;
+      }
+
+      body[data-eduhub-route="resources"] section,
+      body[data-eduhub-route="resources"] main > div,
+      body[data-eduhub-route="resources"] [class*="space-y-"] {
+        gap: 14px !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="min-h-[560px]"],
+      body[data-eduhub-route="resources"] [class*="min-h-[600px]"],
+      body[data-eduhub-route="resources"] [class*="min-h-[650px]"],
+      body[data-eduhub-route="resources"] [class*="min-h-[700px]"] {
+        min-height: auto !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="max-w-7xl"],
+      body[data-eduhub-route="resources"] [class*="max-w-6xl"],
+      body[data-eduhub-route="resources"] [class*="max-w-5xl"],
+      body[data-eduhub-route="resources"] [class*="max-w-4xl"] {
+        max-width: 100vw !important;
+      }
+
+      body[data-eduhub-route="resources"] h1 {
+        font-size: clamp(24px, 6.6vw, 32px) !important;
+      }
+
+      body[data-eduhub-route="resources"] h2 {
+        font-size: clamp(20px, 5.8vw, 26px) !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="rounded-[50px]"],
+      body[data-eduhub-route="resources"] [class*="rounded-[40px]"],
+      body[data-eduhub-route="resources"] [class*="rounded-[36px]"],
+      body[data-eduhub-route="resources"] [class*="rounded-[32px]"] {
+        border-radius: 18px !important;
+      }
+
+      body[data-eduhub-route="resources"] input[type="text"],
+      body[data-eduhub-route="resources"] input[type="search"] {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+
+      body[data-eduhub-route="resources"] button,
+      body[data-eduhub-route="resources"] select {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(button),
+      body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(input),
+      body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(select) {
+        overflow: visible !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)),
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        gap: 8px !important;
+        padding-bottom: 6px !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3))::-webkit-scrollbar,
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3))::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)) > *,
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) > * {
+        flex: 0 0 auto !important;
+        min-width: max-content !important;
+      }
+
+      body[data-eduhub-route="resources"] select,
+      body[data-eduhub-route="resources"] [role="combobox"] {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      body[data-eduhub-route="resources"] img {
+        max-height: 220px !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="py-20"] {
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="mt-20"],
+      body[data-eduhub-route="resources"] [class*="mb-20"] {
+        margin-top: 16px !important;
+        margin-bottom: 16px !important;
+      }
     }
 `;
 
 const MOBILE_OPTIMIZATION_SCRIPT = `
 (function () {
   var STYLE_ID = 'eduhub-mobile-compact-style';
-  if (document.getElementById(STYLE_ID)) return true;
+  var API_ORIGIN = ${JSON.stringify(WEBSITE_ORIGIN)};
+
+  function absoluteApiUrl(input) {
+    if (typeof input !== 'string') return input;
+    if (input.indexOf('/api/') === 0) return API_ORIGIN + input;
+    if (input.indexOf('http://edu-hub-production.up.railway.app/api/') === 0) {
+      return input.replace('http://', 'https://');
+    }
+    return input;
+  }
+
+  function installFetchBridge() {
+    if (!window.fetch || window.__eduhubFetchBridgeInstalled) return;
+
+    var originalFetch = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+      if (typeof input === 'string') {
+        return originalFetch(absoluteApiUrl(input), init);
+      }
+
+      if (input && typeof input.url === 'string') {
+        var nextUrl = absoluteApiUrl(input.url);
+        if (nextUrl !== input.url) {
+          input = new Request(nextUrl, input);
+        }
+      }
+
+      return originalFetch(input, init);
+    };
+
+    window.__eduhubFetchBridgeInstalled = true;
+  }
+
+  function syncRouteClass() {
+    var path = window.location && window.location.pathname ? window.location.pathname : '';
+    var route = path === '/notes' || path === '/papers' ? 'resources' : 'default';
+
+    if (document.body) {
+      document.body.setAttribute('data-eduhub-route', route);
+      document.body.setAttribute('data-eduhub-path', path || '/');
+    }
+  }
+
+  function installRouteObserver() {
+    if (window.__eduhubRouteObserverInstalled) return;
+
+    var originalPushState = history.pushState;
+    var originalReplaceState = history.replaceState;
+    history.pushState = function () {
+      var result = originalPushState.apply(this, arguments);
+      window.setTimeout(syncRouteClass, 0);
+      return result;
+    };
+    history.replaceState = function () {
+      var result = originalReplaceState.apply(this, arguments);
+      window.setTimeout(syncRouteClass, 0);
+      return result;
+    };
+    window.addEventListener('popstate', syncRouteClass);
+    window.addEventListener('hashchange', syncRouteClass);
+    window.__eduhubRouteObserverInstalled = true;
+  }
 
   function injectStyle() {
-    if (document.getElementById(STYLE_ID)) return true;
-
     var target = document.head || document.documentElement || document.body;
     if (!target) {
       window.setTimeout(injectStyle, 50);
       return true;
     }
 
-    var style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = ${JSON.stringify(MOBILE_OPTIMIZATION_CSS)};
-    target.appendChild(style);
+    if (!document.getElementById(STYLE_ID)) {
+      var style = document.createElement('style');
+      style.id = STYLE_ID;
+      style.textContent = ${JSON.stringify(MOBILE_OPTIMIZATION_CSS)};
+      target.appendChild(style);
+    }
+
+    installFetchBridge();
+    installRouteObserver();
+    syncRouteClass();
     return true;
   }
 

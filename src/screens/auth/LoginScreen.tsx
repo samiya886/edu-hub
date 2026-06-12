@@ -23,7 +23,10 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     try {
       await login(email, password);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const serverMessage = typeof err.response?.data === 'string'
+        ? undefined
+        : err.response?.data?.message;
+      setError(serverMessage || err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }

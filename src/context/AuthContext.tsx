@@ -20,25 +20,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Load persisted session on boot
+  // Always start the app at the public Home screen. A user is moved into the
+  // role dashboard only after signing in during the current app session.
   useEffect(() => {
-    const loadSession = async () => {
-      try {
-        const storedToken = await appStorage.getItem(STORAGE_KEYS.TOKEN);
-        const storedUser = await appStorage.getItem(STORAGE_KEYS.USER);
-
-        if (storedToken && storedUser) {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (error) {
-        console.error('Failed to load auth session from storage', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSession();
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {

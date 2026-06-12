@@ -25,7 +25,10 @@ export default function SignupScreen({ navigation }: { navigation: any }) {
     try {
       await register(name, email, password, role);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please check details.');
+      const serverMessage = typeof err.response?.data === 'string'
+        ? undefined
+        : err.response?.data?.message;
+      setError(serverMessage || err.message || 'Registration failed. Please check details.');
     } finally {
       setLoading(false);
     }

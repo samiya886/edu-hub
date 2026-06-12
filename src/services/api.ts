@@ -17,6 +17,19 @@ export interface AuthResponse {
   user: User;
 }
 
+type RawUser = Partial<User> & {
+  _id?: string;
+};
+
+type RawAuthResponse = Partial<AuthResponse> & {
+  accessToken?: string;
+  data?: Partial<AuthResponse> & {
+    accessToken?: string;
+    user?: RawUser;
+  };
+  user?: RawUser;
+};
+
 export interface Note {
   id: string;
   title: string;
@@ -101,15 +114,43 @@ export interface AdminAnalytics {
 
 // --- API SERVICES ---
 
+function normalizeUser(rawUser: RawUser | undefined): User {
+  if (!rawUser) {
+    throw new Error('Login response did not include a user profile.');
+  }
+
+  return {
+    ...rawUser,
+    id: rawUser.id ?? rawUser._id ?? '',
+    name: rawUser.name ?? '',
+    email: rawUser.email ?? '',
+    role: String(rawUser.role ?? 'student').toLowerCase() as UserRole,
+  };
+}
+
+function normalizeAuthResponse(rawResponse: RawAuthResponse): AuthResponse {
+  const payload = rawResponse.data ?? rawResponse;
+  const token = payload.token ?? payload.accessToken ?? rawResponse.token ?? rawResponse.accessToken;
+
+  if (!token) {
+    throw new Error('Login response did not include an auth token.');
+  }
+
+  return {
+    token,
+    user: normalizeUser(payload.user ?? rawResponse.user),
+  };
+}
+
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/auth/login', { email, password });
-    return response.data;
+    const response = await apiClient.post<RawAuthResponse>('/auth/login', { email, password });
+    return normalizeAuthResponse(response.data);
   },
 
   register: async (payload: { name: string; email: string; password: string; role: UserRole }): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/auth/register', payload);
-    return response.data;
+    const response = await apiClient.post<RawAuthResponse>('/auth/register', payload);
+    return normalizeAuthResponse(response.data);
   },
 
   forgotPassword: async (email: string): Promise<{ message: string }> => {

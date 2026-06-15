@@ -213,6 +213,21 @@ const MOBILE_OPTIMIZATION_CSS = `
         scroll-snap-align: start !important;
       }
 
+      section .flex > [class*="rounded-full"][class*="bg-gray-50"][class*="border"] {
+        flex: 0 0 100% !important;
+        min-width: 0 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+      }
+
+      section .flex > [class*="rounded-full"][class*="bg-gray-50"][class*="border"] svg,
+      section .flex > [class*="rounded-full"][class*="bg-gray-50"][class*="border"] span {
+        flex-shrink: 0 !important;
+      }
+
       article,
       [class*="bg-white"][class*="border"],
       [class*="bg-white"][class*="shadow"],

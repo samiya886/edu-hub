@@ -427,16 +427,23 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"]) {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
         gap: 12px !important;
         width: 100% !important;
         max-width: 100% !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
-        scroll-snap-type: none !important;
+        padding: 0 0 8px 0 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"])::-webkit-scrollbar {
+        display: none !important;
       }
 
       .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"])::after {
@@ -444,11 +451,11 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"]) > div {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        flex: 1 1 auto !important;
-        scroll-snap-align: none !important;
+        width: min(82vw, 292px) !important;
+        min-width: min(82vw, 292px) !important;
+        max-width: min(82vw, 292px) !important;
+        flex: 0 0 min(82vw, 292px) !important;
+        scroll-snap-align: start !important;
       }
 
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {

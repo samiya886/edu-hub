@@ -374,6 +374,37 @@ const MOBILE_OPTIMIZATION_CSS = `
         min-width: max-content !important;
       }
 
+      body[data-eduhub-route="resources"] .mobile-carousel::after {
+        display: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .mobile-scroll-track {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .mobile-scroll-track > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex: 1 1 auto !important;
+        scroll-snap-align: none !important;
+      }
+
+      body[data-eduhub-route="resources"] [class*="min-w-[760px]"],
+      body[data-eduhub-route="resources"] [class*="min-w-[850px]"] {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
       body[data-eduhub-route="resources"] select,
       body[data-eduhub-route="resources"] [role="combobox"] {
         width: 100% !important;
@@ -443,6 +474,49 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     }
   }
 
+  function getStoredUserRole() {
+    var storageKeys = ['user', 'authUser', 'eduhub_user', 'eduhub-user'];
+    var storageAreas = [window.localStorage, window.sessionStorage];
+
+    for (var areaIndex = 0; areaIndex < storageAreas.length; areaIndex += 1) {
+      var storage = storageAreas[areaIndex];
+      if (!storage) continue;
+
+      for (var keyIndex = 0; keyIndex < storageKeys.length; keyIndex += 1) {
+        try {
+          var rawValue = storage.getItem(storageKeys[keyIndex]);
+          if (!rawValue) continue;
+
+          var parsed = JSON.parse(rawValue);
+          var role = parsed && (parsed.role || (parsed.user && parsed.user.role));
+          if (typeof role === 'string' && role) return role.toLowerCase();
+        } catch (error) {}
+      }
+    }
+
+    return '';
+  }
+
+  function normalizeUnsupportedRoutes() {
+    var path = window.location && window.location.pathname ? window.location.pathname : '';
+    if (path !== '/profile') return;
+
+    var role = getStoredUserRole();
+    var nextPath = role === 'teacher' ? '/teacher' : role === 'admin' ? '/admin' : '/student';
+    history.replaceState(history.state || {}, document.title, nextPath + (window.location.search || '') + (window.location.hash || ''));
+    syncRouteClass();
+    try {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
+    } catch (error) {
+      window.dispatchEvent(new Event('popstate'));
+    }
+  }
+
+  function handleRouteChange() {
+    normalizeUnsupportedRoutes();
+    syncRouteClass();
+  }
+
   function installRouteObserver() {
     if (window.__eduhubRouteObserverInstalled) return;
 
@@ -450,16 +524,16 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var originalReplaceState = history.replaceState;
     history.pushState = function () {
       var result = originalPushState.apply(this, arguments);
-      window.setTimeout(syncRouteClass, 0);
+      window.setTimeout(handleRouteChange, 0);
       return result;
     };
     history.replaceState = function () {
       var result = originalReplaceState.apply(this, arguments);
-      window.setTimeout(syncRouteClass, 0);
+      window.setTimeout(handleRouteChange, 0);
       return result;
     };
-    window.addEventListener('popstate', syncRouteClass);
-    window.addEventListener('hashchange', syncRouteClass);
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
     window.__eduhubRouteObserverInstalled = true;
   }
 
@@ -479,6 +553,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
     installFetchBridge();
     installRouteObserver();
+    normalizeUnsupportedRoutes();
     syncRouteClass();
     return true;
   }

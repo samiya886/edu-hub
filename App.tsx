@@ -458,8 +458,7 @@ const MOBILE_OPTIMIZATION_CSS = `
         scroll-snap-align: start !important;
       }
 
-      body[data-eduhub-path="/student"] .mobile-carousel.mobile-scroll-track > div > div[class*="absolute"][class*="bottom-0"][class*="h-1"][class*="bg-[#ff9f1c]"],
-      body[data-eduhub-path="/student"] .mobile-carousel.mobile-scroll-track > div > div[class*="absolute"][class*="bottom-0"][class*="h-1"][class*="bg-[#ff9f00]"] {
+      .mobile-carousel.mobile-scroll-track > div[class*="bg-white"][class*="border"] > div[class*="absolute"][class*="bottom-0"][class*="h-1"] {
         display: none !important;
       }
 

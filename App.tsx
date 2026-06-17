@@ -458,6 +458,11 @@ const MOBILE_OPTIMIZATION_CSS = `
         scroll-snap-align: start !important;
       }
 
+      body[data-eduhub-path="/student"] .mobile-carousel.mobile-scroll-track > div > div[class*="absolute"][class*="bottom-0"][class*="h-1"][class*="bg-[#ff9f1c]"],
+      body[data-eduhub-path="/student"] .mobile-carousel.mobile-scroll-track > div > div[class*="absolute"][class*="bottom-0"][class*="h-1"][class*="bg-[#ff9f00]"] {
+        display: none !important;
+      }
+
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;

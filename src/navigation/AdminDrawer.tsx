@@ -26,6 +26,7 @@ const Drawer = createDrawerNavigator();
 function AdminTabNavigator() {
   return (
     <Tab.Navigator
+      safeAreaInsets={{ bottom: 0 }}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = 'shield-outline';
@@ -41,18 +42,18 @@ function AdminTabNavigator() {
         tabBarInactiveTintColor: COLORS.textSecondary,
         tabBarStyle: {
           backgroundColor: COLORS.white,
-          borderTopColor: COLORS.transparent,
-          height: 68,
-          paddingBottom: 10,
-          paddingTop: 8,
-          borderTopLeftRadius: 22,
-          borderTopRightRadius: 22,
+          borderTopColor: COLORS.border,
+          borderTopWidth: 1,
+          height: 58,
+          paddingBottom: 0,
+          paddingTop: 5,
           shadowColor: COLORS.brandDark,
-          shadowOffset: { width: 0, height: -8 },
-          shadowOpacity: 0.08,
-          shadowRadius: 18,
-          elevation: 12,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.06,
+          shadowRadius: 10,
+          elevation: 8,
         },
+        tabBarItemStyle: { height: 52 },
         tabBarLabelStyle: { fontWeight: '900', fontSize: 11 },
         headerShown: false,
       })}

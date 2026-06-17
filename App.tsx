@@ -425,6 +425,61 @@ const MOBILE_OPTIMIZATION_CSS = `
         margin-top: 16px !important;
         margin-bottom: 16px !important;
       }
+
+      .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"]) {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+      }
+
+      .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"])::after {
+        display: none !important;
+      }
+
+      .mobile-carousel.mobile-scroll-track:has(> div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"]) > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex: 1 1 auto !important;
+        scroll-snap-align: none !important;
+      }
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+        scroll-snap-type: none !important;
+      }
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 36px !important;
+        flex: 1 1 0 !important;
+        gap: 4px !important;
+        padding: 8px 4px !important;
+        border-radius: 10px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+      }
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button svg {
+        width: 13px !important;
+        height: 13px !important;
+        flex: 0 0 13px !important;
+      }
     }
 `;
 

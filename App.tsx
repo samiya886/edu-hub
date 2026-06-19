@@ -394,6 +394,64 @@ const MOBILE_OPTIMIZATION_CSS = `
         margin-top: 16px !important;
         margin-bottom: 16px !important;
       }
+
+      body {
+        padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+
+      .eduhub-native-bottom-nav {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 2147483000 !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        min-height: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+        border: 0 !important;
+        border-top: 1px solid rgba(10, 74, 68, 0.10) !important;
+        border-radius: 0 !important;
+        background: #ffffff !important;
+        box-shadow: 0 -8px 24px rgba(10, 74, 68, 0.12) !important;
+        backdrop-filter: blur(18px) !important;
+        -webkit-backdrop-filter: blur(18px) !important;
+      }
+
+      .eduhub-native-bottom-nav button {
+        min-height: 50px !important;
+        border: 0 !important;
+        border-radius: 13px !important;
+        background: transparent !important;
+        color: #64748b !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 6px 2px !important;
+        font-size: 10px !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+      }
+
+      .eduhub-native-bottom-nav button[data-active="true"] {
+        background: #0a4a44 !important;
+        color: #ffffff !important;
+      }
+
+      .eduhub-native-bottom-nav svg {
+        width: 18px !important;
+        height: 18px !important;
+        flex: 0 0 18px !important;
+      }
+    }
+
+    @media (min-width: 641px) {
+      .eduhub-native-bottom-nav {
+        display: none !important;
+      }
     }
 `;
 
@@ -443,6 +501,70 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     }
   }
 
+  function dispatchRouteUpdate() {
+    try {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
+    } catch (error) {
+      window.dispatchEvent(new Event('popstate'));
+    }
+  }
+
+  function navigateInApp(path) {
+    history.pushState({}, document.title, path);
+    dispatchRouteUpdate();
+    window.setTimeout(handleRouteChange, 0);
+  }
+
+  function installBottomNav() {
+    if (window.matchMedia && !window.matchMedia('(max-width: 640px)').matches) return;
+    if (!document.body) return;
+
+    var nav = document.getElementById('eduhub-native-bottom-nav');
+    if (!nav) {
+      nav = document.createElement('div');
+      nav.id = 'eduhub-native-bottom-nav';
+      nav.className = 'eduhub-native-bottom-nav';
+      document.body.appendChild(nav);
+    }
+
+    var path = window.location.pathname || '/';
+    var items = [
+      { key: 'home', label: 'Home', path: '/home', icon: 'M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5Z' },
+      { key: 'notes', label: 'Notes', path: '/notes', icon: 'M5 4h14v16H5V4Zm4 4h6M9 12h6M9 16h4' },
+      { key: 'papers', label: 'Paper', path: '/papers', icon: 'M7 3h8l4 4v14H7V3Zm8 0v5h5M9 13h8M9 17h8' },
+      { key: 'profile', label: 'Profile', path: '/profile', icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9a7 7 0 0 1 14 0' }
+    ];
+
+    nav.innerHTML = '';
+    items.forEach(function (item) {
+      var active =
+        (item.key === 'home' && (path === '/' || path === '/home')) ||
+        (item.key === 'notes' && path === '/notes') ||
+        (item.key === 'papers' && path === '/papers') ||
+        (item.key === 'profile' && (path === '/profile' || path === '/student' || path === '/teacher' || path === '/admin' || path === '/auth'));
+
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('data-active', active ? 'true' : 'false');
+      button.setAttribute('aria-label', item.label);
+      button.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' +
+        item.icon +
+        '"></path></svg><span>' +
+        item.label +
+        '</span>';
+      button.addEventListener('click', function () {
+        navigateInApp(item.path);
+      });
+      nav.appendChild(button);
+    });
+  }
+
+  function handleRouteChange() {
+    syncRouteClass();
+    window.setTimeout(installBottomNav, 80);
+  }
+
   function installRouteObserver() {
     if (window.__eduhubRouteObserverInstalled) return;
 
@@ -450,16 +572,16 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var originalReplaceState = history.replaceState;
     history.pushState = function () {
       var result = originalPushState.apply(this, arguments);
-      window.setTimeout(syncRouteClass, 0);
+      window.setTimeout(handleRouteChange, 0);
       return result;
     };
     history.replaceState = function () {
       var result = originalReplaceState.apply(this, arguments);
-      window.setTimeout(syncRouteClass, 0);
+      window.setTimeout(handleRouteChange, 0);
       return result;
     };
-    window.addEventListener('popstate', syncRouteClass);
-    window.addEventListener('hashchange', syncRouteClass);
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
     window.__eduhubRouteObserverInstalled = true;
   }
 
@@ -479,7 +601,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
     installFetchBridge();
     installRouteObserver();
-    syncRouteClass();
+    handleRouteChange();
+    window.setInterval(installBottomNav, 1500);
     return true;
   }
 

@@ -830,21 +830,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function installBottomNav() {
     if (!isMobileAppView()) return;
 
-    var path = window.location.pathname || '/';
-    var isDashboardRoute =
-      path === '/student' ||
-      path.indexOf('/student/') === 0 ||
-      path === '/teacher' ||
-      path.indexOf('/teacher/') === 0 ||
-      path === '/admin' ||
-      path.indexOf('/admin/') === 0;
-
     var nav = document.getElementById('eduhub-native-bottom-nav');
-    if (isDashboardRoute) {
-      if (nav && nav.parentNode) nav.parentNode.removeChild(nav);
-      return;
-    }
-
     if (!nav) {
       nav = document.createElement('div');
       nav.id = 'eduhub-native-bottom-nav';
@@ -852,6 +838,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       document.body.appendChild(nav);
     }
 
+    var path = window.location.pathname || '/';
     var profilePath = getProfilePath();
     var items = [
       { key: 'home', label: 'Home', path: '/home', icon: 'M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5Z' },

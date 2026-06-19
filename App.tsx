@@ -456,6 +456,209 @@ const MOBILE_OPTIMIZATION_CSS = `
         display: none !important;
       }
 
+      body[data-eduhub-route="profile"] main,
+      body[data-eduhub-route="profile"] footer {
+        display: none !important;
+      }
+
+      .eduhub-profile-screen {
+        display: grid !important;
+        gap: 14px !important;
+        min-height: calc(100vh - 82px) !important;
+        padding: 16px 14px calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+        background: #f8fafc !important;
+      }
+
+      .eduhub-profile-hero,
+      .eduhub-profile-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 22px !important;
+      }
+
+      .eduhub-profile-hero {
+        display: grid !important;
+        gap: 18px !important;
+        padding: 18px !important;
+        background: #0a4a44 !important;
+        color: #ffffff !important;
+        box-shadow: 0 16px 34px rgba(6, 24, 38, 0.16) !important;
+      }
+
+      .eduhub-profile-top,
+      .eduhub-profile-identity,
+      .eduhub-profile-chips,
+      .eduhub-profile-row,
+      .eduhub-profile-action {
+        display: flex !important;
+        align-items: center !important;
+      }
+
+      .eduhub-profile-top {
+        justify-content: space-between !important;
+        gap: 12px !important;
+      }
+
+      .eduhub-profile-kicker {
+        margin: 0 !important;
+        color: #ff9f1c !important;
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.12em !important;
+        text-transform: uppercase !important;
+      }
+
+      .eduhub-profile-title {
+        margin: 5px 0 0 !important;
+        color: #ffffff !important;
+        font-size: 24px !important;
+        line-height: 1.08 !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-edit {
+        width: 42px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: #ffffff !important;
+        color: #0a4a44 !important;
+        font-size: 18px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-identity {
+        gap: 14px !important;
+      }
+
+      .eduhub-profile-avatar {
+        width: 76px !important;
+        height: 76px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 76px !important;
+        border-radius: 24px !important;
+        border: 3px solid rgba(255, 255, 255, 0.22) !important;
+        background: #ff9f1c !important;
+        color: #ffffff !important;
+        font-size: 28px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-name {
+        margin: 0 !important;
+        color: #ffffff !important;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        line-height: 1.16 !important;
+      }
+
+      .eduhub-profile-email {
+        margin: 4px 0 0 !important;
+        color: rgba(255, 255, 255, 0.76) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+      }
+
+      .eduhub-profile-chips {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+
+      .eduhub-profile-chip,
+      .eduhub-profile-status {
+        min-height: 32px !important;
+        border-radius: 999px !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-chip {
+        background: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      }
+
+      .eduhub-profile-status {
+        background: #ffffff !important;
+        color: #0a4a44 !important;
+      }
+
+      .eduhub-profile-card {
+        display: grid !important;
+        gap: 10px !important;
+        padding: 16px !important;
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        box-shadow: 0 12px 28px rgba(6, 24, 38, 0.08) !important;
+      }
+
+      .eduhub-profile-card h2 {
+        margin: 0 0 2px !important;
+        color: #0a4a44 !important;
+        font-size: 17px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-row,
+      .eduhub-profile-action {
+        min-height: 58px !important;
+        gap: 12px !important;
+        padding: 10px 12px !important;
+        border-radius: 16px !important;
+        background: #f3f4f6 !important;
+      }
+
+      .eduhub-profile-row-icon,
+      .eduhub-profile-action-icon {
+        width: 38px !important;
+        height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 38px !important;
+        border-radius: 13px !important;
+        background: #ffffff !important;
+      }
+
+      .eduhub-profile-label {
+        margin: 0 !important;
+        color: #6b7280 !important;
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+      }
+
+      .eduhub-profile-value,
+      .eduhub-profile-action-title {
+        margin: 3px 0 0 !important;
+        color: #061826 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-profile-action {
+        width: 100% !important;
+        border: 0 !important;
+        text-align: left !important;
+      }
+
+      .eduhub-profile-action-subtitle {
+        margin: 3px 0 0 !important;
+        color: #6b7280 !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+      }
+
+      .eduhub-profile-danger .eduhub-profile-action-title,
+      .eduhub-profile-danger .eduhub-profile-action-icon {
+        color: #dc2626 !important;
+      }
+
       body[data-eduhub-route="home"] main > section {
         padding-top: 18px !important;
         padding-bottom: 18px !important;
@@ -627,7 +830,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
   function syncRouteClass() {
     var path = window.location && window.location.pathname ? window.location.pathname : '';
-    var route = path === '/' || path === '/home' ? 'home' : path === '/notes' || path === '/papers' ? 'resources' : 'default';
+    var route = path === '/' || path === '/home' ? 'home' : path === '/notes' || path === '/papers' ? 'resources' : path === '/profile' ? 'profile' : 'default';
 
     if (document.body) {
       document.body.setAttribute('data-eduhub-route', route);
@@ -730,6 +933,158 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
   }
 
+  function readStoredUser() {
+    var storageKeys = ['user', 'authUser', 'eduhub_user', 'eduhub-user'];
+    var storageAreas = [window.localStorage, window.sessionStorage];
+
+    for (var areaIndex = 0; areaIndex < storageAreas.length; areaIndex += 1) {
+      var storage = storageAreas[areaIndex];
+      if (!storage) continue;
+
+      for (var keyIndex = 0; keyIndex < storageKeys.length; keyIndex += 1) {
+        try {
+          var rawValue = storage.getItem(storageKeys[keyIndex]);
+          if (!rawValue) continue;
+
+          var parsed = JSON.parse(rawValue);
+          var user = parsed && (parsed.user || parsed);
+          if (user && (user.name || user.email || user.role)) return user;
+        } catch (error) {}
+      }
+    }
+
+    return {};
+  }
+
+  function formatProfileRole(value) {
+    var role = String(value || 'student').toLowerCase();
+    return role.charAt(0).toUpperCase() + role.slice(1);
+  }
+
+  function getInitials(name) {
+    var parts = String(name || 'EduHub User').trim().split(/\\s+/).filter(Boolean);
+    return parts.slice(0, 2).map(function (part) {
+      return part.charAt(0).toUpperCase();
+    }).join('') || 'U';
+  }
+
+  function createProfileElement(tag, className, text) {
+    var element = document.createElement(tag);
+    if (className) element.className = className;
+    if (typeof text === 'string') element.textContent = text;
+    return element;
+  }
+
+  function createProfileRow(icon, label, value) {
+    var row = createProfileElement('div', 'eduhub-profile-row');
+    row.appendChild(createProfileElement('div', 'eduhub-profile-row-icon', icon));
+
+    var copy = createProfileElement('div', '');
+    copy.appendChild(createProfileElement('p', 'eduhub-profile-label', label));
+    copy.appendChild(createProfileElement('p', 'eduhub-profile-value', value || 'Not available'));
+    row.appendChild(copy);
+    return row;
+  }
+
+  function createProfileAction(icon, title, subtitle, isDanger, onPress) {
+    var action = createProfileElement('button', 'eduhub-profile-action' + (isDanger ? ' eduhub-profile-danger' : ''));
+    action.type = 'button';
+    action.appendChild(createProfileElement('div', 'eduhub-profile-action-icon', icon));
+
+    var copy = createProfileElement('div', '');
+    copy.appendChild(createProfileElement('p', 'eduhub-profile-action-title', title));
+    copy.appendChild(createProfileElement('p', 'eduhub-profile-action-subtitle', subtitle));
+    action.appendChild(copy);
+    action.addEventListener('click', onPress);
+    return action;
+  }
+
+  function logoutUser() {
+    try {
+      ['token', 'user', 'authToken', 'authUser', 'eduhub_token', 'eduhub_user', 'eduhub-user'].forEach(function (key) {
+        window.localStorage.removeItem(key);
+        window.sessionStorage.removeItem(key);
+      });
+    } catch (error) {}
+
+    navigateInApp('/home');
+  }
+
+  function installProfileScreen() {
+    var path = window.location.pathname || '/';
+    var existing = document.getElementById('eduhub-profile-screen');
+
+    if (path !== '/profile') {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      return;
+    }
+
+    if (existing) return;
+
+    var user = readStoredUser();
+    var name = user.name || 'EduHub User';
+    var email = user.email || 'No email added';
+    var role = formatProfileRole(user.role);
+
+    var screen = createProfileElement('section', 'eduhub-profile-screen');
+    screen.id = 'eduhub-profile-screen';
+
+    var hero = createProfileElement('div', 'eduhub-profile-hero');
+    var top = createProfileElement('div', 'eduhub-profile-top');
+    var titleWrap = createProfileElement('div', '');
+    titleWrap.appendChild(createProfileElement('p', 'eduhub-profile-kicker', 'Profile'));
+    titleWrap.appendChild(createProfileElement('h1', 'eduhub-profile-title', 'Your EduHub account'));
+    top.appendChild(titleWrap);
+
+    var edit = createProfileElement('button', 'eduhub-profile-edit', '✎');
+    edit.type = 'button';
+    edit.addEventListener('click', function () {
+      window.alert('Profile editing is available from the dashboard account settings.');
+    });
+    top.appendChild(edit);
+    hero.appendChild(top);
+
+    var identity = createProfileElement('div', 'eduhub-profile-identity');
+    identity.appendChild(createProfileElement('div', 'eduhub-profile-avatar', getInitials(name)));
+    var identityCopy = createProfileElement('div', '');
+    identityCopy.appendChild(createProfileElement('h2', 'eduhub-profile-name', name));
+    identityCopy.appendChild(createProfileElement('p', 'eduhub-profile-email', email));
+    identity.appendChild(identityCopy);
+    hero.appendChild(identity);
+
+    var chips = createProfileElement('div', 'eduhub-profile-chips');
+    chips.appendChild(createProfileElement('span', 'eduhub-profile-chip', role));
+    chips.appendChild(createProfileElement('span', 'eduhub-profile-status', 'Active'));
+    hero.appendChild(chips);
+    screen.appendChild(hero);
+
+    var details = createProfileElement('div', 'eduhub-profile-card');
+    details.appendChild(createProfileElement('h2', '', 'Personal Details'));
+    details.appendChild(createProfileRow('👤', 'Name', name));
+    details.appendChild(createProfileRow('✉', 'Email', email));
+    details.appendChild(createProfileRow('🎓', 'Role', role));
+    details.appendChild(createProfileRow('✓', 'Status', 'Active'));
+    screen.appendChild(details);
+
+    var account = createProfileElement('div', 'eduhub-profile-card');
+    account.appendChild(createProfileElement('h2', '', 'Account'));
+    account.appendChild(createProfileAction('🔒', 'Security', 'Password and account access', false, function () {
+      window.alert('Security settings will be available soon.');
+    }));
+    account.appendChild(createProfileAction('🔔', 'Notifications', 'Updates about notes and papers', false, function () {
+      window.alert('Notification preferences will be available soon.');
+    }));
+    account.appendChild(createProfileAction('↪', 'Sign Out', 'End this session on your device', true, logoutUser));
+    screen.appendChild(account);
+
+    var header = document.querySelector('header');
+    if (header && header.parentNode) {
+      header.parentNode.insertBefore(screen, header.nextSibling);
+    } else {
+      document.body.appendChild(screen);
+    }
+  }
+
   function dispatchRouteUpdate() {
     try {
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
@@ -795,6 +1150,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(removeLiveBackendLabel, 80);
     window.setTimeout(removeResourceFoundation, 80);
+    window.setTimeout(installProfileScreen, 80);
     window.setTimeout(installBottomNav, 80);
   }
 
@@ -839,6 +1195,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setInterval(removeAboutServicesFromMenu, 1500);
     window.setInterval(removeLiveBackendLabel, 1500);
     window.setInterval(removeResourceFoundation, 1500);
+    window.setInterval(installProfileScreen, 1500);
     return true;
   }
 

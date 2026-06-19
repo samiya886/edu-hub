@@ -298,6 +298,33 @@ const MOBILE_OPTIMIZATION_CSS = `
         background: #ffffff !important;
       }
 
+      body[data-eduhub-route="resources"] header > div {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+      }
+
+      body[data-eduhub-route="resources"] header nav,
+      body[data-eduhub-route="resources"] header > div > div:last-child,
+      body[data-eduhub-route="resources"] header > div > button:last-child {
+        margin-left: auto !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        width: auto !important;
+        max-width: max-content !important;
+      }
+
+      body[data-eduhub-route="resources"] header button {
+        flex: 0 0 auto !important;
+      }
+
       body[data-eduhub-route="resources"] section,
       body[data-eduhub-route="resources"] main > div,
       body[data-eduhub-route="resources"] [class*="space-y-"] {

@@ -492,8 +492,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       body[data-eduhub-route="profile"] main,
-      body[data-eduhub-route="teacher"] main,
-      body[data-eduhub-route="teacher"] footer,
+      body[data-eduhub-teacher-dashboard-ready="true"] main,
+      body[data-eduhub-teacher-dashboard-ready="true"] footer,
       body[data-eduhub-route="profile"] footer {
         display: none !important;
       }
@@ -983,11 +983,15 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
   function syncRouteClass() {
     var path = window.location && window.location.pathname ? window.location.pathname : '';
-    var route = path === '/' || path === '/home' ? 'home' : path === '/notes' || path === '/papers' ? 'resources' : path === '/profile' ? 'profile' : path === '/teacher' || path.indexOf('/teacher/') === 0 ? 'teacher' : 'default';
+    var isTeacherPath = path === '/teacher' || path.indexOf('/teacher/') === 0 || path.indexOf('teacher') >= 0;
+    var route = path === '/' || path === '/home' ? 'home' : path === '/notes' || path === '/papers' ? 'resources' : path === '/profile' ? 'profile' : isTeacherPath ? 'teacher' : 'default';
 
     if (document.body) {
       document.body.setAttribute('data-eduhub-route', route);
       document.body.setAttribute('data-eduhub-path', path || '/');
+      if (!isTeacherPath) {
+        document.body.removeAttribute('data-eduhub-teacher-dashboard-ready');
+      }
     }
   }
 
@@ -1400,13 +1404,18 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function installTeacherDashboardScreen() {
     var path = window.location.pathname || '/';
     var existing = document.getElementById('eduhub-teacher-dashboard');
+    var isTeacherPath = path === '/teacher' || path.indexOf('/teacher/') === 0 || path.indexOf('teacher') >= 0;
 
-    if (path !== '/teacher' && path.indexOf('/teacher/') !== 0) {
+    if (!isTeacherPath) {
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      if (document.body) document.body.removeAttribute('data-eduhub-teacher-dashboard-ready');
       return;
     }
 
-    if (existing) return;
+    if (existing) {
+      if (document.body) document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
+      return;
+    }
 
     var user = readStoredUser();
     var name = user.name || 'Teacher';
@@ -1463,6 +1472,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     } else {
       document.body.appendChild(screen);
     }
+    if (document.body) document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
 
     Promise.all([
       window.fetch('/api/notes').then(function (response) { return response.json(); }).catch(function () { return []; }),

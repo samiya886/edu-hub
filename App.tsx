@@ -493,7 +493,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       body {
-        padding-bottom: 64px !important;
+        padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important;
       }
 
       .eduhub-native-bottom-nav {
@@ -505,8 +505,8 @@ const MOBILE_OPTIMIZATION_CSS = `
         display: grid !important;
         grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 4px !important;
-        min-height: 64px !important;
-        padding: 6px 8px !important;
+        min-height: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: 8px 10px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
         border: 0 !important;
         border-top: 1px solid rgba(10, 74, 68, 0.10) !important;
         border-radius: 0 !important;
@@ -517,7 +517,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-native-bottom-nav button {
-        min-height: 46px !important;
+        min-height: 50px !important;
         border: 0 !important;
         border-radius: 13px !important;
         background: transparent !important;
@@ -526,8 +526,8 @@ const MOBILE_OPTIMIZATION_CSS = `
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 3px !important;
-        padding: 5px 2px !important;
+        gap: 4px !important;
+        padding: 6px 2px !important;
         font-size: 10px !important;
         font-weight: 900 !important;
         line-height: 1 !important;

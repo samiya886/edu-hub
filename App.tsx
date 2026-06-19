@@ -353,14 +353,12 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)),
       body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        gap: 8px !important;
-        padding-bottom: 6px !important;
-        scrollbar-width: none !important;
-        -webkit-overflow-scrolling: touch !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        overflow: visible !important;
+        gap: 10px !important;
+        padding-bottom: 0 !important;
+        scrollbar-width: auto !important;
       }
 
       body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3))::-webkit-scrollbar,
@@ -370,8 +368,36 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)) > *,
       body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) > * {
-        flex: 0 0 auto !important;
-        min-width: max-content !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      body[data-eduhub-route="resources"] .mobile-carousel,
+      body[data-eduhub-route="resources"] .mobile-scroll-track {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      body[data-eduhub-route="resources"] .mobile-carousel::after {
+        display: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .mobile-carousel > *,
+      body[data-eduhub-route="resources"] .mobile-scroll-track > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex: 1 1 auto !important;
+        scroll-snap-align: none !important;
       }
 
       body[data-eduhub-route="resources"] select,
@@ -398,7 +424,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       [data-eduhub-home-hidden="true"],
       [data-eduhub-footer-hidden="true"],
       [data-eduhub-menu-hidden="true"],
-      [data-eduhub-live-backend-hidden="true"] {
+      [data-eduhub-live-backend-hidden="true"],
+      [data-eduhub-foundation-hidden="true"] {
         display: none !important;
       }
 
@@ -663,6 +690,19 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
   }
 
+  function removeResourceFoundation() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-eduhub-foundation-hidden]'), function (element) {
+      element.removeAttribute('data-eduhub-foundation-hidden');
+    });
+
+    var path = window.location.pathname || '/';
+    if (path !== '/notes' && path !== '/papers') return;
+
+    Array.prototype.forEach.call(document.querySelectorAll('[class*="absolute"][class*="bottom-0"][class*="h-1"]'), function (element) {
+      element.setAttribute('data-eduhub-foundation-hidden', 'true');
+    });
+  }
+
   function dispatchRouteUpdate() {
     try {
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
@@ -727,6 +767,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setTimeout(compactHomeAndFooter, 80);
     window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(removeLiveBackendLabel, 80);
+    window.setTimeout(removeResourceFoundation, 80);
     window.setTimeout(installBottomNav, 80);
   }
 
@@ -770,6 +811,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setInterval(installBottomNav, 1500);
     window.setInterval(removeAboutServicesFromMenu, 1500);
     window.setInterval(removeLiveBackendLabel, 1500);
+    window.setInterval(removeResourceFoundation, 1500);
     return true;
   }
 

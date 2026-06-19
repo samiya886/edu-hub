@@ -46,7 +46,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       setDepartments(departmentsList);
     } catch (err: any) {
       console.error('Failed to load home data', err);
-      setError(err.response?.data?.message || err.message || 'Unable to load live website data.');
+      setError(err.response?.data?.message || err.message || 'Unable to load website data.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -122,7 +122,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <Text style={styles.kicker}>Student workspace</Text>
         <Text style={styles.title}>Find study material without opening a website.</Text>
         <Text style={styles.subtitle}>
-          Search live notes, papers, departments, and courses in a compact app-first home.
+          Search notes, papers, departments, and courses in a compact app-first home.
         </Text>
 
         <SearchBar
@@ -166,7 +166,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
-          <Text style={styles.sectionTitle}>Live picks</Text>
+          <Text style={styles.sectionTitle}>Featured picks</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Browse')}>
             <Text style={styles.sectionLink}>Open library</Text>
           </TouchableOpacity>

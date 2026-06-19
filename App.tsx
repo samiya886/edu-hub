@@ -396,7 +396,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       [data-eduhub-home-hidden="true"],
-      [data-eduhub-footer-hidden="true"] {
+      [data-eduhub-footer-hidden="true"],
+      [data-eduhub-menu-hidden="true"] {
         display: none !important;
       }
 
@@ -428,7 +429,9 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer {
         padding-top: 18px !important;
         padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
-        background: #061826 !important;
+        background: #f8fafc !important;
+        border-top: 1px solid rgba(10, 74, 68, 0.10) !important;
+        color: #0a4a44 !important;
       }
 
       footer > div {
@@ -439,6 +442,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer h2,
       footer h3,
       footer h4 {
+        color: #0a4a44 !important;
         font-size: 14px !important;
         line-height: 1.15 !important;
         margin-bottom: 6px !important;
@@ -448,8 +452,14 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer a,
       footer li,
       footer span {
+        color: #475569 !important;
         font-size: 12px !important;
         line-height: 1.35 !important;
+      }
+
+      footer a {
+        color: #0a4a44 !important;
+        font-weight: 800 !important;
       }
 
       footer [class*="py-"],
@@ -609,6 +619,30 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
   }
 
+  function removeAboutServicesFromMenu() {
+    var items = document.querySelectorAll('header a, header button, nav a, nav button, [role="dialog"] a, [role="dialog"] button');
+
+    Array.prototype.forEach.call(items, function (item) {
+      var label = String(item.textContent || item.getAttribute('aria-label') || item.getAttribute('title') || '')
+        .replace(/\\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+      var href = item.getAttribute && item.getAttribute('href') ? item.getAttribute('href') : '';
+      var path = '';
+
+      try {
+        path = href ? new URL(href, window.location.origin).pathname.toLowerCase() : '';
+      } catch (error) {}
+
+      var isAbout = label === 'about' || path === '/about';
+      var isServices = label === 'services' || path === '/services';
+
+      if (isAbout || isServices) {
+        item.setAttribute('data-eduhub-menu-hidden', 'true');
+      }
+    });
+  }
+
   function dispatchRouteUpdate() {
     try {
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
@@ -671,6 +705,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function handleRouteChange() {
     syncRouteClass();
     window.setTimeout(compactHomeAndFooter, 80);
+    window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(installBottomNav, 80);
   }
 
@@ -712,6 +747,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     installRouteObserver();
     handleRouteChange();
     window.setInterval(installBottomNav, 1500);
+    window.setInterval(removeAboutServicesFromMenu, 1500);
     return true;
   }
 

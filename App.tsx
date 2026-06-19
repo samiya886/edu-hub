@@ -950,6 +950,11 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     Array.prototype.forEach.call(document.querySelectorAll('.eduhub-resource-header-login, .eduhub-resource-header-menu'), function (element) {
       element.classList.remove('eduhub-resource-header-login');
       element.classList.remove('eduhub-resource-header-menu');
+      element.removeAttribute('data-eduhub-resource-action');
+      element.style.position = '';
+      element.style.top = '';
+      element.style.right = '';
+      element.style.zIndex = '';
     });
 
     var path = window.location.pathname || '/';
@@ -958,7 +963,10 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var header = document.querySelector('header');
     if (!header) return;
 
+    header.style.position = 'relative';
+
     var controls = Array.prototype.slice.call(header.querySelectorAll('a, button'));
+    var buttons = Array.prototype.slice.call(header.querySelectorAll('button'));
     var loginControl = null;
     var menuControl = null;
 
@@ -972,18 +980,47 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       if (!loginControl && (label === 'login' || label === 'sign in' || label === 'signin' || label === 'log in')) {
         loginControl = control;
       }
+    });
 
-      if (!menuControl && (label.indexOf('menu') >= 0 || label === '☰' || hasMenuIcon)) {
-        menuControl = control;
+    buttons.forEach(function (button) {
+      var label = String(button.textContent || button.getAttribute('aria-label') || button.getAttribute('title') || '')
+        .replace(/\\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+      var isLogin = button === loginControl || label === 'login' || label.indexOf('login') >= 0 || label.indexOf('sign in') >= 0;
+      var isBrand = label.indexOf('educ') >= 0 || label.indexOf('logo') >= 0 || label.indexOf('school') >= 0;
+      var isMenu = label.indexOf('menu') >= 0 || label === '☰' || (!!button.querySelector('svg') && !isLogin && !isBrand);
+
+      if (isMenu) {
+        menuControl = button;
       }
     });
 
-    if (!menuControl && controls.length) {
-      menuControl = controls[controls.length - 1];
+    if (!menuControl) {
+      var nonLoginButtons = buttons.filter(function (button) {
+        return button !== loginControl;
+      });
+      menuControl = nonLoginButtons[nonLoginButtons.length - 1] || null;
     }
 
-    if (loginControl) loginControl.classList.add('eduhub-resource-header-login');
-    if (menuControl && menuControl !== loginControl) menuControl.classList.add('eduhub-resource-header-menu');
+    if (loginControl) {
+      loginControl.textContent = 'Login';
+      loginControl.classList.add('eduhub-resource-header-login');
+      loginControl.setAttribute('data-eduhub-resource-action', 'login');
+      loginControl.style.position = 'absolute';
+      loginControl.style.top = '18px';
+      loginControl.style.right = '66px';
+      loginControl.style.zIndex = '2147482000';
+    }
+
+    if (menuControl && menuControl !== loginControl) {
+      menuControl.classList.add('eduhub-resource-header-menu');
+      menuControl.setAttribute('data-eduhub-resource-action', 'menu');
+      menuControl.style.position = 'absolute';
+      menuControl.style.top = '18px';
+      menuControl.style.right = '14px';
+      menuControl.style.zIndex = '2147482000';
+    }
   }
 
   function removeLiveBackendLabel() {

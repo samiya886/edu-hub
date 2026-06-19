@@ -429,9 +429,9 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer {
         padding-top: 18px !important;
         padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
-        background: #f8fafc !important;
-        border-top: 1px solid rgba(10, 74, 68, 0.10) !important;
-        color: #0a4a44 !important;
+        background: #0a4a44 !important;
+        border-top: 1px solid rgba(255, 159, 28, 0.28) !important;
+        color: #ffffff !important;
       }
 
       footer > div {
@@ -442,7 +442,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer h2,
       footer h3,
       footer h4 {
-        color: #0a4a44 !important;
+        color: #ffffff !important;
         font-size: 14px !important;
         line-height: 1.15 !important;
         margin-bottom: 6px !important;
@@ -452,13 +452,13 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer a,
       footer li,
       footer span {
-        color: #475569 !important;
+        color: rgba(255, 255, 255, 0.78) !important;
         font-size: 12px !important;
         line-height: 1.35 !important;
       }
 
       footer a {
-        color: #0a4a44 !important;
+        color: #ff9f1c !important;
         font-weight: 800 !important;
       }
 

@@ -476,6 +476,21 @@ const MOBILE_OPTIMIZATION_CSS = `
         display: none !important;
       }
 
+      header a[href="/about"],
+      header a[href*="/about"],
+      header a[href="/services"],
+      header a[href*="/services"],
+      nav a[href="/about"],
+      nav a[href*="/about"],
+      nav a[href="/services"],
+      nav a[href*="/services"],
+      [role="dialog"] a[href="/about"],
+      [role="dialog"] a[href*="/about"],
+      [role="dialog"] a[href="/services"],
+      [role="dialog"] a[href*="/services"] {
+        display: none !important;
+      }
+
       body[data-eduhub-route="profile"] main,
       body[data-eduhub-route="profile"] footer {
         display: none !important;
@@ -912,8 +927,18 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
         path = href ? new URL(href, window.location.origin).pathname.toLowerCase() : '';
       } catch (error) {}
 
-      var isAbout = label === 'about' || path === '/about';
-      var isServices = label === 'services' || path === '/services';
+      var isStudentLogin =
+        label === 'student login' ||
+        label === 'student signin' ||
+        label === 'student sign in' ||
+        label === 'student log in';
+      var isAbout = label === 'about' || label.indexOf('about us') >= 0 || path === '/about';
+      var isServices = label === 'services' || label.indexOf('our services') >= 0 || path === '/services';
+
+      if (isStudentLogin) {
+        item.textContent = 'Login';
+        item.setAttribute('aria-label', 'Login');
+      }
 
       if (isAbout || isServices) {
         item.setAttribute('data-eduhub-menu-hidden', 'true');
@@ -1206,6 +1231,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
   function handleRouteChange() {
     syncRouteClass();
+    removeAboutServicesFromMenu();
+    alignResourceHeaderActions();
     window.setTimeout(compactHomeAndFooter, 80);
     window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(alignResourceHeaderActions, 80);
@@ -1235,6 +1262,17 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.__eduhubRouteObserverInstalled = true;
   }
 
+  function installMenuObserver() {
+    if (window.__eduhubMenuObserverInstalled || !document.body || !window.MutationObserver) return;
+
+    var observer = new MutationObserver(function () {
+      removeAboutServicesFromMenu();
+      alignResourceHeaderActions();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.__eduhubMenuObserverInstalled = true;
+  }
+
   function injectStyle() {
     var target = document.head || document.documentElement || document.body;
     if (!target) {
@@ -1251,6 +1289,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
     installFetchBridge();
     installRouteObserver();
+    installMenuObserver();
     handleRouteChange();
     window.setInterval(installBottomNav, 1500);
     window.setInterval(removeAboutServicesFromMenu, 1500);

@@ -564,6 +564,65 @@ const MOBILE_OPTIMIZATION_CSS = `
         background: #ff9f1c !important;
         color: #061826 !important;
       }
+
+      .eduhub-dashboard-menu-button {
+        position: fixed !important;
+        top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+        left: 12px !important;
+        z-index: 2147483001 !important;
+        width: 42px !important;
+        height: 42px !important;
+        border: 1px solid rgba(10, 74, 68, 0.12) !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        color: #0a4a44 !important;
+        box-shadow: 0 12px 28px rgba(6, 24, 38, 0.14) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+      }
+
+      .eduhub-dashboard-menu-button svg {
+        width: 22px !important;
+        height: 22px !important;
+      }
+
+      .eduhub-dashboard-menu-panel {
+        position: fixed !important;
+        top: calc(60px + env(safe-area-inset-top, 0px)) !important;
+        left: 12px !important;
+        z-index: 2147483001 !important;
+        width: min(230px, calc(100vw - 24px)) !important;
+        display: grid !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        border: 1px solid rgba(10, 74, 68, 0.12) !important;
+        border-radius: 14px !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        box-shadow: 0 18px 40px rgba(6, 24, 38, 0.18) !important;
+      }
+
+      .eduhub-dashboard-menu-panel[hidden] {
+        display: none !important;
+      }
+
+      .eduhub-dashboard-menu-panel button {
+        min-height: 40px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: #f8fafc !important;
+        color: #0a4a44 !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        text-align: left !important;
+        padding: 10px 12px !important;
+      }
+
+      .eduhub-dashboard-menu-panel button[data-variant="danger"] {
+        background: #ff9f1c !important;
+        color: #061826 !important;
+      }
     }
 
     @media (min-width: 641px) {
@@ -669,6 +728,17 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     }
   }
 
+  function isDashboardRoute(path) {
+    return (
+      path === '/student' ||
+      path.indexOf('/student/') === 0 ||
+      path === '/teacher' ||
+      path.indexOf('/teacher/') === 0 ||
+      path === '/admin' ||
+      path.indexOf('/admin/') === 0
+    );
+  }
+
   function getProfilePath() {
     if (!isLoggedIn()) return '/auth';
 
@@ -676,6 +746,13 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     if (role === 'teacher') return '/teacher?section=profile';
     if (role === 'admin') return '/admin';
     return '/student?section=profile';
+  }
+
+  function getDashboardPath() {
+    var role = getStoredUserRole();
+    if (role === 'teacher') return '/teacher';
+    if (role === 'admin') return '/admin';
+    return '/student';
   }
 
   function dispatchRouteUpdate() {
@@ -712,6 +789,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     if (!isMobileAppView()) return;
 
     var loggedIn = isLoggedIn();
+    var currentPath = window.location && window.location.pathname ? window.location.pathname : '';
     var items = document.querySelectorAll('header a, header button, nav a, nav button, [role="dialog"] a, [role="dialog"] button');
 
     Array.prototype.forEach.call(items, function (item) {
@@ -756,7 +834,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
         isNotes ||
         isPapers ||
         (!loggedIn && (isSignIn || isSignUp)) ||
-        (loggedIn && isLogout);
+        (loggedIn && isLogout && isDashboardRoute(currentPath));
 
       var shouldHide =
         !isAllowedContent ||
@@ -790,11 +868,14 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function installMobileMenuAuthAction() {
     if (!isMobileAppView()) return;
 
+    var dashboardButton = document.getElementById('eduhub-mobile-menu-dashboard-action');
     var signOutButton = document.getElementById('eduhub-mobile-menu-signout-action');
     var logoutButton = document.getElementById('eduhub-mobile-menu-logout-action');
     var loggedIn = isLoggedIn();
+    var path = window.location && window.location.pathname ? window.location.pathname : '';
 
-    if (!loggedIn) {
+    if (!loggedIn || !isDashboardRoute(path)) {
+      if (dashboardButton && dashboardButton.parentNode) dashboardButton.parentNode.removeChild(dashboardButton);
       if (signOutButton && signOutButton.parentNode) signOutButton.parentNode.removeChild(signOutButton);
       if (logoutButton && logoutButton.parentNode) logoutButton.parentNode.removeChild(logoutButton);
       return;
@@ -803,6 +884,14 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var container = document.querySelector('header nav') || document.querySelector('nav') || document.querySelector('header');
     if (!container) return;
 
+    var dashboard = createMenuButton(
+      'eduhub-mobile-menu-dashboard-action',
+      'Dashboard',
+      'eduhub-mobile-menu-auth-action',
+      function () {
+        navigateInApp(getDashboardPath());
+      }
+    );
     var signOut = createMenuButton(
       'eduhub-mobile-menu-signout-action',
       'Sign Out',
@@ -816,8 +905,9 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       logoutUser
     );
 
-    if (!signOut.parentNode) container.appendChild(signOut);
-    if (!logout.parentNode) container.appendChild(logout);
+    container.appendChild(dashboard);
+    container.appendChild(signOut);
+    container.appendChild(logout);
   }
 
   function installLegacyMobileMenuAuthAction() {
@@ -825,6 +915,65 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
     var existing = document.getElementById('eduhub-mobile-menu-auth-action');
     if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+  }
+
+  function installDashboardHamburger() {
+    if (!isMobileAppView()) return;
+
+    var path = window.location.pathname || '/';
+    var existingButton = document.getElementById('eduhub-dashboard-menu-button');
+    var existingPanel = document.getElementById('eduhub-dashboard-menu-panel');
+
+    if (!isDashboardRoute(path)) {
+      if (existingButton && existingButton.parentNode) existingButton.parentNode.removeChild(existingButton);
+      if (existingPanel && existingPanel.parentNode) existingPanel.parentNode.removeChild(existingPanel);
+      return;
+    }
+
+    var button = existingButton || document.createElement('button');
+    button.id = 'eduhub-dashboard-menu-button';
+    button.type = 'button';
+    button.className = 'eduhub-dashboard-menu-button';
+    button.setAttribute('aria-label', 'Open dashboard menu');
+    button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
+
+    var panel = existingPanel || document.createElement('div');
+    panel.id = 'eduhub-dashboard-menu-panel';
+    panel.className = 'eduhub-dashboard-menu-panel';
+    panel.hidden = true;
+    panel.innerHTML = '';
+
+    var items = [
+      { label: 'Home', path: '/home' },
+      { label: 'Papers', path: '/papers' },
+      { label: 'Notes', path: '/notes' },
+      { label: 'Profile', path: '/profile' },
+      { label: 'Dashboard', path: getDashboardPath() },
+      { label: 'Logout', action: logoutUser, variant: 'danger' }
+    ];
+
+    items.forEach(function (item) {
+      var itemButton = document.createElement('button');
+      itemButton.type = 'button';
+      itemButton.textContent = item.label;
+      if (item.variant) itemButton.setAttribute('data-variant', item.variant);
+      itemButton.addEventListener('click', function () {
+        panel.hidden = true;
+        if (item.action) {
+          item.action();
+        } else {
+          navigateInApp(item.path);
+        }
+      });
+      panel.appendChild(itemButton);
+    });
+
+    button.onclick = function () {
+      panel.hidden = !panel.hidden;
+    };
+
+    if (!existingButton) document.body.appendChild(button);
+    if (!existingPanel) document.body.appendChild(panel);
   }
 
   function installBottomNav() {
@@ -878,6 +1027,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     cleanMobileMenu();
     installLegacyMobileMenuAuthAction();
     installMobileMenuAuthAction();
+    installDashboardHamburger();
     installBottomNav();
   }
 

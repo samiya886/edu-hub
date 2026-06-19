@@ -428,8 +428,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       footer {
-        padding-top: 12px !important;
-        padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-top: 8px !important;
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
         background: #0a4a44 !important;
         border-top: 1px solid rgba(255, 159, 28, 0.28) !important;
         color: #ffffff !important;
@@ -437,16 +437,16 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       footer > div {
         display: grid !important;
-        gap: 8px !important;
+        gap: 5px !important;
       }
 
       footer h2,
       footer h3,
       footer h4 {
         color: #ffffff !important;
-        font-size: 13px !important;
-        line-height: 1.15 !important;
-        margin-bottom: 4px !important;
+        font-size: 12px !important;
+        line-height: 1.08 !important;
+        margin-bottom: 2px !important;
       }
 
       footer p,
@@ -454,8 +454,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer li,
       footer span {
         color: rgba(255, 255, 255, 0.78) !important;
-        font-size: 11px !important;
-        line-height: 1.28 !important;
+        font-size: 10px !important;
+        line-height: 1.18 !important;
       }
 
       footer a {
@@ -467,12 +467,12 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer [class*="pt-"],
       footer [class*="pb-"],
       footer [class*="p-"] {
-        padding-top: 5px !important;
-        padding-bottom: 5px !important;
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
       }
 
       footer [class*="gap-"] {
-        gap: 6px !important;
+        gap: 4px !important;
       }
 
       body {
@@ -612,11 +612,11 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
 
     Array.prototype.forEach.call(footer.querySelectorAll('li'), function (item, index) {
-      if (index >= 5) item.setAttribute('data-eduhub-footer-hidden', 'true');
+      if (index >= 3) item.setAttribute('data-eduhub-footer-hidden', 'true');
     });
 
     Array.prototype.forEach.call(footer.querySelectorAll('a, button'), function (item, index) {
-      if (index >= 6) item.setAttribute('data-eduhub-footer-hidden', 'true');
+      if (index >= 4) item.setAttribute('data-eduhub-footer-hidden', 'true');
     });
   }
 

@@ -427,8 +427,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       footer {
-        padding-top: 18px !important;
-        padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-top: 12px !important;
+        padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
         background: #0a4a44 !important;
         border-top: 1px solid rgba(255, 159, 28, 0.28) !important;
         color: #ffffff !important;
@@ -436,16 +436,16 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       footer > div {
         display: grid !important;
-        gap: 12px !important;
+        gap: 8px !important;
       }
 
       footer h2,
       footer h3,
       footer h4 {
         color: #ffffff !important;
-        font-size: 14px !important;
+        font-size: 13px !important;
         line-height: 1.15 !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
       }
 
       footer p,
@@ -453,8 +453,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer li,
       footer span {
         color: rgba(255, 255, 255, 0.78) !important;
-        font-size: 12px !important;
-        line-height: 1.35 !important;
+        font-size: 11px !important;
+        line-height: 1.28 !important;
       }
 
       footer a {
@@ -466,12 +466,12 @@ const MOBILE_OPTIMIZATION_CSS = `
       footer [class*="pt-"],
       footer [class*="pb-"],
       footer [class*="p-"] {
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
       }
 
       footer [class*="gap-"] {
-        gap: 8px !important;
+        gap: 6px !important;
       }
 
       body {

@@ -397,7 +397,8 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       [data-eduhub-home-hidden="true"],
       [data-eduhub-footer-hidden="true"],
-      [data-eduhub-menu-hidden="true"] {
+      [data-eduhub-menu-hidden="true"],
+      [data-eduhub-live-backend-hidden="true"] {
         display: none !important;
       }
 
@@ -643,6 +644,25 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
   }
 
+  function removeLiveBackendLabel() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-eduhub-live-backend-hidden]'), function (element) {
+      element.removeAttribute('data-eduhub-live-backend-hidden');
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('body *'), function (element) {
+      if (element.children && element.children.length > 0) return;
+
+      var label = String(element.textContent || '')
+        .replace(/\\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      if (label === 'live from backend') {
+        element.setAttribute('data-eduhub-live-backend-hidden', 'true');
+      }
+    });
+  }
+
   function dispatchRouteUpdate() {
     try {
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
@@ -706,6 +726,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     syncRouteClass();
     window.setTimeout(compactHomeAndFooter, 80);
     window.setTimeout(removeAboutServicesFromMenu, 80);
+    window.setTimeout(removeLiveBackendLabel, 80);
     window.setTimeout(installBottomNav, 80);
   }
 
@@ -748,6 +769,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     handleRouteChange();
     window.setInterval(installBottomNav, 1500);
     window.setInterval(removeAboutServicesFromMenu, 1500);
+    window.setInterval(removeLiveBackendLabel, 1500);
     return true;
   }
 

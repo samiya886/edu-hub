@@ -1,9 +1,24 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+
+const normalizeRole = (role) => String(role || '').trim().toLowerCase();
+
+const getDashboardPath = (role) => {
+  const normalizedRole = normalizeRole(role);
+
+  if (normalizedRole === 'admin') return '/admin';
+  if (normalizedRole === 'teacher') return '/teacher';
+  if (normalizedRole === 'student') return '/student';
+
+  return '/auth';
+};
 
 const ProtectedRoute = ({ children, requiredRole, redirectTo = '/auth' }) => {
   const { isAuthenticated, userRole, loading } = useAuth();
+  const location = useLocation();
+  const normalizedUserRole = normalizeRole(userRole);
+  const normalizedRequiredRole = normalizeRole(requiredRole);
 
   if (loading) {
     return (
@@ -17,11 +32,11 @@ const ProtectedRoute = ({ children, requiredRole, redirectTo = '/auth' }) => {
   }
 
   if (!isAuthenticated()) {
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
 
-  if (requiredRole && userRole !== requiredRole) {
-    return <Navigate to="/home" replace />;
+  if (normalizedRequiredRole && normalizedUserRole !== normalizedRequiredRole) {
+    return <Navigate to={getDashboardPath(normalizedUserRole)} replace />;
   }
 
   return children;

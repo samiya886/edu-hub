@@ -29,9 +29,13 @@ const Auth = () => {
   const navigate = useNavigate();
 
   const getDashboardPath = (role) => {
-    if (role === 'teacher') return '/teacher';
-    if (role === 'student') return '/student';
-    return '/';
+    const normalizedRole = String(role || '').trim().toLowerCase();
+
+    if (normalizedRole === 'teacher') return '/teacher';
+    if (normalizedRole === 'student') return '/student';
+    if (normalizedRole === 'admin') return '/admin';
+
+    return '/auth';
   };
 
   const decodeAuthPayload = (payload) => {

@@ -1556,7 +1556,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function filterTeacherMaterials(items, user, query) {
     var search = (query || '').trim().toLowerCase();
     return items.filter(function (item) {
-      if (!isTeacherOwnedMaterial(item, user)) return false;
+      var hasOwner = Boolean(item.uploadedById || item.uploadedBy);
+      if (hasOwner && !isTeacherOwnedMaterial(item, user)) return false;
       if (!search) return true;
       return [item.title, item.subject, item.course, item.department].some(function (value) {
         return value && String(value).toLowerCase().indexOf(search) >= 0;
@@ -1650,7 +1651,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     actions.appendChild(createTeacherIconButton('Delete', 'D', function () {
       if (!window.confirm('Delete this ' + type + '?')) return;
       var endpoint = type === 'paper' ? '/api/papers/' : '/api/notes/';
-      window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE' })
+      window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE', headers: { Authorization: 'Bearer ' + (window.localStorage ? window.localStorage.getItem('token') : '') } })
         .then(function () {
           var screen = document.getElementById('eduhub-teacher-dashboard');
           if (screen) loadTeacherDashboardData(screen);
@@ -1723,11 +1724,14 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var search = screen.querySelector('[data-eduhub-teacher-search]');
     var query = search ? search.value : '';
 
+    var token = window.localStorage ? window.localStorage.getItem('token') : '';
+    var authHeaders = token ? { Authorization: 'Bearer ' + token } : {};
+
     Promise.all([
-      window.fetch('/api/notes').then(function (response) { return response.json(); }).catch(function () { return []; }),
-      window.fetch('/api/papers').then(function (response) { return response.json(); }).catch(function () { return []; })
+      window.fetch('/api/users/me/resources?type=notes', { headers: authHeaders }).then(function (response) { return response.json(); }).catch(function () { return { items: [] }; }),
+      window.fetch('/api/users/me/resources?type=papers', { headers: authHeaders }).then(function (response) { return response.json(); }).catch(function () { return { items: [] }; })
     ]).then(function (results) {
-      renderTeacherDashboardData(screen, normalizeTeacherMaterials(results[0]), normalizeTeacherMaterials(results[1]), user, query);
+      renderTeacherDashboardData(screen, normalizeTeacherMaterials(results[0].items || results[0]), normalizeTeacherMaterials(results[1].items || results[1]), user, query);
     });
   }
 

@@ -94,7 +94,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
     <motion.aside
       animate={{
         x: sidebarOpen || isDesktop ? 0 : '-100%',
-        width: sidebarOpen ? 280 : 96,
+        width: sidebarOpen || !isDesktop ? 280 : 96,
       }}
       transition={{ type: 'spring', stiffness: 260, damping: 30 }}
       className="fixed left-0 top-0 z-50 flex h-dvh max-w-[calc(100vw-16px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:h-screen lg:translate-x-0"
@@ -161,7 +161,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Teacher Console</p>
+            <p className="hidden whitespace-nowrap break-normal text-[10px] font-black uppercase tracking-[0.18em] text-gray-400 sm:block md:tracking-[0.25em]">Teacher Workspace</p>
             <h1 className="truncate text-lg font-black tracking-tighter text-[#0a4a44] sm:text-xl md:text-2xl">
               {teacherNav.find((item) => item.key === activeSection)?.label}
             </h1>
@@ -366,41 +366,59 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
     layout
     initial={{ opacity: 0, y: 18 }}
     animate={{ opacity: 1, y: 0 }}
-    className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+    whileHover={{ y: -4, scale: 1.005 }}
+    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+    className="group relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
   >
-    <div className="mb-3 flex gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ff9f1c]/10 text-[#ff9f1c]">
-        {type === 'notes' ? <BookOpen size={19} /> : <FileText size={19} />}
-      </div>
-      <div className="min-w-0">
-        <h3 className="line-clamp-2 text-base font-black leading-tight text-[#0a4a44]">{item.title}</h3>
-        <p className="mt-1 truncate text-xs font-bold text-gray-400">{item.subject?.name || 'Unassigned subject'}</p>
+    <div className="absolute inset-x-4 bottom-0 h-1 rounded-full bg-[#ff9f1c]/70 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
+    <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="flex min-w-0 gap-3">
+        <motion.div whileHover={{ rotate: 8, scale: 1.05 }} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ff9f1c]/10 text-[#ff9f1c] group-hover:bg-orange-50 group-hover:shadow-md">
+          {type === 'notes' ? <BookOpen size={19} /> : <FileText size={19} />}
+        </motion.div>
+        <div className="min-w-0">
+          <h3 className="line-clamp-2 text-base font-black leading-tight text-[#0a4a44]">{item.title}</h3>
+          <p className="mt-1 truncate text-xs font-bold text-gray-400">{item.subject?.name || 'Unassigned subject'}</p>
+        </div>
       </div>
     </div>
-    <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">{item.description || 'No description added yet.'}</p>
+
+    <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">
+      {item.description || 'No description added yet.'}
+    </p>
+
+    <div className="mb-3 grid grid-cols-2 gap-2 text-[11px] font-bold text-gray-400">
+      <div className="rounded-xl bg-gray-50 p-2.5">
+        <p className="truncate text-[#0a4a44]">{item.subject?.course?.name || item.course?.name || 'Course'}</p>
+        <p>Course</p>
+      </div>
+      <div className="rounded-xl bg-gray-50 p-2.5">
+        <p className="truncate text-[#0a4a44]">{item.subject?.semester?.name || item.semester?.name || 'Semester'}</p>
+        <p>Semester</p>
+      </div>
+    </div>
+
     <div className="grid grid-cols-3 gap-2">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}
         className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0a4a44] py-2.5 text-xs font-black text-white transition hover:bg-[#ff9f1c]"
       >
-        <Download size={14} /> Open
+        <Download size={15} /> Open
       </button>
       <button
         type="button"
-        onClick={() => onEdit(item)}
+        onClick={() => onEdit(item, type)}
         disabled={!canManage}
         className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0a4a44]/5 py-2.5 text-xs font-black text-[#0a4a44] transition hover:bg-[#0a4a44] hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
-        title={canManage ? 'Edit resource' : 'Only the uploader or an admin can edit this resource'}
       >
         <Edit2 size={14} /> Edit
       </button>
       <button
         type="button"
-        onClick={() => onDelete(item._id)}
+        onClick={() => onDelete(item._id, type)}
         disabled={!canManage}
         className="flex items-center justify-center gap-1.5 rounded-xl bg-red-50 py-2.5 text-xs font-black text-red-500 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
-        title={canManage ? 'Delete resource' : 'Only the uploader or an admin can delete this resource'}
       >
         <Trash2 size={14} /> Delete
       </button>
@@ -626,7 +644,9 @@ const TeacherDashboard = () => {
     setLoading(false);
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = (item, typeOverride = resourceType) => {
+    const targetType = typeOverride || resourceType;
+    setResourceType(targetType);
     setFormData({
       title: item.title || '',
       description: item.description || '',
@@ -642,14 +662,16 @@ const TeacherDashboard = () => {
     });
     setEditingId(item._id);
     setShowForm(true);
+    setActiveSection(targetType);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, typeOverride = resourceType) => {
+    const targetType = typeOverride || resourceType;
     if (!window.confirm('Delete this resource?')) return;
     setMessage('');
 
     try {
-      const response = await fetch(`${API_URL}/${resourceType}/${id}`, {
+      const response = await fetch(`${API_URL}/${targetType}/${id}`, {
         method: 'DELETE',
         headers: tokenHeaders(),
       });
@@ -657,7 +679,7 @@ const TeacherDashboard = () => {
       if (!response.ok) throw new Error(data.message || 'Unable to delete resource');
 
       setMessage('Resource deleted successfully.');
-      if (resourceType === 'notes') {
+      if (targetType === 'notes') {
         await fetchNotes();
       } else {
         await fetchPapers();
@@ -713,7 +735,7 @@ const TeacherDashboard = () => {
             <button type="button" onClick={fetchAll} className="text-sm font-black text-[#e68a00]">Refresh</button>
           </div>
           {recentUploads.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
               {recentUploads.map((entry) => (
                 <ResourceCard
                   key={`${entry.type}-${entry.id}`}
@@ -740,7 +762,7 @@ const TeacherDashboard = () => {
             <button type="button" onClick={() => setActiveSection('notes')} className="text-sm font-black text-[#e68a00]">See All</button>
           </div>
           {recentNotes.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
               {recentNotes.map((item) => (
                 <ResourceCard key={item._id} item={item} type="notes" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
@@ -760,7 +782,7 @@ const TeacherDashboard = () => {
             <button type="button" onClick={() => setActiveSection('papers')} className="text-sm font-black text-[#e68a00]">See All</button>
           </div>
           {recentPapers.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
               {recentPapers.map((item) => (
                 <ResourceCard key={item._id} item={item} type="papers" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
@@ -796,8 +818,8 @@ const TeacherDashboard = () => {
         }
       />
 
-      <div className="flex flex-col gap-4 rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex rounded-2xl bg-gray-50 p-1">
+      <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="mb-4 flex rounded-2xl bg-gray-50 p-1">
           {['notes', 'papers'].map((type) => (
             <button
               key={type}
@@ -811,7 +833,7 @@ const TeacherDashboard = () => {
             </button>
           ))}
         </div>
-        <div className="relative flex-1 lg:max-w-md">
+        <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
           <input
             value={search}
@@ -849,7 +871,7 @@ const TeacherDashboard = () => {
       </AnimatePresence>
 
       {currentItems.length ? (
-        <motion.div layout className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {currentItems.map((item) => (
             <ResourceCard key={item._id} item={item} type={resourceType} onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} canManage />
           ))}

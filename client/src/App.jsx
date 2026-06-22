@@ -44,9 +44,9 @@ function Layout() {
         <Route path="/subjects" element={<SubjectsPage />} />
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/departments" element={<DepartmentsPage />} />
-        <Route path="/admin" element={<ProtectedRoute requiredRole={'admin'} redirectTo="/admin-login"><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/teacher" element={<ProtectedRoute requiredRole={'teacher'}><TeacherDashboard /></ProtectedRoute>} />
-        <Route path="/student" element={<ProtectedRoute requiredRole={'student'}><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/admin/*" element={<ProtectedRoute requiredRole={'admin'} redirectTo="/admin-login"><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/teacher/*" element={<ProtectedRoute requiredRole={'teacher'}><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/student/*" element={<ProtectedRoute requiredRole={'student'}><StudentDashboard /></ProtectedRoute>} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/auth" element={<Auth />} />
 
@@ -77,3 +77,4 @@ export default function AppRoutes() {
     </AuthProvider>
   );
 }
+

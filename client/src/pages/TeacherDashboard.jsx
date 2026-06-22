@@ -11,7 +11,6 @@ import {
   Edit2,
   FileText,
   GraduationCap,
-  Layers,
   LayoutDashboard,
   Menu,
   Plus,
@@ -22,8 +21,6 @@ import {
 } from 'lucide-react';
 
 const API_URL = '/api';
-
-const getUserId = (user) => user?._id || user?.id;
 
 const teacherNav = [
   { key: 'overview', label: 'Dashboard', icon: LayoutDashboard },
@@ -47,15 +44,6 @@ const emptyResource = {
   examType: 'Final',
 };
 
-const emptyAcademic = {
-  courseName: '',
-  semesterName: '',
-  semesterOrder: '',
-  subjectName: '',
-  department: '',
-  course: '',
-  semester: '',
-};
 
 const tokenHeaders = () => ({
   'Content-Type': 'application/json',
@@ -439,7 +427,6 @@ const TeacherDashboard = () => {
   const [semesters, setSemesters] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [formData, setFormData] = useState(emptyResource);
-  const [academicForm, setAcademicForm] = useState(emptyAcademic);
 
   useEffect(() => {
     const handleResize = () => {
@@ -482,27 +469,16 @@ const TeacherDashboard = () => {
   }, [activeSection]);
 
   useEffect(() => {
-    const department = formData.department || academicForm.department;
-    if (department) fetchCourses(department);
-  }, [formData.department, academicForm.department]);
+    if (formData.department) fetchCourses(formData.department);
+  }, [formData.department]);
 
   useEffect(() => {
-    const course = formData.course || academicForm.course;
-    if (course) fetchSemesters(course);
-  }, [formData.course, academicForm.course]);
+    if (formData.course) fetchSemesters(formData.course);
+  }, [formData.course]);
 
   useEffect(() => {
-    if (formData.semester || academicForm.semester) fetchSubjects(formData.semester || academicForm.semester);
-  }, [formData.semester, academicForm.semester]);
-
-  const teacherId = getUserId(user);
-
-  const isOwner = (item) =>
-    item.uploaderId?._id === teacherId ||
-    item.uploaderId === teacherId ||
-    item.author?._id === teacherId ||
-    item.author === teacherId;
-
+    if (formData.semester) fetchSubjects(formData.semester);
+  }, [formData.semester]);
   const currentItems = (resourceType === 'notes' ? notes : papers).filter((item) =>
     item.title?.toLowerCase().includes(search.toLowerCase()) ||
     item.description?.toLowerCase().includes(search.toLowerCase()) ||
@@ -690,65 +666,6 @@ const TeacherDashboard = () => {
       setMessage(error.message);
     }
   };
-
-  const createAcademic = async (kind) => {
-    setLoading(true);
-    setMessage('');
-
-    const payloads = {
-      course: { name: academicForm.courseName, department: academicForm.department },
-      semester: {
-        name: academicForm.semesterName,
-        department: academicForm.department,
-        course: academicForm.course,
-        order: Number(academicForm.semesterOrder) || undefined,
-      },
-      subject: {
-        name: academicForm.subjectName,
-        department: academicForm.department,
-        course: academicForm.course,
-        semester: academicForm.semester,
-      },
-    };
-
-    try {
-      const response = await fetch(`${API_URL}/${kind === 'course' ? 'courses' : kind === 'semester' ? 'semesters' : 'subjects'}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloads[kind]),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || `Unable to create ${kind}`);
-
-      setMessage(`${kind.charAt(0).toUpperCase() + kind.slice(1)} created successfully.`);
-      setAcademicForm({ ...emptyAcademic, department: academicForm.department, course: academicForm.course, semester: academicForm.semester });
-      if (kind === 'course') fetchCourses(academicForm.department);
-      if (kind === 'semester') fetchSemesters(academicForm.course);
-      fetchSubjects(academicForm.semester);
-    } catch (error) {
-      setMessage(error.message);
-    }
-
-    setLoading(false);
-  };
-
-  const deleteSubject = async (id) => {
-    if (!window.confirm('Delete this subject?')) return;
-
-    try {
-      const response = await fetch(`${API_URL}/subjects/${id}`, {
-        method: 'DELETE',
-        headers: tokenHeaders(),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Unable to delete subject');
-      setMessage('Subject deleted successfully.');
-      fetchSubjects(academicForm.semester);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
   const renderOverview = () => {
     const recentUploads = activity.slice(0, 3);
     const recentNotes = notes.slice(0, 3);
@@ -977,161 +894,6 @@ const TeacherDashboard = () => {
       />
     </div>
   );
-
-  const renderAcademics = () => (
-    <div className="space-y-8">
-      <HeroPanel
-        title="Manage Courses, Subjects & Semesters"
-        caption="Keep the academic taxonomy clean so notes and papers land in the right department, course, semester, and subject."
-      />
-
-      <AnimatePresence>
-        {message && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 rounded-2xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44]">
-            <CheckCircle2 size={18} /> {message}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-5 text-2xl font-black text-[#0a4a44]">Course</h3>
-          <div className="space-y-4">
-            <SelectField label="Department" value={academicForm.department} onChange={(e) => setAcademicForm({ ...academicForm, department: e.target.value, course: '', semester: '' })}>
-              <option value="">Select Department</option>
-              {departments.map((dept) => <option key={dept._id} value={dept._id}>{dept.name}</option>)}
-            </SelectField>
-            <Field label="Course Name">
-              <input
-                value={academicForm.courseName}
-                onChange={(e) => setAcademicForm({ ...academicForm, courseName: e.target.value })}
-                className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-              />
-            </Field>
-            <button
-              type="button"
-              disabled={!academicForm.department || !academicForm.courseName || loading}
-              onClick={() => createAcademic('course')}
-              className="w-full rounded-2xl bg-[#0a4a44] py-4 text-sm font-black text-white transition hover:bg-[#ff9f1c] disabled:bg-gray-300"
-            >
-              Create Course
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-5 text-2xl font-black text-[#0a4a44]">Semester</h3>
-          <div className="space-y-4">
-            <SelectField label="Course" value={academicForm.course} disabled={!academicForm.department} onChange={(e) => setAcademicForm({ ...academicForm, course: e.target.value, semester: '' })}>
-              <option value="">Select Course</option>
-              {courses.map((course) => <option key={course._id} value={course._id}>{course.name}</option>)}
-            </SelectField>
-            <Field label="Semester Name">
-              <input
-                value={academicForm.semesterName}
-                onChange={(e) => setAcademicForm({ ...academicForm, semesterName: e.target.value })}
-                placeholder="e.g. Semester 3"
-                className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-              />
-            </Field>
-            <Field label="Order">
-              <input
-                type="number"
-                value={academicForm.semesterOrder}
-                onChange={(e) => setAcademicForm({ ...academicForm, semesterOrder: e.target.value })}
-                className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-              />
-            </Field>
-            <button
-              type="button"
-              disabled={!academicForm.department || !academicForm.course || !academicForm.semesterName || loading}
-              onClick={() => createAcademic('semester')}
-              className="w-full rounded-2xl bg-[#0a4a44] py-4 text-sm font-black text-white transition hover:bg-[#ff9f1c] disabled:bg-gray-300"
-            >
-              Create Semester
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="mb-5 text-2xl font-black text-[#0a4a44]">Subject</h3>
-          <div className="space-y-4">
-            <SelectField label="Semester" value={academicForm.semester} disabled={!academicForm.course} onChange={(e) => setAcademicForm({ ...academicForm, semester: e.target.value })}>
-              <option value="">Select Semester</option>
-              {semesters.map((semester) => <option key={semester._id} value={semester._id}>{semester.name}</option>)}
-            </SelectField>
-            <Field label="Subject Name">
-              <input
-                value={academicForm.subjectName}
-                onChange={(e) => setAcademicForm({ ...academicForm, subjectName: e.target.value })}
-                className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-              />
-            </Field>
-            <button
-              type="button"
-              disabled={!academicForm.department || !academicForm.course || !academicForm.semester || !academicForm.subjectName || loading}
-              onClick={() => createAcademic('subject')}
-              className="w-full rounded-2xl bg-[#0a4a44] py-4 text-sm font-black text-white transition hover:bg-[#ff9f1c] disabled:bg-gray-300"
-            >
-              Create Subject
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm">
-        <h3 className="mb-5 text-2xl font-black text-[#0a4a44]">Subject Directory</h3>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {subjects.length ? subjects.map((subject) => (
-            <div key={subject._id} className="flex items-center justify-between gap-4 rounded-2xl bg-gray-50 p-4">
-              <div className="min-w-0">
-                <p className="truncate font-black text-[#0a4a44]">{subject.name}</p>
-                <p className="truncate text-xs font-bold text-gray-400">{subject.course?.name || 'Course'} / {subject.semester?.name || 'Semester'}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => deleteSubject(subject._id)}
-                className="rounded-xl bg-red-50 p-3 text-red-500 transition hover:bg-red-500 hover:text-white"
-                aria-label="Delete subject"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          )) : (
-            <p className="text-sm font-bold text-gray-400">Select a semester to view subjects.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderActivity = () => (
-    <div className="space-y-8">
-      <HeroPanel title="Dashboard Stats & Activity" caption="A compact timeline of your uploads and taxonomy work inside the teacher console." />
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
-      </div>
-      <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
-        <h3 className="mb-6 text-2xl font-black text-[#0a4a44]">Activity Feed</h3>
-        <div className="space-y-4">
-          {activity.length ? activity.map((item) => (
-            <div key={`${item.type}-${item.title}`} className="flex items-center gap-4 rounded-3xl bg-gray-50 p-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c]">
-                {item.type === 'Note' ? <BookOpen size={20} /> : <FileText size={20} />}
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{item.type}</p>
-                <p className="font-black text-[#0a4a44]">{item.title}</p>
-              </div>
-            </div>
-          )) : (
-            <p className="text-sm font-bold text-gray-400">No recent activity yet.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
   const content = () => {
     if (activeSection === 'upload-notes' || activeSection === 'upload-papers') return renderUpload();
     if (activeSection === 'notes' || activeSection === 'papers') return renderResources();
@@ -1157,6 +919,7 @@ const TeacherDashboard = () => {
 };
 
 export default TeacherDashboard;
+
 
 
 

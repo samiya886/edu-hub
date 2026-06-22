@@ -669,6 +669,200 @@ const MOBILE_OPTIMIZATION_CSS = `
         font-weight: 700 !important;
       }
 
+      .eduhub-teacher-hero-chips {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+      }
+
+      .eduhub-teacher-hero-chips span {
+        display: inline-flex !important;
+        align-items: center !important;
+        min-height: 32px !important;
+        border-radius: 18px !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #ffffff !important;
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 8px 12px !important;
+      }
+
+      .eduhub-teacher-search {
+        min-height: 54px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        border-radius: 18px !important;
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        padding: 0 16px !important;
+      }
+
+      .eduhub-teacher-search span {
+        color: #94a3b8 !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-teacher-search input {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        border: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+        color: #0a4a44 !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+      }
+
+      .eduhub-teacher-section-title,
+      .eduhub-teacher-section-header h2 {
+        margin: 0 !important;
+        color: #0a4a44 !important;
+        font-size: 18px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-teacher-section-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+        margin-top: 2px !important;
+      }
+
+      .eduhub-teacher-section-header button {
+        border: 0 !important;
+        background: transparent !important;
+        color: #e68a00 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+      }
+
+      .eduhub-teacher-quick-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+      }
+
+      .eduhub-teacher-quick-action {
+        min-height: 108px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 22px !important;
+        background: #ffffff !important;
+        color: #0a4a44 !important;
+        padding: 16px !important;
+        box-shadow: 0 12px 28px rgba(6, 24, 38, 0.08) !important;
+      }
+
+      .eduhub-teacher-quick-icon {
+        width: 48px !important;
+        height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 16px !important;
+        background: #fff7ed !important;
+        color: #ff9f1c !important;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-teacher-quick-label {
+        color: #0a4a44 !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+      }
+
+      .eduhub-teacher-list {
+        display: grid !important;
+        gap: 12px !important;
+      }
+
+      .eduhub-teacher-material-card {
+        display: grid !important;
+        gap: 12px !important;
+        padding: 18px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 24px !important;
+        background: #ffffff !important;
+        box-shadow: 0 12px 28px rgba(6, 24, 38, 0.08) !important;
+      }
+
+      .eduhub-teacher-material-header,
+      .eduhub-teacher-material-info,
+      .eduhub-teacher-material-actions {
+        display: flex !important;
+        align-items: center !important;
+      }
+
+      .eduhub-teacher-material-header {
+        justify-content: space-between !important;
+        gap: 10px !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        padding-bottom: 12px !important;
+      }
+
+      .eduhub-teacher-material-header h3 {
+        min-width: 0 !important;
+        margin: 0 !important;
+        color: #0a4a44 !important;
+        font-size: 17px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+      }
+
+      .eduhub-teacher-downloads {
+        flex: 0 0 auto !important;
+        border-radius: 12px !important;
+        background: #fff7ed !important;
+        color: #e68a00 !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        padding: 4px 8px !important;
+      }
+
+      .eduhub-teacher-material-info {
+        flex-wrap: wrap !important;
+        gap: 10px 16px !important;
+      }
+
+      .eduhub-teacher-material-info span {
+        color: #6b7280 !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+      }
+
+      .eduhub-teacher-material-actions {
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        border-top: 1px solid #f8fafc !important;
+        padding-top: 12px !important;
+      }
+
+      .eduhub-teacher-icon-action {
+        width: 42px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: #fff7ed !important;
+        color: #ff9f1c !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+      }
+
+      .eduhub-teacher-icon-action.danger {
+        background: #fef2f2 !important;
+        color: #dc2626 !important;
+      }
+
       .eduhub-profile-edit {
         width: 42px !important;
         height: 42px !important;
@@ -1337,9 +1531,42 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
         id: item.id || item._id || '',
         title: item.title || 'Untitled resource',
         subject: typeof item.subject === 'string' ? item.subject : (item.subject && (item.subject.name || item.subject.code)) || 'General',
+        course: typeof item.course === 'string' ? item.course : (item.course && (item.course.name || item.course.code)) || '',
+        department: typeof item.department === 'string' ? item.department : (item.department && (item.department.name || item.department.code)) || '',
+        fileUrl: item.fileUrl || item.file || item.url || '',
         downloads: item.downloadsCount || item.downloads || item.views || 0,
+        createdAt: item.createdAt || '',
+        uploadedById: uploader.id || uploader._id || '',
         uploadedBy: uploader.name || ''
       };
+    });
+  }
+
+  function isTeacherOwnedMaterial(item, user) {
+    var userId = user.id || user._id || '';
+    var userName = (user.name || '').trim().toLowerCase();
+    var uploaderName = (item.uploadedBy || '').trim().toLowerCase();
+
+    return Boolean(
+      (userId && item.uploadedById && item.uploadedById === userId) ||
+      (userName && uploaderName && uploaderName === userName)
+    );
+  }
+
+  function filterTeacherMaterials(items, user, query) {
+    var search = (query || '').trim().toLowerCase();
+    return items.filter(function (item) {
+      if (!isTeacherOwnedMaterial(item, user)) return false;
+      if (!search) return true;
+      return [item.title, item.subject, item.course, item.department].some(function (value) {
+        return value && String(value).toLowerCase().indexOf(search) >= 0;
+      });
+    });
+  }
+
+  function sortTeacherMaterialsByNewest(items) {
+    return items.slice().sort(function (left, right) {
+      return new Date(right.item.createdAt || 0).getTime() - new Date(left.item.createdAt || 0).getTime();
     });
   }
 
@@ -1367,37 +1594,140 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     return row;
   }
 
+  function createTeacherQuickAction(icon, title, pathOrRefresh) {
+    var action = createTeacherElement('button', 'eduhub-teacher-quick-action');
+    action.type = 'button';
+    var box = createTeacherElement('span', 'eduhub-teacher-quick-icon', icon);
+    var label = createTeacherElement('span', 'eduhub-teacher-quick-label', title);
+    action.appendChild(box);
+    action.appendChild(label);
+    action.addEventListener('click', function () {
+      if (pathOrRefresh === 'refresh') {
+        var screen = document.getElementById('eduhub-teacher-dashboard');
+        if (screen) loadTeacherDashboardData(screen);
+        return;
+      }
+      navigateTeacher(pathOrRefresh);
+    });
+    return action;
+  }
+
+  function createTeacherIconButton(label, icon, onClick, danger) {
+    var button = createTeacherElement('button', danger ? 'eduhub-teacher-icon-action danger' : 'eduhub-teacher-icon-action');
+    button.type = 'button';
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.textContent = icon;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function createTeacherMaterialCard(item, type) {
+    var card = createTeacherElement('article', 'eduhub-teacher-material-card');
+    var header = createTeacherElement('div', 'eduhub-teacher-material-header');
+    header.appendChild(createTeacherElement('h3', '', item.title));
+    var downloads = createTeacherElement('span', 'eduhub-teacher-downloads', String(item.downloads));
+    header.appendChild(downloads);
+    card.appendChild(header);
+
+    var info = createTeacherElement('div', 'eduhub-teacher-material-info');
+    info.appendChild(createTeacherElement('span', '', type === 'paper' ? 'Paper' : 'Note'));
+    info.appendChild(createTeacherElement('span', '', item.subject));
+    info.appendChild(createTeacherElement('span', '', item.course || item.department || 'General'));
+    card.appendChild(info);
+
+    var actions = createTeacherElement('div', 'eduhub-teacher-material-actions');
+    actions.appendChild(createTeacherIconButton('Open', 'O', function () {
+      if (item.fileUrl) {
+        window.open(item.fileUrl, '_blank');
+      } else {
+        window.alert('This resource does not have a file link yet.');
+      }
+    }));
+    actions.appendChild(createTeacherIconButton('Edit', 'E', function () {
+      navigateTeacher('/teacher/upload?type=' + encodeURIComponent(type) + '&id=' + encodeURIComponent(item.id));
+    }));
+    actions.appendChild(createTeacherIconButton('Delete', 'D', function () {
+      if (!window.confirm('Delete this ' + type + '?')) return;
+      var endpoint = type === 'paper' ? '/api/papers/' : '/api/notes/';
+      window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE' })
+        .then(function () {
+          var screen = document.getElementById('eduhub-teacher-dashboard');
+          if (screen) loadTeacherDashboardData(screen);
+        })
+        .catch(function () {
+          window.alert('Unable to delete this resource. Please try again.');
+        });
+    }, true));
+    card.appendChild(actions);
+    return card;
+  }
+
   function navigateTeacher(path) {
     navigateInApp(path);
   }
 
-  function renderTeacherDashboardData(screen, notes, papers, userName) {
+  function renderTeacherDashboardData(screen, notes, papers, user, query) {
     var stats = screen.querySelector('[data-eduhub-teacher-stats]');
     var recent = screen.querySelector('[data-eduhub-teacher-recent]');
-    if (!stats || !recent) return;
+    var notesList = screen.querySelector('[data-eduhub-teacher-notes]');
+    var papersList = screen.querySelector('[data-eduhub-teacher-papers]');
+    if (!stats || !recent || !notesList || !papersList) return;
 
-    var totalDownloads = notes.concat(papers).reduce(function (total, item) {
+    var myNotes = filterTeacherMaterials(notes, user, query);
+    var myPapers = filterTeacherMaterials(papers, user, query);
+    var totalDownloads = myNotes.concat(myPapers).reduce(function (total, item) {
       return total + item.downloads;
     }, 0);
+
     stats.innerHTML = '';
-    stats.appendChild(createTeacherStat(notes.length, 'Notes'));
-    stats.appendChild(createTeacherStat(papers.length, 'Papers'));
+    stats.appendChild(createTeacherStat(myNotes.length, 'My Notes'));
+    stats.appendChild(createTeacherStat(myPapers.length, 'My Papers'));
     stats.appendChild(createTeacherStat(totalDownloads, 'Downloads'));
 
-    recent.innerHTML = '';
-    var materials = notes.map(function (note) {
-      return { icon: 'N', title: note.title, meta: note.subject + ' - Note - ' + note.downloads + ' downloads' };
-    }).concat(papers.map(function (paper) {
-      return { icon: 'P', title: paper.title, meta: paper.subject + ' - Paper - ' + paper.downloads + ' downloads' };
-    })).slice(0, 5);
+    var recentItems = sortTeacherMaterialsByNewest(
+      myNotes.map(function (item) { return { type: 'note', item: item }; })
+        .concat(myPapers.map(function (item) { return { type: 'paper', item: item }; }))
+    ).slice(0, 3);
 
-    if (!materials.length) {
-      recent.appendChild(createTeacherRow('+', 'Start by uploading a resource', 'Share notes or papers with your students'));
-      return;
+    recent.innerHTML = '';
+    if (!recentItems.length) {
+      recent.appendChild(createTeacherRow('+', 'No recent uploads', 'Upload notes or papers to see them here'));
+    } else {
+      recentItems.forEach(function (entry) {
+        recent.appendChild(createTeacherMaterialCard(entry.item, entry.type));
+      });
     }
 
-    materials.forEach(function (item) {
-      recent.appendChild(createTeacherRow(item.icon, item.title, item.meta));
+    notesList.innerHTML = '';
+    if (!myNotes.length) {
+      notesList.appendChild(createTeacherRow('+', 'No notes found', 'Upload notes from this teacher account'));
+    } else {
+      myNotes.slice(0, 3).forEach(function (note) {
+        notesList.appendChild(createTeacherMaterialCard(note, 'note'));
+      });
+    }
+
+    papersList.innerHTML = '';
+    if (!myPapers.length) {
+      papersList.appendChild(createTeacherRow('+', 'No papers found', 'Upload papers from this teacher account'));
+    } else {
+      myPapers.slice(0, 3).forEach(function (paper) {
+        papersList.appendChild(createTeacherMaterialCard(paper, 'paper'));
+      });
+    }
+  }
+
+  function loadTeacherDashboardData(screen) {
+    var user = readStoredUser();
+    var search = screen.querySelector('[data-eduhub-teacher-search]');
+    var query = search ? search.value : '';
+
+    Promise.all([
+      window.fetch('/api/notes').then(function (response) { return response.json(); }).catch(function () { return []; }),
+      window.fetch('/api/papers').then(function (response) { return response.json(); }).catch(function () { return []; })
+    ]).then(function (results) {
+      renderTeacherDashboardData(screen, normalizeTeacherMaterials(results[0]), normalizeTeacherMaterials(results[1]), user, query);
     });
   }
 
@@ -1423,48 +1753,73 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     screen.id = 'eduhub-teacher-dashboard';
 
     var hero = createTeacherElement('div', 'eduhub-teacher-hero');
-    var top = createTeacherElement('div', 'eduhub-teacher-top');
     var titleWrap = createTeacherElement('div', '');
-    titleWrap.appendChild(createTeacherElement('p', 'eduhub-teacher-kicker', 'Faculty workspace'));
-    titleWrap.appendChild(createTeacherElement('h1', 'eduhub-teacher-title', 'Welcome, ' + name));
-    titleWrap.appendChild(createTeacherElement('p', 'eduhub-teacher-subtitle', 'Publish resources, monitor downloads, and keep academic content current.'));
-    top.appendChild(titleWrap);
-    hero.appendChild(top);
-
-    var actions = createTeacherElement('div', 'eduhub-teacher-actions');
-    var upload = createTeacherElement('button', 'eduhub-teacher-action', 'Upload');
-    upload.type = 'button';
-    upload.addEventListener('click', function () { navigateTeacher('/teacher/upload'); });
-    var library = createTeacherElement('button', 'eduhub-teacher-action', 'Library');
-    library.type = 'button';
-    library.setAttribute('data-variant', 'secondary');
-    library.addEventListener('click', function () { navigateTeacher('/notes'); });
-    actions.appendChild(upload);
-    actions.appendChild(library);
-    hero.appendChild(actions);
+    titleWrap.appendChild(createTeacherElement('p', 'eduhub-teacher-kicker', 'Teacher portal'));
+    titleWrap.appendChild(createTeacherElement('h1', 'eduhub-teacher-title', 'Hello, ' + name));
+    titleWrap.appendChild(createTeacherElement('p', 'eduhub-teacher-subtitle', 'Manage your uploaded notes, exam papers, and student-ready resources.'));
+    hero.appendChild(titleWrap);
+    var heroStats = createTeacherElement('div', 'eduhub-teacher-hero-chips');
+    heroStats.appendChild(createTeacherElement('span', '', 'Your uploads'));
+    heroStats.appendChild(createTeacherElement('span', '', 'Teacher workspace'));
+    hero.appendChild(heroStats);
     screen.appendChild(hero);
+
+    var searchWrap = createTeacherElement('div', 'eduhub-teacher-search');
+    searchWrap.appendChild(createTeacherElement('span', '', 'Search'));
+    var search = createTeacherElement('input', '', '');
+    search.type = 'search';
+    search.placeholder = 'Search your notes, papers, subjects...';
+    search.setAttribute('data-eduhub-teacher-search', 'true');
+    search.addEventListener('input', function () { loadTeacherDashboardData(screen); });
+    searchWrap.appendChild(search);
+    screen.appendChild(searchWrap);
 
     var stats = createTeacherElement('div', 'eduhub-teacher-stats');
     stats.setAttribute('data-eduhub-teacher-stats', 'true');
-    stats.appendChild(createTeacherStat('0', 'Notes'));
-    stats.appendChild(createTeacherStat('0', 'Papers'));
+    stats.appendChild(createTeacherStat('0', 'My Notes'));
+    stats.appendChild(createTeacherStat('0', 'My Papers'));
     stats.appendChild(createTeacherStat('0', 'Downloads'));
     screen.appendChild(stats);
 
-    var quick = createTeacherElement('div', 'eduhub-teacher-card');
-    quick.appendChild(createTeacherElement('h2', '', 'Quick Actions'));
-    quick.appendChild(createTeacherRow('+', 'Upload study material', 'Add notes, PDFs, and question papers'));
-    quick.appendChild(createTeacherRow('L', 'Review library', 'Check available notes and papers'));
-    quick.appendChild(createTeacherRow('P', 'Update profile', 'Manage your teacher account'));
+    screen.appendChild(createTeacherElement('h2', 'eduhub-teacher-section-title', 'Quick Actions'));
+    var quick = createTeacherElement('div', 'eduhub-teacher-quick-grid');
+    quick.appendChild(createTeacherQuickAction('+', 'Upload Resource', '/teacher/upload'));
+    quick.appendChild(createTeacherQuickAction('R', 'Refresh Dashboard', 'refresh'));
     screen.appendChild(quick);
 
-    var recentCard = createTeacherElement('div', 'eduhub-teacher-card');
-    recentCard.appendChild(createTeacherElement('h2', '', 'Recent Activity'));
-    var recent = createTeacherElement('div', '');
+    var recentHeader = createTeacherElement('div', 'eduhub-teacher-section-header');
+    recentHeader.appendChild(createTeacherElement('h2', '', 'Recent Uploads'));
+    var refresh = createTeacherElement('button', '', 'Refresh');
+    refresh.type = 'button';
+    refresh.addEventListener('click', function () { loadTeacherDashboardData(screen); });
+    recentHeader.appendChild(refresh);
+    screen.appendChild(recentHeader);
+    var recent = createTeacherElement('div', 'eduhub-teacher-list');
     recent.setAttribute('data-eduhub-teacher-recent', 'true');
     recent.appendChild(createTeacherRow('...', 'Loading resources', 'Fetching dashboard activity'));
-    recentCard.appendChild(recent);
-    screen.appendChild(recentCard);
+    screen.appendChild(recent);
+
+    var notesHeader = createTeacherElement('div', 'eduhub-teacher-section-header');
+    notesHeader.appendChild(createTeacherElement('h2', '', 'My Notes'));
+    var addNote = createTeacherElement('button', '', 'Add Note');
+    addNote.type = 'button';
+    addNote.addEventListener('click', function () { navigateTeacher('/teacher/upload?type=note'); });
+    notesHeader.appendChild(addNote);
+    screen.appendChild(notesHeader);
+    var notesList = createTeacherElement('div', 'eduhub-teacher-list');
+    notesList.setAttribute('data-eduhub-teacher-notes', 'true');
+    screen.appendChild(notesList);
+
+    var papersHeader = createTeacherElement('div', 'eduhub-teacher-section-header');
+    papersHeader.appendChild(createTeacherElement('h2', '', 'My Papers'));
+    var addPaper = createTeacherElement('button', '', 'Add Paper');
+    addPaper.type = 'button';
+    addPaper.addEventListener('click', function () { navigateTeacher('/teacher/upload?type=paper'); });
+    papersHeader.appendChild(addPaper);
+    screen.appendChild(papersHeader);
+    var papersList = createTeacherElement('div', 'eduhub-teacher-list');
+    papersList.setAttribute('data-eduhub-teacher-papers', 'true');
+    screen.appendChild(papersList);
 
     var header = document.querySelector('header');
     if (header && header.parentNode) {
@@ -1473,15 +1828,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       document.body.appendChild(screen);
     }
     if (document.body) document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
-
-    Promise.all([
-      window.fetch('/api/notes').then(function (response) { return response.json(); }).catch(function () { return []; }),
-      window.fetch('/api/papers').then(function (response) { return response.json(); }).catch(function () { return []; })
-    ]).then(function (results) {
-      renderTeacherDashboardData(screen, normalizeTeacherMaterials(results[0]), normalizeTeacherMaterials(results[1]), name);
-    });
+    loadTeacherDashboardData(screen);
   }
-
   function dispatchRouteUpdate() {
     try {
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
@@ -1897,3 +2245,5 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+
+

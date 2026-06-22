@@ -1824,12 +1824,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     papersList.setAttribute('data-eduhub-teacher-papers', 'true');
     screen.appendChild(papersList);
 
-    var header = document.querySelector('header');
-    if (header && header.parentNode) {
-      header.parentNode.insertBefore(screen, header.nextSibling);
-    } else {
-      document.body.appendChild(screen);
-    }
+    document.body.appendChild(screen);
     document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
     loadTeacherDashboardData(screen);
     } catch (error) {

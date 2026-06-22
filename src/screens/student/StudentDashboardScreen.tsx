@@ -127,13 +127,15 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
                 <Text style={styles.infoText}>By {note.uploadedBy.name}</Text>
               </View>
             </View>
-            <TouchableOpacity
-              style={styles.viewBtn}
-              onPress={() => navigation.navigate('PDFViewer', { title: note.title, url: note.fileUrl })}
-            >
-              <Text style={styles.viewBtnText}>View Study Guide</Text>
-              <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
-            </TouchableOpacity>
+            <View style={styles.cardActions}>
+              <TouchableOpacity
+                style={styles.openIconButton}
+                onPress={() => navigation.navigate('PDFViewer', { title: note.title, url: note.fileUrl })}
+                accessibilityLabel="Open"
+              >
+                <Ionicons name="eye-outline" size={17} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
           </Card>
         ))
       )}
@@ -170,13 +172,15 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
                 <Text style={styles.infoText}>{paper.subject}</Text>
               </View>
             </View>
-            <TouchableOpacity
-              style={styles.viewBtn}
-              onPress={() => navigation.navigate('PDFViewer', { title: paper.title, url: paper.fileUrl })}
-            >
-              <Text style={styles.viewBtnText}>View Exam Paper</Text>
-              <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
-            </TouchableOpacity>
+            <View style={styles.cardActions}>
+              <TouchableOpacity
+                style={styles.openIconButton}
+                onPress={() => navigation.navigate('PDFViewer', { title: paper.title, url: paper.fileUrl })}
+                accessibilityLabel="Open"
+              >
+                <Ionicons name="eye-outline" size={17} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
           </Card>
         ))
       )}
@@ -321,18 +325,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textSecondary,
   },
-  viewBtn: {
+  cardActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: COLORS.background,
     paddingTop: 12,
     marginTop: 4,
   },
-  viewBtnText: {
-    color: COLORS.primaryDark,
-    fontSize: 14,
-    fontWeight: '900',
+  openIconButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: COLORS.warningBg,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
+

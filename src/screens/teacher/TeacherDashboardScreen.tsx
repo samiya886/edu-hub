@@ -85,9 +85,13 @@ function MaterialCard({
       </View>
 
       <View style={styles.cardActions}>
-        <TouchableOpacity style={styles.viewBtn} activeOpacity={0.84} onPress={onView}>
-          <Ionicons name="eye-outline" size={16} color={COLORS.primary} />
-          <Text style={styles.viewBtnText}>Open</Text>
+        <TouchableOpacity
+          style={styles.iconButtonOpen}
+          activeOpacity={0.84}
+          onPress={onView}
+          accessibilityLabel="Open"
+        >
+          <Ionicons name="eye-outline" size={17} color={COLORS.primary} />
         </TouchableOpacity>
 
         {owned ? (
@@ -544,20 +548,13 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     marginTop: 4,
   },
-  viewBtn: {
-    flex: 1,
-    minHeight: 42,
+  iconButtonOpen: {
+    width: 42,
+    height: 42,
     borderRadius: 14,
     backgroundColor: COLORS.warningBg,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-  },
-  viewBtnText: {
-    color: COLORS.primaryDark,
-    fontSize: 14,
-    fontWeight: '900',
   },
   iconButton: {
     width: 42,
@@ -576,3 +573,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

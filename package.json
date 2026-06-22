@@ -3,7 +3,9 @@
   "main": "node_modules/expo/AppEntry.js",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start -c --port 8083",
+    "build": "npm install --prefix Backend1 && npm install --prefix client && npm run build --prefix client",
+    "start": "npm start --prefix Backend1",
+    "start:expo": "expo start -c --port 8083",
     "start:clean": "expo start -c --port 8083",
     "kill-ports": "powershell -Command \"Get-NetTCPConnection -LocalPort 8081,8082,8083,8084,8085 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }\"",
     "reset-project": "node ./scripts/reset-project.js",

@@ -3,13 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  Activity,
   AlertCircle,
-  ArrowLeft,
-  BarChart3,
   BookOpen,
   CheckCircle2,
   ChevronDown,
+  Download,
   Edit2,
   FileText,
   GraduationCap,
@@ -28,13 +26,11 @@ const API_URL = '/api';
 const getUserId = (user) => user?._id || user?.id;
 
 const teacherNav = [
-  { key: 'overview', label: 'Dashboard Stats', icon: LayoutDashboard },
-  { key: 'notes', label: 'Manage Notes', icon: BookOpen },
-  { key: 'papers', label: 'Manage Papers', icon: FileText },
+  { key: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'notes', label: 'My Notes', icon: BookOpen },
+  { key: 'papers', label: 'My Papers', icon: FileText },
   { key: 'upload-notes', label: 'Upload Notes', icon: Upload },
   { key: 'upload-papers', label: 'Upload Papers', icon: Upload },
-  { key: 'academics', label: 'Courses & Subjects', icon: Layers },
-  { key: 'activity', label: 'Activity', icon: Activity },
 ];
 
 const emptyResource = {
@@ -377,7 +373,7 @@ const ResourceForm = ({
   </motion.div>
 );
 
-const ResourceCard = ({ item, type, onEdit, onDelete, canManage = true }) => (
+const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = true }) => (
   <motion.div
     layout
     initial={{ opacity: 0, y: 18 }}
@@ -394,7 +390,14 @@ const ResourceCard = ({ item, type, onEdit, onDelete, canManage = true }) => (
       </div>
     </div>
     <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">{item.description || 'No description added yet.'}</p>
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-3 gap-2">
+      <button
+        type="button"
+        onClick={() => onDownload(item.fileUrl)}
+        className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0a4a44] py-2.5 text-xs font-black text-white transition hover:bg-[#ff9f1c]"
+      >
+        <Download size={14} /> Open
+      </button>
       <button
         type="button"
         onClick={() => onEdit(item)}
@@ -505,17 +508,20 @@ const TeacherDashboard = () => {
     item.description?.toLowerCase().includes(search.toLowerCase()) ||
     item.subject?.name?.toLowerCase().includes(search.toLowerCase())
   );
-
   const activity = [
-    ...notes.slice(0, 3).map((item) => ({ type: 'Note', title: item.title, time: item.createdAt })),
-    ...papers.slice(0, 3).map((item) => ({ type: 'Paper', title: item.title, time: item.createdAt })),
+    ...notes.slice(0, 3).map((item) => ({ type: 'Note', resourceType: 'notes', title: item.title, time: item.createdAt, id: item._id, item })),
+    ...papers.slice(0, 3).map((item) => ({ type: 'Paper', resourceType: 'papers', title: item.title, time: item.createdAt, id: item._id, item })),
   ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 6);
 
+  const totalDownloads = [...notes, ...papers].reduce(
+    (total, item) => total + Number(item.downloadsCount || item.downloads || item.views || 0),
+    0
+  );
+
   const stats = [
-    { label: 'My Notes', value: notes?.length ?? 0, caption: 'Notes uploaded by you', icon: <BookOpen /> },
-    { label: 'My Papers', value: papers?.length ?? 0, caption: 'Papers uploaded by you', icon: <FileText /> },
-    { label: 'Subjects Indexed', value: subjects?.length ?? 0, caption: 'Current subject scope', icon: <Layers /> },
-    { label: 'My Uploads', value: [...notes, ...papers].filter(isOwner).length, caption: 'Resources you can manage', icon: <Activity /> },
+    { label: 'My Notes', value: notes?.length ?? 0, caption: 'Notes uploaded by you', icon: BookOpen },
+    { label: 'My Papers', value: papers?.length ?? 0, caption: 'Papers uploaded by you', icon: FileText },
+    { label: 'Downloads', value: totalDownloads, caption: 'Across your uploads', icon: Download },
   ];
 
   const fetchAll = async () => {
@@ -585,6 +591,10 @@ const TeacherDashboard = () => {
       console.error('Error fetching papers:', error);
       setPapers([]);
     }
+  };
+
+  const handleDownload = (fileUrl) => {
+    if (fileUrl) window.open(fileUrl, '_blank');
   };
 
   const resetResourceForm = () => {
@@ -739,68 +749,116 @@ const TeacherDashboard = () => {
     }
   };
 
-  const renderOverview = () => (
-    <div className="space-y-8">
-      <HeroPanel
-        title="Academic Command Center"
-        caption="Track your uploads, monitor resource activity, and keep course structures tidy from one responsive console."
-        action={
+  const renderOverview = () => {
+    const recentUploads = activity.slice(0, 3);
+    const recentNotes = notes.slice(0, 3);
+    const recentPapers = papers.slice(0, 3);
+
+    return (
+      <div className="space-y-8">
+        <HeroPanel
+          title={`Hello, ${user?.name || 'Teacher'}`}
+          caption="Manage your uploaded notes, exam papers, downloads, and recent activity from one student-style dashboard."
+        />
+
+        <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+          {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
           <button
             type="button"
-            onClick={() => {
-              setActiveSection('notes');
-              setResourceType('notes');
-              setShowForm(true);
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 py-4 text-sm font-black text-white transition hover:bg-[#e68a00] sm:w-auto sm:px-6"
+            onClick={() => setActiveSection('upload-notes')}
+            className="rounded-[26px] border border-gray-100 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
-            <Plus size={18} /> New Resource
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c]">
+              <Upload size={22} />
+            </div>
+            <p className="text-lg font-black text-[#0a4a44]">Upload Resource</p>
+            <p className="mt-1 text-sm font-semibold text-gray-400">Add notes or exam papers for students.</p>
           </button>
-        }
-      />
-
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
-      </div>
-
-      <div className="grid gap-5 sm:gap-8 xl:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
-          <div className="mb-8 flex items-center justify-between gap-3">
-            <h3 className="flex min-w-0 items-center gap-3 text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl sm:tracking-tighter">
-              <BarChart3 className="text-[#ff9f1c]" /> Resource Activity
-            </h3>
-            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-600">Live</span>
-          </div>
-          <div className="flex h-56 items-end gap-4">
-            {[notes.length + 2, papers.length + 1, subjects.length + 1, courses.length + 1, semesters.length + 1, notes.length + papers.length + 1].map((height, index) => (
-              <motion.div
-                key={index}
-                initial={{ height: 0 }}
-                animate={{ height: `${Math.min(95, 24 + height * 12)}%` }}
-                transition={{ delay: index * 0.08 }}
-                className="w-full rounded-t-3xl bg-[#0a4a44] transition-colors hover:bg-[#ff9f1c]"
-              />
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={fetchAll}
+            className="rounded-[26px] border border-gray-100 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0a4a44]/5 text-[#0a4a44]">
+              <LayoutDashboard size={22} />
+            </div>
+            <p className="text-lg font-black text-[#0a4a44]">Refresh Dashboard</p>
+            <p className="mt-1 text-sm font-semibold text-gray-400">Reload your latest teacher uploads.</p>
+          </button>
         </div>
 
-        <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white shadow-xl sm:rounded-[40px] sm:p-8">
-          <h3 className="mb-6 text-2xl font-black tracking-tighter">Recent Activity</h3>
-          <div className="space-y-4">
-            {activity.length ? activity.map((item) => (
-              <div key={`${item.type}-${item.title}`} className="rounded-3xl bg-white/5 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ff9f1c]">{item.type}</p>
-                <p className="mt-1 line-clamp-1 font-bold">{item.title}</p>
-              </div>
-            )) : (
-              <p className="text-sm font-medium text-teal-100/50">No uploads yet.</p>
-            )}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">Recent Uploads</h3>
+            <button type="button" onClick={fetchAll} className="text-sm font-black text-[#e68a00]">Refresh</button>
           </div>
-        </div>
-      </div>
-    </div>
-  );
+          {recentUploads.length ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {recentUploads.map((entry) => (
+                <ResourceCard
+                  key={`${entry.type}-${entry.id}`}
+                  item={entry.item}
+                  type={entry.resourceType}
+                  onDownload={handleDownload}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
+              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
+              <p className="font-black text-[#0a4a44]">No recent uploads</p>
+              <p className="mt-1 text-sm font-semibold text-gray-400">Upload notes or papers to see them here.</p>
+            </div>
+          )}
+        </section>
 
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">My Notes</h3>
+            <button type="button" onClick={() => setActiveSection('notes')} className="text-sm font-black text-[#e68a00]">See All</button>
+          </div>
+          {recentNotes.length ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {recentNotes.map((item) => (
+                <ResourceCard key={item._id} item={item} type="notes" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
+              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
+              <p className="font-black text-[#0a4a44]">No notes found</p>
+              <p className="mt-1 text-sm font-semibold text-gray-400">Upload notes from this teacher account.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">My Papers</h3>
+            <button type="button" onClick={() => setActiveSection('papers')} className="text-sm font-black text-[#e68a00]">See All</button>
+          </div>
+          {recentPapers.length ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {recentPapers.map((item) => (
+                <ResourceCard key={item._id} item={item} type="papers" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
+              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
+              <p className="font-black text-[#0a4a44]">No papers found</p>
+              <p className="mt-1 text-sm font-semibold text-gray-400">Upload papers from this teacher account.</p>
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  };
   const renderResources = () => (
     <div className="space-y-8">
       <HeroPanel
@@ -876,7 +934,7 @@ const TeacherDashboard = () => {
       {currentItems.length ? (
         <motion.div layout className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {currentItems.map((item) => (
-            <ResourceCard key={item._id} item={item} type={resourceType} onEdit={handleEdit} onDelete={handleDelete} canManage />
+            <ResourceCard key={item._id} item={item} type={resourceType} onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} canManage />
           ))}
         </motion.div>
       ) : (
@@ -1075,8 +1133,6 @@ const TeacherDashboard = () => {
   );
 
   const content = () => {
-    if (activeSection === 'academics') return renderAcademics();
-    if (activeSection === 'activity') return renderActivity();
     if (activeSection === 'upload-notes' || activeSection === 'upload-papers') return renderUpload();
     if (activeSection === 'notes' || activeSection === 'papers') return renderResources();
     return renderOverview();
@@ -1101,3 +1157,11 @@ const TeacherDashboard = () => {
 };
 
 export default TeacherDashboard;
+
+
+
+
+
+
+
+

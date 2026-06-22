@@ -21,7 +21,16 @@ export const AuthProvider = ({ children }) => {
     const userData = localStorage.getItem('user');
 
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Stored user parse error:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setLoading(false);
+        return;
+      }
+
       refreshUser(token);
     } else {
       setLoading(false);
@@ -46,13 +55,17 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
 
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 8000);
+
     try {
       const response = await fetch(`${API_URL}/auth/me`, {
+        signal: controller.signal,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) throw new Error(data.message || 'Unable to refresh session');
 
@@ -65,6 +78,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       return null;
     } finally {
+      window.clearTimeout(timeoutId);
       setLoading(false);
     }
   };

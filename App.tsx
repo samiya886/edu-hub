@@ -2009,6 +2009,7 @@ export default function App() {
 function NativeWebViewApp() {
   const webViewRef = useRef<WebViewType>(null);
   const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastLoadStartRef = useRef(0);
   const [canGoBack, setCanGoBack] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -2026,7 +2027,7 @@ function NativeWebViewApp() {
     loadingTimeoutRef.current = setTimeout(() => {
       setIsLoading(false);
       loadingTimeoutRef.current = null;
-    }, 12000);
+    }, 6000);
   }, [clearLoadingTimeout]);
 
   useEffect(() => {
@@ -2100,10 +2101,29 @@ function NativeWebViewApp() {
           mixedContentMode="compatibility"
           injectedJavaScriptBeforeContentLoaded={MOBILE_OPTIMIZATION_SCRIPT}
           injectedJavaScript={MOBILE_OPTIMIZATION_SCRIPT}
-          onLoadStart={() => {
-            setIsLoading(true);
+          onLoadStart={(event) => {
+            const now = Date.now();
+            const url = event.nativeEvent.url || '';
+            const isWebsiteLoad =
+              !url ||
+              url === WEBSITE_URL ||
+              url.startsWith(WEBSITE_ORIGIN) ||
+              url.startsWith('about:') ||
+              url.startsWith('data:');
+
+            if (isWebsiteLoad && now - lastLoadStartRef.current > 1500) {
+              lastLoadStartRef.current = now;
+              setIsLoading(true);
+              startLoadingTimeout();
+            }
+
             setHasError(false);
-            startLoadingTimeout();
+          }}
+          onLoadProgress={(event) => {
+            if (event.nativeEvent.progress >= 0.8) {
+              clearLoadingTimeout();
+              setIsLoading(false);
+            }
           }}
           onLoadEnd={() => {
             clearLoadingTimeout();

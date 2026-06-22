@@ -1732,18 +1732,21 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   }
 
   function installTeacherDashboardScreen() {
-    var path = window.location.pathname || '/';
+    try {
+      if (!document.body) return;
+
+      var path = window.location.pathname || '/';
     var existing = document.getElementById('eduhub-teacher-dashboard');
     var isTeacherPath = path === '/teacher' || path.indexOf('/teacher/') === 0 || path.indexOf('teacher') >= 0;
 
     if (!isTeacherPath) {
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-      if (document.body) document.body.removeAttribute('data-eduhub-teacher-dashboard-ready');
+      document.body.removeAttribute('data-eduhub-teacher-dashboard-ready');
       return;
     }
 
     if (existing) {
-      if (document.body) document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
+      document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
       return;
     }
 
@@ -1827,8 +1830,14 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     } else {
       document.body.appendChild(screen);
     }
-    if (document.body) document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
+    document.body.setAttribute('data-eduhub-teacher-dashboard-ready', 'true');
     loadTeacherDashboardData(screen);
+    } catch (error) {
+      console.warn('Teacher dashboard wrapper failed', error);
+      var failedScreen = document.getElementById('eduhub-teacher-dashboard');
+      if (failedScreen && failedScreen.parentNode) failedScreen.parentNode.removeChild(failedScreen);
+      if (document.body) document.body.removeAttribute('data-eduhub-teacher-dashboard-ready');
+    }
   }
   function dispatchRouteUpdate() {
     try {

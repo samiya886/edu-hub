@@ -11,6 +11,7 @@ import {
   Edit2,
   FileText,
   GraduationCap,
+  Menu,
   Search,
   Trash2,
   Upload,
@@ -178,10 +179,9 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
             className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
             aria-label="Toggle sidebar"
           >
-            {sidebarOpen ? <X size={20} /> : <span className="text-2xl font-black leading-none" aria-hidden="true">☰</span>}
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="min-w-0">
-            <p className="hidden whitespace-nowrap break-normal text-[10px] font-black uppercase tracking-[0.18em] text-gray-400 sm:block md:tracking-[0.25em]">Student Workspace</p>
             <h1 className="truncate text-lg font-black tracking-tighter text-[#0a4a44] sm:text-xl md:text-2xl">
               {studentNav.find((item) => item.key === activeSection)?.label}
             </h1>

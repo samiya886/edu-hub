@@ -158,7 +158,6 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <div className="min-w-0">
-            <p className="hidden whitespace-nowrap break-normal text-[10px] font-black uppercase tracking-[0.18em] text-gray-400 sm:block md:tracking-[0.25em]">Teacher Workspace</p>
             <h1 className="truncate text-lg font-black tracking-tighter text-[#0a4a44] sm:text-xl md:text-2xl">
               {teacherNav.find((item) => item.key === activeSection)?.label}
             </h1>

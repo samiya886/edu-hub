@@ -8,12 +8,18 @@ import {
   Text,
   TouchableOpacity,
   View,
+  StatusBar,
 } from 'react-native';
-import { Button } from '../../components/Button';
 import { Loader } from '../../components/Loader';
-import { SearchBar } from '../../components/SearchBar';
 import { COLORS, SHADOWS } from '../../constants';
-import { Department, Note, Paper, filterService, notesService, papersService } from '../../services/api';
+import {
+  Department,
+  Note,
+  Paper,
+  filterService,
+  notesService,
+  papersService,
+} from '../../services/api';
 
 type PublicRoute = 'Login' | 'Signup' | 'Browse' | 'Departments' | 'PDFViewer';
 
@@ -27,10 +33,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'Home' | 'Notes' | 'Paper' | 'Profile'>('Home');
 
   const loadHomeData = async () => {
     try {
@@ -40,13 +46,12 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         papersService.list(),
         filterService.getDepartments(),
       ]);
-
       setNotes(notesList);
       setPapers(papersList);
       setDepartments(departmentsList);
     } catch (err: any) {
       console.error('Failed to load home data', err);
-      setError(err.response?.data?.message || err.message || 'Unable to load website data.');
+      setError(err.response?.data?.message || err.message || 'Unable to load data.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -57,18 +62,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     loadHomeData();
   }, []);
 
-  const totals = useMemo(() => ({
-    notes: notes.length,
-    papers: papers.length,
-    departments: departments.length,
-  }), [departments.length, notes.length, papers.length]);
-
-  const featuredNote = notes[0];
-  const featuredPaper = papers[0];
-
-  const handleSearch = () => {
-    navigation.navigate('Browse', { searchQuery: search });
-  };
+  const totals = useMemo(
+    () => ({
+      notes: notes.length,
+      papers: papers.length,
+      departments: departments.length,
+    }),
+    [departments.length, notes.length, papers.length]
+  );
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -80,170 +81,236 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[COLORS.primary]} />}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={styles.topBar}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoMark}>
-            <Ionicons name="school" size={23} color={COLORS.white} />
+    <View style={styles.root}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+
+      {/* ── Scrollable content ── */}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[COLORS.primary]} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Top Bar ── */}
+        <View style={styles.topBar}>
+          {/* Logo */}
+          <View style={styles.logoRow}>
+            <View style={styles.logoMark}>
+              <Ionicons name="school" size={22} color={COLORS.white} />
+            </View>
+            <Text style={styles.brand}>
+              Educ<Text style={styles.brandDot}>.</Text>
+            </Text>
           </View>
-          <Text style={styles.brand}>EduHub<Text style={styles.brandDot}>.</Text></Text>
+
+          {/* Right actions */}
+          <View style={styles.topBarRight}>
+            <TouchableOpacity
+              style={styles.loginPill}
+              onPress={() => navigation.navigate('Login')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.loginPillText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.hamburgerBtn}
+              onPress={() => navigation.navigate('Browse')}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="menu-outline" size={24} color={COLORS.text} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity
-          style={styles.loginPill}
-          onPress={() => navigation.navigate('Login')}
-          activeOpacity={0.75}
-        >
-          <Ionicons name="log-in-outline" size={17} color={COLORS.primary} />
-          <Text style={styles.loginPillText}>Login</Text>
-        </TouchableOpacity>
-      </View>
 
-      <View style={styles.navRail}>
-        <TouchableOpacity style={styles.navChip} onPress={() => navigation.navigate('Browse', { initialTab: 'notes' })}>
-          <Ionicons name="library-outline" size={14} color={COLORS.text} />
-          <Text style={styles.navChipText}>Notes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navChip} onPress={() => navigation.navigate('Browse', { initialTab: 'papers' })}>
-          <Ionicons name="document-text-outline" size={14} color={COLORS.text} />
-          <Text style={styles.navChipText}>Papers</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navChip} onPress={() => navigation.navigate('Departments')}>
-          <Ionicons name="business-outline" size={14} color={COLORS.text} />
-          <Text style={styles.navChipText}>Departments</Text>
-        </TouchableOpacity>
-      </View>
+        {/* ── Hero Banner ── */}
+        <View style={styles.heroBanner}>
+          {/* Overlay tint */}
+          <View style={styles.heroOverlay} />
 
-      <View style={styles.hero}>
-        <Text style={styles.kicker}>Student workspace</Text>
-        <Text style={styles.title}>Find study material without opening a website.</Text>
-        <Text style={styles.subtitle}>
-          Search notes, papers, departments, and courses in a compact app-first home.
-        </Text>
+          <View style={styles.heroContent}>
+            <View style={styles.heroBadge}>
+              <View style={styles.heroBadgeDot} />
+              <Text style={styles.heroBadgeText}>START YOUR JOURNEY TODAY</Text>
+            </View>
 
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          onSubmit={handleSearch}
-          placeholder="Search notes, subjects, papers..."
-        />
+            <Text style={styles.heroTitle}>
+              Empowering You with Digital{'\n'}
+              <Text style={styles.heroTitleAccent}>Skills</Text>
+            </Text>
 
-        <View style={styles.actions}>
-          <Button
-            title="Browse Resources"
-            onPress={() => navigation.navigate('Browse', { searchQuery: search })}
-            style={styles.primaryAction}
-          />
-          <Button
-            title="Register"
-            variant="outline"
+            <Text style={styles.heroSubtitle}>
+              Our platform makes education flexible and convenient.
+            </Text>
+          </View>
+        </View>
+
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+        {/* ── Live Stats Card ── */}
+        <View style={styles.statsCard}>
+          <Text style={styles.statsKicker}>LIVE FROM BACKEND</Text>
+          <Text style={styles.statsTitle}>EduHub resources at a glance</Text>
+
+          <View style={styles.connectedRow}>
+            <View style={styles.connectedDot} />
+            <Text style={styles.connectedText}>Connected</Text>
+          </View>
+
+          <View style={styles.statsDivider} />
+
+          <View style={styles.statsGrid}>
+            <View style={styles.statsItem}>
+              <Text style={styles.statsValue}>{totals.notes}</Text>
+              <Text style={styles.statsLabel}>NOTES</Text>
+            </View>
+            <View style={styles.statsItemSep} />
+            <View style={styles.statsItem}>
+              <Text style={styles.statsValue}>{totals.papers}</Text>
+              <Text style={styles.statsLabel}>PAPERS</Text>
+            </View>
+            <View style={styles.statsItemSep} />
+            <View style={styles.statsItem}>
+              <Text style={styles.statsValue}>{totals.departments}</Text>
+              <Text style={styles.statsLabel}>DEPARTMENTS</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* ── Services Section ── */}
+        <View style={styles.servicesSection}>
+          <Text style={styles.servicesKicker}>OUR SERVICES</Text>
+          <Text style={styles.servicesTitle}>Everything you need to succeed</Text>
+
+          <View style={styles.servicesGrid}>
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => navigation.navigate('Browse', { initialTab: 'notes' })}
+              activeOpacity={0.82}
+            >
+              <View style={styles.serviceIcon}>
+                <Ionicons name="book-outline" size={22} color={COLORS.primary} />
+              </View>
+              <Text style={styles.serviceTitle}>Study Notes</Text>
+              <Text style={styles.serviceDesc}>Handwritten & digital notes by subject</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => navigation.navigate('Browse', { initialTab: 'papers' })}
+              activeOpacity={0.82}
+            >
+              <View style={styles.serviceIcon}>
+                <Ionicons name="document-text-outline" size={22} color={COLORS.primary} />
+              </View>
+              <Text style={styles.serviceTitle}>Past Papers</Text>
+              <Text style={styles.serviceDesc}>Previous year exam question papers</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => navigation.navigate('Departments')}
+              activeOpacity={0.82}
+            >
+              <View style={styles.serviceIcon}>
+                <Ionicons name="business-outline" size={22} color={COLORS.primary} />
+              </View>
+              <Text style={styles.serviceTitle}>Departments</Text>
+              <Text style={styles.serviceDesc}>Browse by department and course</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => navigation.navigate('Signup')}
+              activeOpacity={0.82}
+            >
+              <View style={styles.serviceIcon}>
+                <Ionicons name="person-add-outline" size={22} color={COLORS.primary} />
+              </View>
+              <Text style={styles.serviceTitle}>Join Free</Text>
+              <Text style={styles.serviceDesc}>Create an account to upload resources</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* ── CTA Banner ── */}
+        <View style={styles.ctaBanner}>
+          <Text style={styles.ctaTitle}>Ready to get started?</Text>
+          <Text style={styles.ctaSubtitle}>Join thousands of students already using EduHub.</Text>
+          <TouchableOpacity
+            style={styles.ctaBtn}
             onPress={() => navigation.navigate('Signup')}
-            style={styles.secondaryAction}
-          />
-        </View>
-      </View>
-
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totals.notes}</Text>
-          <Text style={styles.statLabel}>Notes</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totals.papers}</Text>
-          <Text style={styles.statLabel}>Papers</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totals.departments}</Text>
-          <Text style={styles.statLabel}>Departments</Text>
-        </View>
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHeader}>
-          <Text style={styles.sectionTitle}>Featured picks</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Browse')}>
-            <Text style={styles.sectionLink}>Open library</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.pickGrid}>
-          <TouchableOpacity
-            style={styles.pickCard}
-            onPress={() => featuredNote
-              ? navigation.navigate('PDFViewer', { title: featuredNote.title, url: featuredNote.fileUrl })
-              : navigation.navigate('Browse', { initialTab: 'notes' })}
-            activeOpacity={0.82}
+            activeOpacity={0.85}
           >
-            <View style={styles.pickIcon}>
-              <Ionicons name="reader-outline" size={18} color={COLORS.primary} />
-            </View>
-            <Text style={styles.pickLabel}>Note</Text>
-            <Text style={styles.pickTitle} numberOfLines={2}>{featuredNote?.title || 'Browse latest notes'}</Text>
-            <Text style={styles.pickMeta} numberOfLines={1}>{featuredNote?.subject || 'Updated from EduHub'}</Text>
+            <Text style={styles.ctaBtnText}>Create Free Account</Text>
+            <Ionicons name="arrow-forward" size={16} color={COLORS.white} />
           </TouchableOpacity>
+        </View>
+      </ScrollView>
 
-          <TouchableOpacity
-            style={styles.pickCard}
-            onPress={() => featuredPaper
-              ? navigation.navigate('PDFViewer', { title: featuredPaper.title, url: featuredPaper.fileUrl })
-              : navigation.navigate('Browse', { initialTab: 'papers' })}
-            activeOpacity={0.82}
-          >
-            <View style={styles.pickIcon}>
-              <Ionicons name="document-attach-outline" size={18} color={COLORS.primary} />
-            </View>
-            <Text style={styles.pickLabel}>Paper</Text>
-            <Text style={styles.pickTitle} numberOfLines={2}>{featuredPaper?.title || 'Browse question papers'}</Text>
-            <Text style={styles.pickMeta} numberOfLines={1}>{featuredPaper?.subject || 'Exam prep library'}</Text>
-          </TouchableOpacity>
-        </View>
+      {/* ── Bottom Tab Bar ── */}
+      <View style={styles.tabBar}>
+        {(
+          [
+            { name: 'Home', icon: 'home', screen: null },
+            { name: 'Notes', icon: 'reader-outline', screen: 'Browse' as PublicRoute, params: { initialTab: 'notes' } },
+            { name: 'Paper', icon: 'document-text-outline', screen: 'Browse' as PublicRoute, params: { initialTab: 'papers' } },
+            { name: 'Profile', icon: 'person-outline', screen: 'Login' as PublicRoute },
+          ] as Array<{
+            name: 'Home' | 'Notes' | 'Paper' | 'Profile';
+            icon: string;
+            screen: PublicRoute | null;
+            params?: Record<string, unknown>;
+          }>
+        ).map((tab) => {
+          const isActive = activeTab === tab.name;
+          return (
+            <TouchableOpacity
+              key={tab.name}
+              style={[styles.tabItem, isActive && styles.tabItemActive]}
+              onPress={() => {
+                setActiveTab(tab.name);
+                if (tab.screen) navigation.navigate(tab.screen, tab.params);
+              }}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name={(isActive ? tab.icon.replace('-outline', '') : tab.icon) as any}
+                size={22}
+                color={isActive ? COLORS.white : COLORS.textSecondary}
+              />
+              <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+                {tab.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-
-      <View style={styles.footer}>
-        <View style={styles.footerTop}>
-          <View>
-            <Text style={styles.footerBrand}>EduHub</Text>
-            <Text style={styles.footerText}>Built for quick academic access.</Text>
-          </View>
-          <View style={styles.footerSeal}>
-            <Ionicons name="sparkles-outline" size={18} color={COLORS.primary} />
-          </View>
-        </View>
-        <View style={styles.footerActions}>
-          <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Departments')}>
-            <Text style={styles.footerLinkText}>Catalog</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.footerLinkText}>Role Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  content: {
-    paddingTop: Platform.OS === 'ios' ? 58 : 36,
-    paddingHorizontal: 16,
-    paddingBottom: 22,
+  container: {
+    flex: 1,
   },
+  content: {
+    paddingTop: Platform.OS === 'ios' ? 54 : 32,
+    paddingBottom: 16,
+  },
+
+  /* ── Top Bar ── */
   topBar: {
-    minHeight: 52,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    paddingHorizontal: 18,
+    marginBottom: 16,
   },
   logoRow: {
     flexDirection: 'row',
@@ -251,244 +318,318 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   logoMark: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.brand,
     ...SHADOWS.lift,
   },
   brand: {
     color: COLORS.text,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
     fontStyle: 'italic',
   },
   brandDot: {
     color: COLORS.primary,
   },
-  loginPill: {
-    minHeight: 40,
+  topBarRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    gap: 10,
+  },
+  loginPill: {
+    height: 38,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.lift,
   },
   loginPillText: {
-    color: COLORS.text,
-    fontSize: 13,
+    color: COLORS.white,
+    fontSize: 14,
     fontWeight: '900',
   },
-  navRail: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 18,
+  hamburgerBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  navChip: {
-    minHeight: 38,
+
+  /* ── Hero Banner ── */
+  heroBanner: {
+    marginHorizontal: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: COLORS.brand,
+    minHeight: 170,
+    marginBottom: 20,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6,24,38,0.45)',
+  },
+  heroContent: {
+    padding: 22,
+    paddingBottom: 26,
+    gap: 12,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  heroBadgeDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
+  },
+  heroBadgeText: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  heroTitle: {
+    color: COLORS.white,
+    fontSize: 26,
+    fontWeight: '900',
+    lineHeight: 32,
+  },
+  heroTitleAccent: {
+    color: COLORS.primary,
+    textDecorationLine: 'underline',
+  },
+  heroSubtitle: {
+    color: 'rgba(204,251,241,0.8)',
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 19,
+  },
+
+  /* ── Error ── */
+  errorText: {
+    color: COLORS.error,
+    fontSize: 13,
+    fontWeight: '700',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: COLORS.errorBg,
+    borderRadius: 8,
+    padding: 10,
+  },
+
+  /* ── Live Stats Card ── */
+  statsCard: {
+    marginHorizontal: 16,
+    borderRadius: 18,
+    backgroundColor: COLORS.white,
+    padding: 20,
+    marginBottom: 22,
+    ...SHADOWS.card,
+  },
+  statsKicker: {
+    color: COLORS.primary,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  statsTitle: {
+    color: COLORS.textDark,
+    fontSize: 16,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  connectedRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
-  navChipText: {
-    color: COLORS.text,
+  connectedDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.success,
+  },
+  connectedText: {
+    color: COLORS.success,
     fontSize: 13,
-    fontWeight: '900',
-  },
-  hero: {
-    marginTop: 22,
-    gap: 14,
-  },
-  kicker: {
-    color: COLORS.primary,
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-  },
-  title: {
-    color: COLORS.textDark,
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '900',
-  },
-  subtitle: {
-    color: COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  primaryAction: {
-    flex: 1,
-  },
-  secondaryAction: {
-    flex: 1,
-  },
-  errorText: {
-    color: COLORS.error,
-    fontSize: 14,
     fontWeight: '700',
-    marginTop: 16,
-    backgroundColor: COLORS.errorBg,
-    borderWidth: 1,
-    borderColor: '#fee2e2',
-    borderRadius: 8,
-    padding: 12,
   },
-  statsRow: {
+  statsDivider: {
+    height: 3,
+    width: 36,
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+    marginVertical: 14,
+  },
+  statsGrid: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 22,
+    alignItems: 'center',
   },
-  statItem: {
+  statsItem: {
     flex: 1,
-    borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.brand,
   },
-  statValue: {
-    color: COLORS.white,
-    fontSize: 24,
-    fontWeight: '900',
+  statsItemSep: {
+    width: 1,
+    height: 32,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 12,
   },
-  statLabel: {
-    color: 'rgba(204,251,241,0.74)',
-    fontSize: 12,
-    fontWeight: '800',
-    marginTop: 4,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    color: COLORS.text,
-    fontSize: 17,
-    fontWeight: '900',
-  },
-  sectionLink: {
-    color: COLORS.primaryDark,
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  panel: {
-    marginTop: 22,
-  },
-  panelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  pickGrid: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  pickCard: {
-    flex: 1,
-    minHeight: 142,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
-    padding: 14,
-    ...SHADOWS.card,
-  },
-  pickIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.warningBg,
-  },
-  pickLabel: {
-    color: COLORS.primaryDark,
-    fontSize: 11,
-    fontWeight: '900',
-    marginTop: 12,
-    textTransform: 'uppercase',
-  },
-  pickTitle: {
+  statsValue: {
     color: COLORS.textDark,
-    fontSize: 14,
-    lineHeight: 19,
+    fontSize: 26,
     fontWeight: '900',
-    marginTop: 6,
   },
-  pickMeta: {
+  statsLabel: {
     color: COLORS.textSecondary,
-    fontSize: 12,
-    fontWeight: '800',
-    marginTop: 8,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginTop: 2,
   },
-  footer: {
-    marginTop: 24,
-    borderRadius: 8,
-    padding: 16,
-    backgroundColor: COLORS.brandDark,
+
+  /* ── Services ── */
+  servicesSection: {
+    marginHorizontal: 16,
+    marginBottom: 22,
   },
-  footerTop: {
+  servicesKicker: {
+    color: COLORS.primary,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  servicesTitle: {
+    color: COLORS.textDark,
+    fontSize: 22,
+    fontWeight: '900',
+    marginBottom: 16,
+    lineHeight: 28,
+  },
+  servicesGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
     gap: 12,
   },
-  footerBrand: {
+  serviceCard: {
+    width: '47%',
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOWS.card,
+  },
+  serviceIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.warningBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  serviceTitle: {
+    color: COLORS.textDark,
+    fontSize: 14,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  serviceDesc: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+
+  /* ── CTA Banner ── */
+  ctaBanner: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 18,
+    backgroundColor: COLORS.brand,
+    padding: 22,
+    gap: 10,
+  },
+  ctaTitle: {
     color: COLORS.white,
     fontSize: 20,
     fontWeight: '900',
   },
-  footerText: {
-    color: 'rgba(255,255,255,0.72)',
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 3,
+  ctaSubtitle: {
+    color: 'rgba(204,251,241,0.8)',
+    fontSize: 13,
+    fontWeight: '600',
   },
-  footerSeal: {
-    width: 38,
-    height: 38,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  footerActions: {
+  ctaBtn: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 14,
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    marginTop: 4,
   },
-  footerLink: {
-    minHeight: 36,
+  ctaBtnText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+
+  /* ── Bottom Tab Bar ── */
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.white,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 6,
+    paddingTop: 6,
+    shadowColor: COLORS.brandDark,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  tabItem: {
     flex: 1,
-    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginHorizontal: 4,
+    gap: 3,
   },
-  footerLinkText: {
-    color: COLORS.white,
-    fontSize: 12,
+  tabItemActive: {
+    backgroundColor: COLORS.brand,
+  },
+  tabLabel: {
+    fontSize: 11,
     fontWeight: '900',
+    color: COLORS.textSecondary,
+  },
+  tabLabelActive: {
+    color: COLORS.white,
   },
 });

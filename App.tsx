@@ -496,6 +496,43 @@ const MOBILE_OPTIMIZATION_CSS = `
         height: 20px !important;
       }
 
+      header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 2147482500 !important;
+        overflow: visible !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(18px) !important;
+        min-height: 72px !important;
+      }
+
+      header > div {
+        position: relative !important;
+        z-index: 2147482501 !important;
+        min-height: 64px !important;
+        align-items: center !important;
+      }
+
+      header button[aria-label="Toggle sidebar"],
+      header [data-eduhub-dashboard-back="true"] {
+        position: relative !important;
+        z-index: 2147482600 !important;
+        pointer-events: auto !important;
+      }
+
+      header [data-eduhub-dashboard-back="true"] {
+        flex: 0 0 auto !important;
+        min-width: 48px !important;
+        width: auto !important;
+        background: #ffffff !important;
+      }
+
+      header + *,
+      main > div:first-child {
+        position: relative !important;
+        z-index: 1 !important;
+      }
+
       header a[href="/about"],
       header a[href*="/about"],
       header a[href="/services"],
@@ -1388,14 +1425,34 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
         .replace(/\s+/g, ' ')
         .trim()
         .toLowerCase();
+      var compactLabel = label.replace(/[^a-z0-9]/g, '');
       var className = String(element.getAttribute('class') || '');
       var looksLikeDashboardKicker =
         className.indexOf('uppercase') >= 0 &&
         className.indexOf('tracking-') >= 0 &&
         className.indexOf('text-gray-400') >= 0;
 
-      if (label === 'student workspace' || label === 'teacher workspace' || label === 'workspace' || looksLikeDashboardKicker) {
+      if (
+        label === 'student workspace' ||
+        label === 'teacher workspace' ||
+        label === 'workspace' ||
+        compactLabel === 'workspace' ||
+        compactLabel === 'studentworkspace' ||
+        compactLabel === 'teacherworkspace' ||
+        looksLikeDashboardKicker
+      ) {
         element.setAttribute('data-eduhub-dashboard-kicker-hidden', 'true');
+      }
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('header button'), function (button) {
+      var label = String(button.textContent || button.getAttribute('aria-label') || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      if (label === 'back' || label === 'go back') {
+        button.setAttribute('data-eduhub-dashboard-back', 'true');
       }
     });
 

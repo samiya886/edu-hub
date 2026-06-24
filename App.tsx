@@ -345,6 +345,41 @@ const MOBILE_OPTIMIZATION_CSS = `
         right: 14px !important;
       }
 
+      body[data-eduhub-route="resources"] nav {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 2147482500 !important;
+        min-height: 76px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+      }
+
+      body[data-eduhub-route="resources"] .eduhub-public-nav-inner {
+        position: relative !important;
+        min-height: 54px !important;
+        align-items: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      body[data-eduhub-route="resources"] .eduhub-public-nav-brand {
+        align-self: center !important;
+        padding-right: 126px !important;
+      }
+
+      body[data-eduhub-route="resources"] .eduhub-public-nav-actions {
+        position: absolute !important;
+        right: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 2147482600 !important;
+        margin-left: 0 !important;
+      }
+
+      body[data-eduhub-route="resources"] .eduhub-public-menu-button {
+        margin-left: 8px !important;
+      }
+
       body[data-eduhub-route="resources"] section,
       body[data-eduhub-route="resources"] main > div,
       body[data-eduhub-route="resources"] [class*="space-y-"] {

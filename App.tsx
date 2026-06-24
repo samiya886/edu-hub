@@ -472,7 +472,8 @@ const MOBILE_OPTIMIZATION_CSS = `
       [data-eduhub-footer-hidden="true"],
       [data-eduhub-menu-hidden="true"],
       [data-eduhub-live-backend-hidden="true"],
-      [data-eduhub-foundation-hidden="true"] {
+      [data-eduhub-foundation-hidden="true"],
+      [data-eduhub-dashboard-kicker-hidden="true"] {
         display: none !important;
       }
 
@@ -1356,6 +1357,37 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     });
   }
 
+  function normalizeDashboardHeaderChrome() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-eduhub-dashboard-kicker-hidden]'), function (element) {
+      element.removeAttribute('data-eduhub-dashboard-kicker-hidden');
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('body *'), function (element) {
+      if (element.children && element.children.length > 0) return;
+
+      var label = String(element.textContent || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      if (label === 'student workspace' || label === 'teacher workspace') {
+        element.setAttribute('data-eduhub-dashboard-kicker-hidden', 'true');
+      }
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('header button[aria-label="Toggle sidebar"]'), function (button) {
+      if (button.querySelector('svg')) return;
+
+      var label = String(button.textContent || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      if (label === 'menu' || label === '?' || label === '☰' || label.length <= 3) {
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>';
+      }
+    });
+  }
   function removeResourceFoundation() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-eduhub-foundation-hidden]'), function (element) {
       element.removeAttribute('data-eduhub-foundation-hidden');
@@ -1802,9 +1834,11 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     syncRouteClass();
     removeAboutServicesFromMenu();
     alignResourceHeaderActions();
+    normalizeDashboardHeaderChrome();
     window.setTimeout(compactHomeAndFooter, 80);
     window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(alignResourceHeaderActions, 80);
+    window.setTimeout(normalizeDashboardHeaderChrome, 80);
     window.setTimeout(removeLiveBackendLabel, 80);
     window.setTimeout(removeResourceFoundation, 80);
     window.setTimeout(installProfileScreen, 80);
@@ -1864,6 +1898,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setInterval(installBottomNav, 1500);
     window.setInterval(removeAboutServicesFromMenu, 1500);
     window.setInterval(alignResourceHeaderActions, 1500);
+    window.setInterval(normalizeDashboardHeaderChrome, 1500);
     window.setInterval(removeLiveBackendLabel, 1500);
     window.setInterval(removeResourceFoundation, 1500);
     window.setInterval(installProfileScreen, 1500);

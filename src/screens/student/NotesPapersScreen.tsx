@@ -137,8 +137,22 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
   return (
     <View style={styles.container}>
       <View style={styles.hero}>
-        <Text style={styles.kicker}>Resource library</Text>
-        <Text style={styles.heroTitle}>Notes & Papers</Text>
+        <View style={styles.heroTopRow}>
+          <View>
+            <Text style={styles.kicker}>Resource library</Text>
+            <Text style={styles.heroTitle}>Notes & Papers</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.hamburgerBtn}
+            onPress={() => {
+              if (navigation.openDrawer) navigation.openDrawer();
+              else navigation.goBack();
+            }}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="menu-outline" size={24} color={COLORS.white} />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.heroText}>Filter by department, course, and subject just like the website.</Text>
       </View>
 
@@ -302,6 +316,20 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: COLORS.brand,
     padding: 20,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  hamburgerBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   kicker: {
     color: COLORS.primary,

@@ -261,7 +261,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
     animate={{ opacity: 1, y: 0 }}
     whileHover={{ y: -4, scale: 1.005 }}
     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-    className="group relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
+    className="group relative overflow-hidden rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
   >
     <div className="absolute inset-x-4 bottom-0 h-1 rounded-full bg-[#ff9f1c]/70 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
     <div className="mb-3 flex items-start justify-between gap-3">
@@ -280,36 +280,36 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
       {item.description || 'No description added yet.'}
     </p>
 
-    <div className="mb-3 grid grid-cols-2 gap-2 text-[11px] font-bold text-gray-400">
-      <div className="rounded-xl bg-gray-50 p-2.5">
+    <div className="mb-4 grid grid-cols-1 gap-3 text-sm font-bold text-gray-400 sm:grid-cols-2">
+      <div className="rounded-2xl bg-gray-50 p-3.5">
         <p className="truncate text-[#0a4a44]">{item.subject?.course?.name || item.course?.name || 'Course'}</p>
         <p>Course</p>
       </div>
-      <div className="rounded-xl bg-gray-50 p-2.5">
+      <div className="rounded-2xl bg-gray-50 p-3.5">
         <p className="truncate text-[#0a4a44]">{item.subject?.semester?.name || item.semester?.name || 'Semester'}</p>
         <p>Semester</p>
       </div>
     </div>
 
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-3">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}
-        className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0a4a44] py-2.5 text-xs font-black text-white transition hover:bg-[#ff9f1c]"
+        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#ff9f1c]"
       >
         <Download size={15} /> Open
       </button>
       <button
         type="button"
         onClick={() => onEdit(item)}
-        className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0a4a44]/5 py-2.5 text-xs font-black text-[#0a4a44] transition hover:bg-[#0a4a44] hover:text-white"
+        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-emerald-50 px-3 py-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white"
       >
         <Edit2 size={14} /> Edit
       </button>
       <button
         type="button"
         onClick={() => onDelete(item._id)}
-        className="flex items-center justify-center gap-1.5 rounded-xl bg-red-50 py-2.5 text-xs font-black text-red-500 transition hover:bg-red-500 hover:text-white"
+        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-red-50 px-3 py-3 text-sm font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white"
       >
         <Trash2 size={14} /> Delete
       </button>

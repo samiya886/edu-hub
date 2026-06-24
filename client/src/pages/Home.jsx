@@ -118,22 +118,19 @@ const Home = () => {
                   EduHub resources at a glance
                 </h2>
               </div>
-
-              <div className="flex items-center gap-2 text-sm font-bold">
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-2 text-gray-400">
-                    <Loader2 size={16} className="animate-spin" /> Connecting to backend
-                  </span>
-                ) : errorMessage ? (
-                  <span className="inline-flex items-center gap-2 text-red-500">
-                    <AlertCircle size={16} /> Backend unavailable
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-2 text-emerald-600">
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Connected
-                  </span>
-                )}
-              </div>
+              {(isLoading || errorMessage) && (
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  {isLoading ? (
+                    <span className="inline-flex items-center gap-2 text-gray-400">
+                      <Loader2 size={16} className="animate-spin" /> Connecting to backend
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 text-red-500">
+                      <AlertCircle size={16} /> Backend unavailable
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             <motion.div variants={staggerGrid} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">

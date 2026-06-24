@@ -477,6 +477,25 @@ const MOBILE_OPTIMIZATION_CSS = `
         display: none !important;
       }
 
+      header p[class*="uppercase"][class*="tracking-"][class*="text-gray-400"] {
+        display: none !important;
+      }
+
+      header button[aria-label="Toggle sidebar"] {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+        flex: 0 0 44px !important;
+      }
+
+      header button[aria-label="Toggle sidebar"] svg {
+        width: 20px !important;
+        height: 20px !important;
+      }
+
       header a[href="/about"],
       header a[href*="/about"],
       header a[href="/services"],
@@ -1362,15 +1381,20 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       element.removeAttribute('data-eduhub-dashboard-kicker-hidden');
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll('body *'), function (element) {
+    Array.prototype.forEach.call(document.querySelectorAll('header p, header span, body *'), function (element) {
       if (element.children && element.children.length > 0) return;
 
       var label = String(element.textContent || '')
         .replace(/\s+/g, ' ')
         .trim()
         .toLowerCase();
+      var className = String(element.getAttribute('class') || '');
+      var looksLikeDashboardKicker =
+        className.indexOf('uppercase') >= 0 &&
+        className.indexOf('tracking-') >= 0 &&
+        className.indexOf('text-gray-400') >= 0;
 
-      if (label === 'student workspace' || label === 'teacher workspace') {
+      if (label === 'student workspace' || label === 'teacher workspace' || label === 'workspace' || looksLikeDashboardKicker) {
         element.setAttribute('data-eduhub-dashboard-kicker-hidden', 'true');
       }
     });

@@ -123,8 +123,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white text-gray-800 px-3 py-3 sticky top-0 z-50 w-full max-w-full shadow-sm border-b border-gray-100 sm:px-5 lg:px-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-        <Link to="/" className="flex min-w-0 items-center gap-2 group">
+      <div className="eduhub-public-nav-inner max-w-7xl mx-auto flex items-center justify-between gap-3">
+        <Link to="/" className="eduhub-public-nav-brand flex min-w-0 items-center gap-2 group">
           <div className="bg-[#10b981] p-2 rounded-full transition-transform group-hover:scale-105">
             <GraduationCap className="text-white w-5 h-5" />
           </div>
@@ -194,7 +194,7 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+        <div className="eduhub-public-nav-actions ml-auto flex min-w-0 items-center justify-end gap-2 sm:gap-4">
           {isAuthenticated() ? (
             <div className="relative" ref={profileMenuRef}>
               <button
@@ -266,7 +266,7 @@ const Navbar = () => {
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm lg:hidden"
+            className="eduhub-public-menu-button ml-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm lg:hidden"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle navigation menu"
             aria-expanded={isOpen}

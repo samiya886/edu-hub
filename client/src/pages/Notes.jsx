@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useAcademicOptions from '../hooks/useAcademicOptions';
 import {
   Search, BookOpen, Download, Star,
-  Calendar, Eye, ShieldCheck, ArrowRight,
+  Calendar, Eye, ArrowRight,
   Loader2, AlertCircle
 } from 'lucide-react';
 
@@ -163,13 +163,6 @@ const NotesPage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a4a44]/90 via-[#0a4a44]/70 to-white z-0" />
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-[#ff9f00] px-5 py-2 rounded-full text-white text-xs font-black uppercase tracking-widest mb-8 shadow-xl"
-          >
-            <ShieldCheck size={16} /> <span>Live notes from backend</span>
-          </motion.div>
 
           <h1 className="text-5xl md:text-8xl font-black text-white mb-10 leading-none">
             Study Smart. <br />

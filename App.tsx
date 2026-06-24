@@ -1042,22 +1042,29 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-teacher-material-actions {
-        justify-content: flex-end !important;
-        gap: 8px !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 10px !important;
         border-top: 1px solid #f8fafc !important;
         padding-top: 12px !important;
       }
 
       .eduhub-teacher-icon-action {
-        width: 42px !important;
-        height: 42px !important;
-        min-height: 42px !important;
+        width: 100% !important;
+        height: 48px !important;
+        min-height: 48px !important;
         border: 0 !important;
-        border-radius: 14px !important;
-        background: #fff7ed !important;
-        color: #ff9f1c !important;
-        font-size: 13px !important;
+        border-radius: 16px !important;
+        background: #ecfdf5 !important;
+        color: #0a4a44 !important;
+        font-size: 14px !important;
         font-weight: 900 !important;
+        white-space: nowrap !important;
+      }
+
+      .eduhub-teacher-icon-action:first-child {
+        background: #0a4a44 !important;
+        color: #ffffff !important;
       }
 
       .eduhub-teacher-icon-action.danger {
@@ -1896,17 +1903,17 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     card.appendChild(info);
 
     var actions = createTeacherElement('div', 'eduhub-teacher-material-actions');
-    actions.appendChild(createTeacherIconButton('Open', 'O', function () {
+    actions.appendChild(createTeacherIconButton('Open', 'Open', function () {
       if (item.fileUrl) {
         window.open(item.fileUrl, '_blank');
       } else {
         window.alert('This resource does not have a file link yet.');
       }
     }));
-    actions.appendChild(createTeacherIconButton('Edit', 'E', function () {
+    actions.appendChild(createTeacherIconButton('Edit', 'Edit', function () {
       navigateTeacher('/teacher/upload?type=' + encodeURIComponent(type) + '&id=' + encodeURIComponent(item.id));
     }));
-    actions.appendChild(createTeacherIconButton('Delete', 'D', function () {
+    actions.appendChild(createTeacherIconButton('Delete', 'Delete', function () {
       if (!window.confirm('Delete this ' + type + '?')) return;
       var endpoint = type === 'paper' ? '/api/papers/' : '/api/notes/';
       window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE', headers: { Authorization: 'Bearer ' + (window.localStorage ? window.localStorage.getItem('token') : '') } })

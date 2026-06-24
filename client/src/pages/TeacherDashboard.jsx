@@ -432,11 +432,11 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
       </div>
     </div>
 
-    <div className="grid grid-cols-3 gap-3">
+    <div className="eduhub-resource-actions grid grid-cols-3 gap-3">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}
-        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#ff9f1c]"
+        className="eduhub-resource-action eduhub-resource-action-open flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#ff9f1c]"
       >
         <Download size={15} /> Open
       </button>
@@ -444,7 +444,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
         type="button"
         onClick={() => onEdit(item, type)}
         disabled={!canManage}
-        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-emerald-50 px-3 py-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
+        className="eduhub-resource-action eduhub-resource-action-edit flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-emerald-50 px-3 py-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
       >
         <Edit2 size={14} /> Edit
       </button>
@@ -452,7 +452,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
         type="button"
         onClick={() => onDelete(item._id, type)}
         disabled={!canManage}
-        className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-red-50 px-3 py-3 text-sm font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
+        className="eduhub-resource-action eduhub-resource-action-delete flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-red-50 px-3 py-3 text-sm font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
       >
         <Trash2 size={14} /> Delete
       </button>

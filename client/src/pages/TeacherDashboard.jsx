@@ -11,9 +11,7 @@ import {
   Edit2,
   FileText,
   GraduationCap,
-  LayoutDashboard,
   Menu,
-  Plus,
   Search,
   Trash2,
   Upload,
@@ -23,7 +21,6 @@ import {
 const API_URL = '/api';
 
 const teacherNav = [
-  { key: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'notes', label: 'My Notes', icon: BookOpen },
   { key: 'papers', label: 'My Papers', icon: FileText },
   { key: 'upload-notes', label: 'Upload Notes', icon: Upload },
@@ -194,14 +191,18 @@ const Field = ({ label, children }) => (
   </div>
 );
 
-const SelectField = ({ label, value, onChange, disabled, children }) => (
+const SelectField = ({ label, value, onChange, disabled, children, variant = 'rounded' }) => (
   <Field label={label}>
     <div className="relative">
       <select
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className="w-full appearance-none rounded-2xl border-2 border-transparent bg-gray-50 p-4 pr-10 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+        className={
+          variant === 'plain'
+            ? 'w-full appearance-none rounded-md border border-gray-300 bg-white p-3 pr-10 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60'
+            : 'w-full appearance-none rounded-2xl border-2 border-transparent bg-gray-50 p-4 pr-10 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50'
+        }
       >
         {children}
       </select>
@@ -244,7 +245,7 @@ const HeroPanel = ({ title, caption, action }) => (
   </div>
 );
 
-const ResourceForm = ({
+const UploadForm = ({
   type,
   form,
   setForm,
@@ -252,111 +253,145 @@ const ResourceForm = ({
   courses,
   semesters,
   subjects,
-  onSubmit,
   loading,
+  message,
   editingId,
   onCancel,
+  onSubmit,
 }) => (
-  <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm sm:rounded-[36px]">
-    <div className="flex items-center justify-between gap-3 bg-[#0a4a44] p-4 text-white sm:p-6">
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">{editingId ? 'Edit Resource' : 'New Upload'}</p>
-        <h3 className="mt-1 text-xl font-black tracking-tighter sm:text-2xl">{editingId ? 'Update' : 'Upload'} {type === 'notes' ? 'Note' : 'Paper'}</h3>
-      </div>
-      <button type="button" onClick={onCancel} className="rounded-2xl bg-white/10 p-3 text-white transition hover:bg-white/20" aria-label="Close form">
-        <X size={20} />
-      </button>
+  <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-4xl">
+    <div className="mb-5 border-b border-gray-200 pb-5">
+      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ff9f1c]">Academic Submission</p>
+      <h2 className="mt-2 text-2xl font-black tracking-tight text-[#0a4a44] sm:text-3xl">
+        {editingId ? 'Edit' : 'Upload'} {type === 'notes' ? 'Notes' : 'Question Paper'}
+      </h2>
+      <p className="mt-2 text-sm font-semibold leading-relaxed text-gray-500">
+        Complete each required field and attach one PDF document for review.
+      </p>
     </div>
 
-    <form onSubmit={onSubmit} className="space-y-5 p-4 sm:space-y-6 sm:p-6">
-      <div className="grid gap-5 md:grid-cols-2">
-        <Field label="Title">
-          <input
-            required
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-          />
-        </Field>
-        <SelectField label="Department" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value, course: '', semester: '', subject: '' })}>
-          <option value="">Select Department</option>
-          {departments.map((dept) => <option key={dept._id} value={dept._id}>{dept.name}</option>)}
-        </SelectField>
-        <SelectField label="Course" value={form.course} disabled={!form.department} onChange={(e) => setForm({ ...form, course: e.target.value, semester: '', subject: '' })}>
-          <option value="">Select Course</option>
-          {courses.map((course) => <option key={course._id} value={course._id}>{course.name}</option>)}
-        </SelectField>
-        <SelectField label="Semester" value={form.semester} disabled={!form.course} onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}>
-          <option value="">Select Semester</option>
-          {semesters.map((semester) => <option key={semester._id} value={semester._id}>{semester.name}</option>)}
-        </SelectField>
-        <SelectField label="Subject" value={form.subject} disabled={!form.semester} onChange={(e) => setForm({ ...form, subject: e.target.value })}>
-          <option value="">Select Subject</option>
-          {subjects.map((subject) => <option key={subject._id} value={subject._id}>{subject.name}</option>)}
-        </SelectField>
-        {type === 'papers' && (
-          <>
-            <Field label="Year">
-              <input
-                required
-                type="number"
-                min="2000"
-                max="2100"
-                value={form.year}
-                onChange={(e) => setForm({ ...form, year: e.target.value })}
-                className="w-full rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-              />
-            </Field>
-            <SelectField label="Exam Type" value={form.examType} onChange={(e) => setForm({ ...form, examType: e.target.value })}>
-              {['Mid-term', 'Final', 'Quiz', 'Assignment'].map((exam) => <option key={exam} value={exam}>{exam}</option>)}
-            </SelectField>
-          </>
-        )}
-      </div>
+    <form onSubmit={onSubmit} className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <section className="border-b border-gray-200 p-5 sm:p-6">
+        <h3 className="text-base font-black text-[#0a4a44]">Resource Information</h3>
+        <div className="mt-5 grid gap-5">
+          <Field label="Title">
+            <input
+              required
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="e.g. Data Structures Unit 2"
+              className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition placeholder:text-gray-400 focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100"
+            />
+          </Field>
 
-      <Field label="Description">
-        <textarea
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          rows="3"
-          className="w-full resize-none rounded-2xl border-2 border-transparent bg-gray-50 p-4 font-bold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:bg-white"
-        />
-      </Field>
-
-      <div className="relative cursor-pointer rounded-[26px] border-4 border-dashed border-gray-100 bg-gray-50/20 p-5 text-center transition hover:border-[#ff9f1c] sm:rounded-[36px] sm:p-10">
-        <input
-          required={!editingId && !form.existingFileUrl}
-          type="file"
-          accept="application/pdf,.pdf"
-          onChange={(e) => setForm({ ...form, file: e.target.files[0] || null })}
-          className="absolute inset-0 z-20 cursor-pointer opacity-0"
-        />
-        <div className="space-y-5">
-          <motion.div whileHover={{ scale: 1.08, rotate: 4 }} className="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-white shadow-xl sm:h-24 sm:w-24 sm:rounded-[32px]">
-            <Upload className={form.file ? 'text-green-500' : 'text-[#ff9f1c]'} size={32} />
-          </motion.div>
-          <div>
-            <p className="break-words text-lg font-black text-[#0a4a44] sm:text-2xl">
-              {form.file ? form.file.name : editingId ? 'Replace PDF Document' : 'Attach PDF Document'}
-            </p>
-            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400 sm:text-xs sm:tracking-[0.2em]">
-              {form.file
-                ? `${(form.file.size / 1024 / 1024).toFixed(2)} MB - Ready`
-                : editingId
-                ? 'Leave empty to keep current PDF'
-                : 'Max File Size: 15MB - PDF only'}
-            </p>
-          </div>
+          <Field label="Description">
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows="4"
+              placeholder="Add brief details about this resource"
+              className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition placeholder:text-gray-400 focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100"
+            />
+          </Field>
         </div>
-      </div>
+      </section>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#ff9f1c] px-4 py-4 text-base font-black text-white shadow-[0_24px_50px_-18px_rgba(255,159,28,0.65)] transition hover:bg-[#e68a00] disabled:bg-gray-300 sm:rounded-3xl sm:py-5 sm:text-lg"
-      >
-        <Upload size={20} /> {loading ? 'Saving...' : editingId ? 'Update Resource' : 'Publish Resource'}
-      </button>
+      <section className="border-b border-gray-200 p-5 sm:p-6">
+        <h3 className="text-base font-black text-[#0a4a44]">Academic Details</h3>
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <SelectField variant="plain" label="Department" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value, course: '', semester: '', subject: '' })}>
+            <option value="">Select Department</option>
+            {departments.map((dept) => <option key={dept._id} value={dept._id}>{dept.name}</option>)}
+          </SelectField>
+
+          <SelectField variant="plain" label="Course" value={form.course} disabled={!form.department} onChange={(e) => setForm({ ...form, course: e.target.value, semester: '', subject: '' })}>
+            <option value="">Select Course</option>
+            {courses.map((course) => <option key={course._id} value={course._id}>{course.name}</option>)}
+          </SelectField>
+
+          <SelectField variant="plain" label="Semester" value={form.semester} disabled={!form.course} onChange={(e) => setForm({ ...form, semester: e.target.value, subject: '' })}>
+            <option value="">Select Semester</option>
+            {semesters.map((semester) => <option key={semester._id} value={semester._id}>{semester.name}</option>)}
+          </SelectField>
+
+          <SelectField variant="plain" label="Subject" value={form.subject} disabled={!form.semester} onChange={(e) => setForm({ ...form, subject: e.target.value })}>
+            <option value="">Select Subject</option>
+            {subjects.map((subject) => <option key={subject._id} value={subject._id}>{subject.name}</option>)}
+          </SelectField>
+
+          {type === 'notes' ? (
+            <SelectField variant="plain" label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+              {['Digital PDF', 'Handwritten', 'Revision Sheets', 'Topper Special'].map((category) => <option key={category} value={category}>{category}</option>)}
+            </SelectField>
+          ) : (
+            <>
+              <Field label="Year">
+                <input
+                  required
+                  type="number"
+                  min="2000"
+                  max="2100"
+                  value={form.year}
+                  onChange={(e) => setForm({ ...form, year: e.target.value })}
+                  className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100"
+                />
+              </Field>
+              <SelectField variant="plain" label="Exam Type" value={form.examType} onChange={(e) => setForm({ ...form, examType: e.target.value })}>
+                {['Mid-term', 'Final', 'Quiz', 'Assignment'].map((exam) => <option key={exam} value={exam}>{exam}</option>)}
+              </SelectField>
+            </>
+          )}
+        </div>
+      </section>
+
+      <section className="border-b border-gray-200 p-5 sm:p-6">
+        <h3 className="text-base font-black text-[#0a4a44]">Document Upload</h3>
+        <div className="mt-5 rounded-md border border-gray-300 bg-gray-50 p-4">
+          <label className="block text-xs font-black uppercase tracking-[0.16em] text-gray-500" htmlFor="teacher-resource-file">
+            PDF Document
+          </label>
+          <input
+            id="teacher-resource-file"
+            required={!editingId && !form.existingFileUrl}
+            type="file"
+            accept="application/pdf,.pdf"
+            onChange={(e) => setForm({ ...form, file: e.target.files[0] || null })}
+            className="mt-3 block w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] file:mr-4 file:rounded-md file:border-0 file:bg-[#0a4a44] file:px-4 file:py-2 file:text-sm file:font-black file:text-white"
+          />
+          <p className="mt-3 text-xs font-semibold text-gray-500">
+            {form.file
+              ? `${form.file.name} - ${(form.file.size / 1024 / 1024).toFixed(2)} MB`
+              : editingId
+              ? 'Leave empty to keep the current PDF.'
+              : 'Upload one PDF file, maximum 15MB.'}
+          </p>
+        </div>
+      </section>
+
+      {message && (
+        <div className="mx-5 mt-5 rounded-md border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44] sm:mx-6">
+          {message}
+        </div>
+      )}
+
+      <div className="grid gap-3 p-5 sm:flex sm:justify-end sm:p-6">
+        {editingId && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-black text-[#0a4a44] transition hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#ff9f1c] px-6 py-3 text-sm font-black text-white transition hover:bg-[#e68a00] disabled:bg-gray-300"
+        >
+          <Upload size={18} /> {loading ? 'Submitting...' : editingId ? 'Update Submission' : `Submit ${type === 'notes' ? 'Notes' : 'Paper'}`}
+        </button>
+      </div>
     </form>
   </motion.div>
 );
@@ -428,16 +463,15 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
 
 const TeacherDashboard = () => {
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState('notes');
   const [isDesktop, setIsDesktop] = useState(getIsDesktop);
   const [sidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [resourceType, setResourceType] = useState('notes');
   const [notes, setNotes] = useState([]);
   const [papers, setPapers] = useState([]);
-  const [search, setSearch] = useState('');
-  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
   const [departments, setDepartments] = useState([]);
@@ -445,6 +479,7 @@ const TeacherDashboard = () => {
   const [semesters, setSemesters] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [formData, setFormData] = useState(emptyResource);
+  const [filters, setFilters] = useState({ search: '' });
 
   useEffect(() => {
     const handleResize = () => {
@@ -476,13 +511,11 @@ const TeacherDashboard = () => {
       setResourceType('notes');
       setEditingId(null);
       setFormData(emptyResource);
-      setShowForm(false);
     }
     if (activeSection === 'upload-papers') {
       setResourceType('papers');
       setEditingId(null);
       setFormData(emptyResource);
-      setShowForm(false);
     }
   }, [activeSection]);
 
@@ -498,9 +531,9 @@ const TeacherDashboard = () => {
     if (formData.semester) fetchSubjects(formData.semester);
   }, [formData.semester]);
   const currentItems = (resourceType === 'notes' ? notes : papers).filter((item) =>
-    item.title?.toLowerCase().includes(search.toLowerCase()) ||
-    item.description?.toLowerCase().includes(search.toLowerCase()) ||
-    item.subject?.name?.toLowerCase().includes(search.toLowerCase())
+    item.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
+    item.description?.toLowerCase().includes(filters.search.toLowerCase()) ||
+    item.subject?.name?.toLowerCase().includes(filters.search.toLowerCase())
   );
   const activity = [
     ...notes.slice(0, 3).map((item) => ({ type: 'Note', resourceType: 'notes', title: item.title, time: item.createdAt, id: item._id, item })),
@@ -515,11 +548,13 @@ const TeacherDashboard = () => {
   const stats = [
     { label: 'My Notes', value: notes?.length ?? 0, caption: 'Notes uploaded by you', icon: BookOpen },
     { label: 'My Papers', value: papers?.length ?? 0, caption: 'Papers uploaded by you', icon: FileText },
-    { label: 'Downloads', value: totalDownloads, caption: 'Across your uploads', icon: Download },
+    { label: 'Search Active', value: filters.search ? 1 : 0, caption: 'Keyword search only', icon: Search },
   ];
 
   const fetchAll = async () => {
+    setLoading(true);
     await Promise.all([fetchDepartments(), fetchNotes(), fetchPapers(), fetchSubjects()]);
+    setLoading(false);
   };
 
   const fetchDepartments = async () => {
@@ -594,12 +629,11 @@ const TeacherDashboard = () => {
   const resetResourceForm = () => {
     setFormData(emptyResource);
     setEditingId(null);
-    setShowForm(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setUploading(true);
     setMessage('');
 
     try {
@@ -641,7 +675,7 @@ const TeacherDashboard = () => {
       setMessage(error.message);
     }
 
-    setLoading(false);
+    setUploading(false);
   };
 
   const handleEdit = (item, typeOverride = resourceType) => {
@@ -661,8 +695,7 @@ const TeacherDashboard = () => {
       examType: item.examType || 'Final',
     });
     setEditingId(item._id);
-    setShowForm(true);
-    setActiveSection(targetType);
+    setActiveSection(targetType === 'papers' ? 'upload-papers' : 'upload-notes');
   };
 
   const handleDelete = async (id, typeOverride = resourceType) => {
@@ -688,189 +721,44 @@ const TeacherDashboard = () => {
       setMessage(error.message);
     }
   };
-  const renderOverview = () => {
-    const recentUploads = activity.slice(0, 3);
-    const recentNotes = notes.slice(0, 3);
-    const recentPapers = papers.slice(0, 3);
-
-    return (
-      <div className="space-y-8">
-        <HeroPanel
-          title={`Hello, ${user?.name || 'Teacher'}`}
-          caption="Manage your uploaded notes, exam papers, downloads, and recent activity from one student-style dashboard."
-        />
-
-        <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
-          {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => setActiveSection('upload-notes')}
-            className="rounded-[26px] border border-gray-100 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c]">
-              <Upload size={22} />
-            </div>
-            <p className="text-lg font-black text-[#0a4a44]">Upload Resource</p>
-            <p className="mt-1 text-sm font-semibold text-gray-400">Add notes or exam papers for students.</p>
-          </button>
-          <button
-            type="button"
-            onClick={fetchAll}
-            className="rounded-[26px] border border-gray-100 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0a4a44]/5 text-[#0a4a44]">
-              <LayoutDashboard size={22} />
-            </div>
-            <p className="text-lg font-black text-[#0a4a44]">Refresh Dashboard</p>
-            <p className="mt-1 text-sm font-semibold text-gray-400">Reload your latest teacher uploads.</p>
-          </button>
-        </div>
-
-        <section className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">Recent Uploads</h3>
-            <button type="button" onClick={fetchAll} className="text-sm font-black text-[#e68a00]">Refresh</button>
-          </div>
-          {recentUploads.length ? (
-            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
-              {recentUploads.map((entry) => (
-                <ResourceCard
-                  key={`${entry.type}-${entry.id}`}
-                  item={entry.item}
-                  type={entry.resourceType}
-                  onDownload={handleDownload}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
-              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
-              <p className="font-black text-[#0a4a44]">No recent uploads</p>
-              <p className="mt-1 text-sm font-semibold text-gray-400">Upload notes or papers to see them here.</p>
-            </div>
-          )}
-        </section>
-
-        <section className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">My Notes</h3>
-            <button type="button" onClick={() => setActiveSection('notes')} className="text-sm font-black text-[#e68a00]">See All</button>
-          </div>
-          {recentNotes.length ? (
-            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
-              {recentNotes.map((item) => (
-                <ResourceCard key={item._id} item={item} type="notes" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
-              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
-              <p className="font-black text-[#0a4a44]">No notes found</p>
-              <p className="mt-1 text-sm font-semibold text-gray-400">Upload notes from this teacher account.</p>
-            </div>
-          )}
-        </section>
-
-        <section className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-xl font-black tracking-tight text-[#0a4a44] sm:text-2xl">My Papers</h3>
-            <button type="button" onClick={() => setActiveSection('papers')} className="text-sm font-black text-[#e68a00]">See All</button>
-          </div>
-          {recentPapers.length ? (
-            <div className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
-              {recentPapers.map((item) => (
-                <ResourceCard key={item._id} item={item} type="papers" onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center">
-              <AlertCircle className="mx-auto mb-3 text-gray-300" size={40} />
-              <p className="font-black text-[#0a4a44]">No papers found</p>
-              <p className="mt-1 text-sm font-semibold text-gray-400">Upload papers from this teacher account.</p>
-            </div>
-          )}
-        </section>
-      </div>
-    );
-  };
   const renderResources = () => (
     <div className="space-y-8">
-      <HeroPanel
-        title={`Manage ${resourceType === 'notes' ? 'Notes' : 'Papers'}`}
-        caption="Upload, edit, and delete your academic resources with the same structure students use to discover them."
-        action={
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(null);
-              setFormData(emptyResource);
-              setShowForm(true);
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 py-4 text-sm font-black text-white transition hover:bg-[#e68a00] sm:w-auto sm:px-6"
-          >
-            <Plus size={18} /> Add {resourceType === 'notes' ? 'Note' : 'Paper'}
-          </button>
-        }
-      />
+      <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">Academic Library</p>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">
+              {activeSection === 'notes' ? 'Notes Library' : 'Paper Vault'}
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">
+              Review your own uploaded resources, search by title or description, then open the exact material you need.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+        {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
+      </div>
 
       <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
-        <div className="mb-4 flex rounded-2xl bg-gray-50 p-1">
-          {['notes', 'papers'].map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => setResourceType(type)}
-              className={`rounded-xl px-5 py-3 text-sm font-black capitalize transition ${
-                resourceType === type ? 'bg-[#0a4a44] text-white' : 'text-gray-400 hover:text-[#0a4a44]'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
           <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search your resources"
-            className="w-full rounded-2xl bg-gray-50 py-4 pl-11 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]"
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            placeholder={`Search ${resourceType}`}
+            className="w-full rounded-2xl bg-gray-50 py-4 pl-12 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]"
           />
         </div>
       </div>
 
-      <AnimatePresence>
-        {message && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 rounded-2xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44]">
-            <CheckCircle2 size={18} /> {message}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showForm && (
-          <ResourceForm
-            type={resourceType}
-            form={formData}
-            setForm={setFormData}
-            departments={departments}
-            courses={courses}
-            semesters={semesters}
-            subjects={subjects}
-            onSubmit={handleSubmit}
-            loading={loading}
-            editingId={editingId}
-            onCancel={resetResourceForm}
-          />
-        )}
-      </AnimatePresence>
-
-      {currentItems.length ? (
+      {loading ? (
+        <div className="py-20 text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#ff9f1c]/20 border-t-[#ff9f1c]" />
+          <p className="font-bold text-gray-400">Loading resources...</p>
+        </div>
+      ) : currentItems.length ? (
         <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {currentItems.map((item) => (
             <ResourceCard key={item._id} item={item} type={resourceType} onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} canManage />
@@ -879,47 +767,37 @@ const TeacherDashboard = () => {
       ) : (
         <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12">
           <AlertCircle className="mx-auto mb-4 text-gray-300" size={48} />
-          <h3 className="text-2xl font-black text-[#0a4a44]">No {resourceType} yet</h3>
-          <p className="mt-2 font-medium text-gray-400">Create one to start building your resource library.</p>
+          <h3 className="text-2xl font-black text-[#0a4a44]">No resources found</h3>
+          <p className="mt-2 font-medium text-gray-400">Try changing the search keyword or upload a new teacher resource.</p>
         </div>
       )}
     </div>
   );
 
   const renderUpload = () => (
-    <div className="space-y-8">
-      <HeroPanel
-        title={`Upload ${resourceType === 'notes' ? 'Notes' : 'Papers'}`}
-        caption="Publish a new academic resource and tag it to the right department, course, semester, and subject."
-      />
-
-      <AnimatePresence>
-        {message && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 rounded-2xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44]">
-            <CheckCircle2 size={18} /> {message}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <ResourceForm
-        type={resourceType}
-        form={formData}
-        setForm={setFormData}
-        departments={departments}
-        courses={courses}
-        semesters={semesters}
-        subjects={subjects}
-        onSubmit={handleSubmit}
-        loading={loading}
-        editingId={null}
-        onCancel={() => setActiveSection(resourceType)}
-      />
-    </div>
+    <UploadForm
+      type={activeSection === 'upload-papers' ? 'papers' : 'notes'}
+      form={formData}
+      setForm={setFormData}
+      departments={departments}
+      courses={courses}
+      semesters={semesters}
+      subjects={subjects}
+      loading={uploading}
+      message={message}
+      editingId={editingId}
+      onCancel={() => {
+        resetResourceForm();
+        setActiveSection(resourceType);
+      }}
+      onSubmit={handleSubmit}
+    />
   );
+
   const content = () => {
     if (activeSection === 'upload-notes' || activeSection === 'upload-papers') return renderUpload();
     if (activeSection === 'notes' || activeSection === 'papers') return renderResources();
-    return renderOverview();
+    return renderResources();
   };
 
   return (

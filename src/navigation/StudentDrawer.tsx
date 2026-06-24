@@ -3,7 +3,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { COLORS } from '../constants';
 
@@ -116,7 +116,7 @@ export default function StudentDrawer() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerTintColor: COLORS.text,
         headerStyle: { backgroundColor: COLORS.white },
         headerTitleAlign: 'center',
@@ -125,7 +125,17 @@ export default function StudentDrawer() {
         drawerInactiveTintColor: COLORS.textSecondary,
         drawerActiveBackgroundColor: COLORS.warningBg,
         drawerLabelStyle: { fontWeight: '800' },
-      }}
+        drawerPosition: 'right',
+        headerLeft: () => null,
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.openDrawer()}
+            style={{ marginRight: 16, padding: 4 }}
+          >
+            <Ionicons name="menu-outline" size={26} color={COLORS.text} />
+          </TouchableOpacity>
+        ),
+      })}
     >
       <Drawer.Screen
         name="StudentApp"

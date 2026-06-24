@@ -86,7 +86,7 @@ const BackButton = () => {
     <button
       type="button"
       onClick={goBack}
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:px-4"
+      className="eduhub-dashboard-back-button inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-xs font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm"
       aria-label="Go back"
     >
       <span>Back</span>
@@ -171,12 +171,12 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
     </motion.aside>
 
     <main className={`${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[96px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
-      <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/80 px-3 backdrop-blur-2xl sm:px-4 md:px-8 lg:h-24 lg:px-10">
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
+      <header className="eduhub-dashboard-header sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/80 px-3 backdrop-blur-2xl sm:px-4 md:px-8 lg:h-24 lg:px-10">
+        <div className="eduhub-dashboard-header-left flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <button
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
+            className="eduhub-dashboard-menu-button inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
             aria-label="Toggle sidebar"
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -187,7 +187,7 @@ const Shell = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen, c
             </h1>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="eduhub-dashboard-header-actions flex shrink-0 items-center justify-end gap-2 sm:gap-3">
           <BackButton />
           <div className="hidden items-center gap-3 rounded-3xl border border-gray-100 bg-gray-50 p-2 pr-5 sm:flex">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">

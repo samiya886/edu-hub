@@ -496,6 +496,46 @@ const MOBILE_OPTIMIZATION_CSS = `
         height: 20px !important;
       }
 
+      .eduhub-dashboard-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+      }
+
+      .eduhub-dashboard-header-left,
+      .eduhub-dashboard-header-actions {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+      }
+
+      .eduhub-dashboard-header-left {
+        width: auto !important;
+        flex: 1 1 auto !important;
+      }
+
+      .eduhub-dashboard-header-actions {
+        width: auto !important;
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+      }
+
+      .eduhub-dashboard-menu-button,
+      .eduhub-dashboard-back-button {
+        position: relative !important;
+        z-index: 2147482600 !important;
+        flex: 0 0 auto !important;
+      }
+
+      .eduhub-dashboard-menu-button {
+        min-width: 44px !important;
+        width: 44px !important;
+      }
+
       header {
         position: sticky !important;
         top: 0 !important;

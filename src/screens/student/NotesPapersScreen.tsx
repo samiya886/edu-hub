@@ -137,8 +137,9 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
   return (
     <View style={styles.container}>
       <View style={styles.hero}>
+        {/* Navbar row */}
         <View style={styles.heroTopRow}>
-          <View>
+          <View style={styles.heroTitleBlock}>
             <Text style={styles.kicker}>Resource library</Text>
             <Text style={styles.heroTitle}>Notes & Papers</Text>
           </View>
@@ -150,7 +151,7 @@ export default function NotesPapersScreen({ route, navigation }: { route: any; n
             }}
             activeOpacity={0.75}
           >
-            <Ionicons name="menu-outline" size={24} color={COLORS.white} />
+            <Ionicons name="menu-outline" size={20} color={COLORS.white} />
           </TouchableOpacity>
         </View>
         <Text style={styles.heroText}>Filter by department, course, and subject just like the website.</Text>
@@ -311,37 +312,44 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   hero: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 12,
     marginBottom: 0,
-    borderRadius: 28,
+    borderRadius: 22,
     backgroundColor: COLORS.brand,
-    padding: 20,
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 18,
   },
   heroTopRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 10,
+  },
+  heroTitleBlock: {
+    flex: 1,
+    marginRight: 12,
   },
   hamburgerBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   kicker: {
     color: COLORS.primary,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '900',
     letterSpacing: 2,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   heroTitle: {
     color: COLORS.white,
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: '900',
   },
   heroText: {

@@ -513,6 +513,39 @@ const MOBILE_OPTIMIZATION_CSS = `
         display: none !important;
       }
 
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+        scroll-snap-type: none !important;
+      }
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 36px !important;
+        flex: 1 1 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 8px 4px !important;
+        border-radius: 10px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+      }
+
+      div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button svg {
+        width: 13px !important;
+        height: 13px !important;
+        flex: 0 0 13px !important;
+      }
       header p[class*="uppercase"][class*="tracking-"][class*="text-gray-400"] {
         display: none !important;
       }
@@ -1050,23 +1083,43 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-teacher-material-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 12px !important;
+        gap: 7px !important;
         border-top: 1px solid #f8fafc !important;
         margin-top: auto !important;
-        padding-top: 12px !important;
+        padding-top: 10px !important;
       }
 
       .eduhub-teacher-icon-action {
         width: 100% !important;
-        height: 48px !important;
-        min-height: 48px !important;
+        height: 38px !important;
+        min-height: 38px !important;
         border: 0 !important;
-        border-radius: 16px !important;
+        border-radius: 12px !important;
         background: #ecfdf5 !important;
         color: #0a4a44 !important;
-        font-size: 14px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 6px 4px !important;
+        font-size: 10px !important;
         font-weight: 900 !important;
+        line-height: 1 !important;
         white-space: nowrap !important;
+      }
+
+      .eduhub-teacher-action-icon,
+      .eduhub-teacher-action-label {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 0 !important;
+      }
+
+      .eduhub-teacher-action-icon svg {
+        width: 13px !important;
+        height: 13px !important;
+        flex: 0 0 13px !important;
       }
 
       .eduhub-teacher-icon-action:first-child {
@@ -1887,10 +1940,20 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
   function createTeacherIconButton(label, icon, onClick, danger) {
     var button = createTeacherElement('button', danger ? 'eduhub-teacher-icon-action danger' : 'eduhub-teacher-icon-action');
+    var paths = {
+      Open: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+      Edit: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z',
+      Delete: 'M3 6h18 M8 6V4h8v2 M6 6l1 14h10l1-14 M10 11v5 M14 11v5'
+    };
     button.type = 'button';
     button.setAttribute('aria-label', label);
     button.title = label;
-    button.textContent = icon;
+    button.innerHTML =
+      '<span class="eduhub-teacher-action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' +
+      (paths[label] || paths.Open) +
+      '"></path></svg></span><span class="eduhub-teacher-action-label">' +
+      label +
+      '</span>';
     button.addEventListener('click', onClick);
     return button;
   }

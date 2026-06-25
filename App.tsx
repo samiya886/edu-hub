@@ -460,8 +460,11 @@ const MOBILE_OPTIMIZATION_CSS = `
       body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)),
       body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)),
       body[data-eduhub-route="resources"] .eduhub-resource-actions {
-        display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        display: flex !important;
+        grid-template-columns: none !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
         gap: 6px !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -480,10 +483,10 @@ const MOBILE_OPTIMIZATION_CSS = `
       body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)) > button,
       body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)) > button,
       body[data-eduhub-route="resources"] .eduhub-resource-actions > button {
-        width: 100% !important;
+        width: auto !important;
         min-width: 0 !important;
-        max-width: 100% !important;
-        flex: 1 1 0 !important;
+        max-width: none !important;
+        flex: 0 1 auto !important;
       }
 
       body[data-eduhub-route="resources"] .mobile-carousel,
@@ -544,8 +547,11 @@ const MOBILE_OPTIMIZATION_CSS = `
 
 
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {
-        display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        display: flex !important;
+        grid-template-columns: none !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
         gap: 6px !important;
         width: 100% !important;
         overflow: visible !important;
@@ -554,15 +560,15 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button {
-        width: 100% !important;
+        width: auto !important;
         min-width: 0 !important;
         min-height: 36px !important;
-        flex: 1 1 0 !important;
+        flex: 0 1 auto !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 4px !important;
-        padding: 8px 4px !important;
+        padding: 7px 8px !important;
         border-radius: 10px !important;
         font-size: 10px !important;
         line-height: 1 !important;
@@ -673,8 +679,11 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-actions {
-        display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        display: flex !important;
+        grid-template-columns: none !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
         gap: 6px !important;
         overflow: visible !important;
         width: 100% !important;
@@ -686,17 +695,17 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-actions > * {
-        width: 100% !important;
+        width: auto !important;
         min-width: 0 !important;
         max-width: none !important;
-        flex: 1 1 auto !important;
+        flex: 0 1 auto !important;
         scroll-snap-align: none !important;
       }
 
       .eduhub-resource-action {
         min-height: 36px !important;
         border-radius: 10px !important;
-        padding: 7px 4px !important;
+        padding: 7px 8px !important;
         font-size: 10px !important;
         line-height: 1 !important;
         white-space: nowrap !important;
@@ -1678,8 +1687,11 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     function styleGroup(group) {
       group.classList.add('eduhub-resource-actions');
       group.setAttribute('data-eduhub-actions-normalized', 'true');
-      group.style.display = 'grid';
-      group.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+      group.style.display = 'flex';
+      group.style.gridTemplateColumns = 'none';
+      group.style.justifyContent = 'flex-start';
+      group.style.alignItems = 'center';
+      group.style.flexWrap = 'nowrap';
       group.style.gap = '6px';
       group.style.width = '100%';
       group.style.maxWidth = '100%';
@@ -1697,23 +1709,23 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       button.classList.add('eduhub-resource-action-' + action);
       button.setAttribute('aria-label', label);
       button.title = label;
-      button.style.width = '100%';
+      button.style.width = 'auto';
       button.style.minWidth = '0';
-      button.style.maxWidth = '100%';
+      button.style.maxWidth = 'none';
       button.style.minHeight = '36px';
       button.style.height = '36px';
       button.style.display = 'inline-flex';
       button.style.alignItems = 'center';
       button.style.justifyContent = 'center';
       button.style.gap = '4px';
-      button.style.padding = '7px 4px';
+      button.style.padding = '7px 10px';
       button.style.borderRadius = '10px';
       button.style.fontSize = '10px';
       button.style.fontWeight = '900';
       button.style.lineHeight = '1';
       button.style.whiteSpace = 'nowrap';
       button.style.overflow = 'hidden';
-      button.style.flex = '1 1 0';
+      button.style.flex = '0 1 auto';
       button.style.scrollSnapAlign = 'none';
 
       if (button.getAttribute('data-eduhub-action-rendered') !== action) {
@@ -2657,6 +2669,9 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+
+
+
 
 
 

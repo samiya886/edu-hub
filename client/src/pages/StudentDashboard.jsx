@@ -261,12 +261,12 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
     animate={{ opacity: 1, y: 0 }}
     whileHover={{ y: -4, scale: 1.005 }}
     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-    className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
+    className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)] sm:p-5"
   >
-    <div className="absolute inset-x-4 bottom-0 h-1 rounded-full bg-[#ff9f1c]/70 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
-    <div className="mb-3 flex items-start justify-between gap-3">
+    <div className="absolute inset-x-5 bottom-0 h-1 rounded-full bg-[#ff9f1c]/80 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
+    <div className="mb-4 flex items-start gap-3">
       <div className="flex min-w-0 gap-3">
-        <motion.div whileHover={{ rotate: 8, scale: 1.05 }} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ff9f1c]/10 text-[#ff9f1c] group-hover:bg-orange-50 group-hover:shadow-md">
+        <motion.div whileHover={{ rotate: 8, scale: 1.05 }} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c] group-hover:bg-orange-50 group-hover:shadow-md">
           {type === 'notes' ? <BookOpen size={19} /> : <FileText size={19} />}
         </motion.div>
         <div className="min-w-0">
@@ -276,40 +276,40 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
       </div>
     </div>
 
-    <p className="mb-3 line-clamp-2 min-h-[36px] text-xs font-medium leading-relaxed text-gray-500">
+    <p className="mb-4 line-clamp-2 min-h-[38px] text-sm font-medium leading-relaxed text-gray-500">
       {item.description || 'No description added yet.'}
     </p>
 
     <div className="mb-4 grid grid-cols-1 gap-3 text-sm font-bold text-gray-400 sm:grid-cols-2">
-      <div className="rounded-2xl bg-gray-50 p-3.5">
+      <div className="rounded-2xl bg-gray-50/90 p-3">
         <p className="truncate text-[#0a4a44]">{item.subject?.course?.name || item.course?.name || 'Course'}</p>
         <p>Course</p>
       </div>
-      <div className="rounded-2xl bg-gray-50 p-3.5">
+      <div className="rounded-2xl bg-gray-50/90 p-3">
         <p className="truncate text-[#0a4a44]">{item.subject?.semester?.name || item.semester?.name || 'Semester'}</p>
         <p>Semester</p>
       </div>
     </div>
 
-    <div className="eduhub-resource-actions mt-auto grid grid-cols-3 gap-3 pt-2">
+    <div className="eduhub-resource-actions mt-auto grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 sm:gap-3">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}
-        className="eduhub-resource-action eduhub-resource-action-open flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-[#ff9f1c]"
+        className="eduhub-resource-action eduhub-resource-action-open flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-[#0a4a44] px-2.5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-[#ff9f1c] sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm"
       >
         <Download size={15} /> Open
       </button>
       <button
         type="button"
         onClick={() => onEdit(item)}
-        className="eduhub-resource-action eduhub-resource-action-edit flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-50 px-3 py-2.5 text-sm font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white"
+        className="eduhub-resource-action eduhub-resource-action-edit flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-2.5 py-2 text-xs font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm"
       >
         <Edit2 size={14} /> Edit
       </button>
       <button
         type="button"
         onClick={() => onDelete(item._id)}
-        className="eduhub-resource-action eduhub-resource-action-delete flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-red-50 px-3 py-2.5 text-sm font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white"
+        className="eduhub-resource-action eduhub-resource-action-delete flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-red-50 px-2.5 py-2 text-xs font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm"
       >
         <Trash2 size={14} /> Delete
       </button>

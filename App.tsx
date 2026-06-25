@@ -613,10 +613,13 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-resource-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 12px !important;
+        gap: 8px !important;
         overflow: visible !important;
         width: 100% !important;
+        margin-top: auto !important;
+        padding-top: 12px !important;
         padding-bottom: 0 !important;
+        border-top: 1px solid #f3f4f6 !important;
         scroll-snap-type: none !important;
       }
 
@@ -629,18 +632,19 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-action {
-        min-height: 48px !important;
+        min-height: 44px !important;
         border-radius: 16px !important;
-        padding: 10px 8px !important;
-        font-size: 14px !important;
+        padding: 8px 6px !important;
+        font-size: 12px !important;
         line-height: 1 !important;
         white-space: nowrap !important;
+        gap: 6px !important;
       }
 
       .eduhub-resource-action svg {
-        width: 18px !important;
-        height: 18px !important;
-        flex: 0 0 18px !important;
+        width: 16px !important;
+        height: 16px !important;
+        flex: 0 0 16px !important;
       }
 
       header {

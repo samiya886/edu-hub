@@ -402,7 +402,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
     animate={{ opacity: 1, y: 0 }}
     whileHover={{ y: -4, scale: 1.005 }}
     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-    className="group relative overflow-hidden rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
+    className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.45)]"
   >
     <div className="absolute inset-x-4 bottom-0 h-1 rounded-full bg-[#ff9f1c]/70 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
     <div className="mb-3 flex items-start justify-between gap-3">
@@ -432,7 +432,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
       </div>
     </div>
 
-    <div className="eduhub-resource-actions grid grid-cols-3 gap-3">
+    <div className="eduhub-resource-actions mt-auto grid grid-cols-3 gap-3 pt-1">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}

@@ -988,8 +988,10 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-teacher-material-card {
-        display: grid !important;
+        display: flex !important;
+        flex-direction: column !important;
         gap: 12px !important;
+        min-height: 260px !important;
         padding: 18px !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 24px !important;
@@ -1046,6 +1048,7 @@ const MOBILE_OPTIMIZATION_CSS = `
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         gap: 10px !important;
         border-top: 1px solid #f8fafc !important;
+        margin-top: auto !important;
         padding-top: 12px !important;
       }
 

@@ -434,8 +434,8 @@ const MOBILE_OPTIMIZATION_CSS = `
         overflow: visible !important;
       }
 
-      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)),
-      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) {
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button)),
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button)) {
         display: grid !important;
         grid-template-columns: 1fr !important;
         overflow: visible !important;
@@ -444,17 +444,46 @@ const MOBILE_OPTIMIZATION_CSS = `
         scrollbar-width: auto !important;
       }
 
-      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3))::-webkit-scrollbar,
-      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3))::-webkit-scrollbar {
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button))::-webkit-scrollbar,
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button))::-webkit-scrollbar {
         display: none !important;
       }
 
-      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)) > *,
-      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)) > * {
+      body[data-eduhub-route="resources"] .grid:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button)) > *,
+      body[data-eduhub-route="resources"] .flex:has(button):has(> :nth-child(3)):not(.eduhub-resource-actions):not(:has(> button)) > * {
         flex: 1 1 auto !important;
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)),
+      body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)),
+      body[data-eduhub-route="resources"] .eduhub-resource-actions {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+        scroll-snap-type: none !important;
+        scrollbar-width: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3))::-webkit-scrollbar,
+      body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3))::-webkit-scrollbar,
+      body[data-eduhub-route="resources"] .eduhub-resource-actions::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)) > button,
+      body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)) > button,
+      body[data-eduhub-route="resources"] .eduhub-resource-actions > button {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex: 1 1 0 !important;
       }
 
       body[data-eduhub-route="resources"] .mobile-carousel,
@@ -646,11 +675,11 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-resource-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 8px !important;
+        gap: 6px !important;
         overflow: visible !important;
         width: 100% !important;
         margin-top: auto !important;
-        padding-top: 12px !important;
+        padding-top: 8px !important;
         padding-bottom: 0 !important;
         border-top: 1px solid #f3f4f6 !important;
         scroll-snap-type: none !important;
@@ -665,19 +694,19 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-action {
-        min-height: 44px !important;
-        border-radius: 16px !important;
-        padding: 8px 6px !important;
-        font-size: 12px !important;
+        min-height: 36px !important;
+        border-radius: 10px !important;
+        padding: 7px 4px !important;
+        font-size: 10px !important;
         line-height: 1 !important;
         white-space: nowrap !important;
-        gap: 6px !important;
+        gap: 4px !important;
       }
 
       .eduhub-resource-action svg {
-        width: 16px !important;
-        height: 16px !important;
-        flex: 0 0 16px !important;
+        width: 13px !important;
+        height: 13px !important;
+        flex: 0 0 13px !important;
       }
 
       header {
@@ -1608,6 +1637,116 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     }
   }
 
+
+  function normalizeResourceActionButtons() {
+    var iconPaths = {
+      open: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+      edit: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z',
+      delete: 'M3 6h18 M8 6V4h8v2 M6 6l1 14h10l1-14 M10 11v5 M14 11v5'
+    };
+
+    function buttonLabel(button) {
+      return String(button.textContent || button.getAttribute('aria-label') || button.getAttribute('title') || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    }
+
+    function actionKey(button) {
+      var label = buttonLabel(button);
+      if (label === 'open' || label.indexOf(' open') >= 0 || label.indexOf('read') >= 0 || label.indexOf('download') >= 0) return 'open';
+      if (label === 'edit' || label.indexOf(' edit') >= 0) return 'edit';
+      if (label === 'delete' || label.indexOf(' delete') >= 0 || label.indexOf('remove') >= 0) return 'delete';
+      return '';
+    }
+
+    function findActionGroup(button) {
+      var node = button.parentElement;
+      var depth = 0;
+      while (node && node !== document.body && depth < 5) {
+        var buttons = Array.prototype.slice.call(node.querySelectorAll('button'));
+        var keys = buttons.map(actionKey).filter(Boolean);
+        if (keys.indexOf('open') >= 0 && (keys.indexOf('edit') >= 0 || keys.indexOf('delete') >= 0 || buttons.length >= 2)) {
+          return node;
+        }
+        node = node.parentElement;
+        depth += 1;
+      }
+      return button.parentElement;
+    }
+
+    function styleGroup(group) {
+      group.classList.add('eduhub-resource-actions');
+      group.setAttribute('data-eduhub-actions-normalized', 'true');
+      group.style.display = 'grid';
+      group.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+      group.style.gap = '6px';
+      group.style.width = '100%';
+      group.style.maxWidth = '100%';
+      group.style.overflow = 'visible';
+      group.style.overflowX = 'visible';
+      group.style.paddingTop = '8px';
+      group.style.paddingBottom = '0';
+      group.style.marginTop = 'auto';
+      group.style.scrollSnapType = 'none';
+    }
+
+    function styleButton(button, action) {
+      var label = action.charAt(0).toUpperCase() + action.slice(1);
+      button.classList.add('eduhub-resource-action');
+      button.classList.add('eduhub-resource-action-' + action);
+      button.setAttribute('aria-label', label);
+      button.title = label;
+      button.style.width = '100%';
+      button.style.minWidth = '0';
+      button.style.maxWidth = '100%';
+      button.style.minHeight = '36px';
+      button.style.height = '36px';
+      button.style.display = 'inline-flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
+      button.style.gap = '4px';
+      button.style.padding = '7px 4px';
+      button.style.borderRadius = '10px';
+      button.style.fontSize = '10px';
+      button.style.fontWeight = '900';
+      button.style.lineHeight = '1';
+      button.style.whiteSpace = 'nowrap';
+      button.style.overflow = 'hidden';
+      button.style.flex = '1 1 0';
+      button.style.scrollSnapAlign = 'none';
+
+      if (button.getAttribute('data-eduhub-action-rendered') !== action) {
+        button.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:13px;height:13px;flex:0 0 13px"><path d="' +
+          iconPaths[action] +
+          '"></path></svg><span>' +
+          label +
+          '</span>';
+        button.setAttribute('data-eduhub-action-rendered', action);
+      }
+    }
+
+    var handledGroups = [];
+    Array.prototype.forEach.call(document.querySelectorAll('button'), function (button) {
+      var key = actionKey(button);
+      if (!key) return;
+
+      var group = findActionGroup(button);
+      if (!group || handledGroups.indexOf(group) >= 0) return;
+
+      var groupButtons = Array.prototype.slice.call(group.querySelectorAll('button')).filter(function (candidate) {
+        return !!actionKey(candidate);
+      });
+      if (groupButtons.length < 1) return;
+
+      styleGroup(group);
+      groupButtons.forEach(function (actionButton) {
+        styleButton(actionButton, actionKey(actionButton));
+      });
+      handledGroups.push(group);
+    });
+  }
   function removeLiveBackendLabel() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-eduhub-live-backend-hidden]'), function (element) {
       element.removeAttribute('data-eduhub-live-backend-hidden');
@@ -2139,8 +2278,10 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     syncRouteClass();
     removeAboutServicesFromMenu();
     alignResourceHeaderActions();
+    normalizeResourceActionButtons();
     normalizeDashboardHeaderChrome();
     window.setTimeout(compactHomeAndFooter, 80);
+    window.setTimeout(normalizeResourceActionButtons, 120);
     window.setTimeout(removeAboutServicesFromMenu, 80);
     window.setTimeout(alignResourceHeaderActions, 80);
     window.setTimeout(normalizeDashboardHeaderChrome, 80);
@@ -2177,6 +2318,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     var observer = new MutationObserver(function () {
       removeAboutServicesFromMenu();
       alignResourceHeaderActions();
+      normalizeResourceActionButtons();
     });
     observer.observe(document.body, { childList: true, subtree: true });
     window.__eduhubMenuObserverInstalled = true;
@@ -2203,6 +2345,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     window.setInterval(installBottomNav, 1500);
     window.setInterval(removeAboutServicesFromMenu, 1500);
     window.setInterval(alignResourceHeaderActions, 1500);
+    window.setInterval(normalizeResourceActionButtons, 1000);
     window.setInterval(normalizeDashboardHeaderChrome, 1500);
     window.setInterval(removeLiveBackendLabel, 1500);
     window.setInterval(removeResourceFoundation, 1500);
@@ -2514,5 +2657,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+
 
 

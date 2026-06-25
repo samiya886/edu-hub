@@ -613,7 +613,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-resource-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 8px !important;
+        gap: 12px !important;
         overflow: visible !important;
         width: 100% !important;
         padding-bottom: 0 !important;
@@ -629,18 +629,18 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-action {
-        min-height: 36px !important;
-        border-radius: 12px !important;
-        padding: 8px 6px !important;
-        font-size: 12px !important;
+        min-height: 48px !important;
+        border-radius: 16px !important;
+        padding: 10px 8px !important;
+        font-size: 14px !important;
         line-height: 1 !important;
         white-space: nowrap !important;
       }
 
       .eduhub-resource-action svg {
-        width: 14px !important;
-        height: 14px !important;
-        flex: 0 0 14px !important;
+        width: 18px !important;
+        height: 18px !important;
+        flex: 0 0 18px !important;
       }
 
       header {
@@ -1046,7 +1046,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-teacher-material-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 8px !important;
+        gap: 12px !important;
         border-top: 1px solid #f8fafc !important;
         margin-top: auto !important;
         padding-top: 12px !important;
@@ -1054,13 +1054,13 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       .eduhub-teacher-icon-action {
         width: 100% !important;
-        height: 36px !important;
-        min-height: 36px !important;
+        height: 48px !important;
+        min-height: 48px !important;
         border: 0 !important;
-        border-radius: 12px !important;
+        border-radius: 16px !important;
         background: #ecfdf5 !important;
         color: #0a4a44 !important;
-        font-size: 12px !important;
+        font-size: 14px !important;
         font-weight: 900 !important;
         white-space: nowrap !important;
       }

@@ -28,7 +28,7 @@ const BackButton = () => {
     <button
       type="button"
       onClick={goBack}
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-sm font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:px-4"
+      className="eduhub-dashboard-back-button inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 text-xs font-black text-[#0a4a44] shadow-sm transition hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c] focus:outline-none focus:ring-2 focus:ring-[#ff9f1c]/40 focus:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm"
       aria-label="Go back"
     >
       <span>Back</span>
@@ -301,9 +301,9 @@ const AdminActionForm = ({ activeTab }) => {
   );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-5xl">
-      <div className="bg-white rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden relative sm:rounded-[50px]">
-        <div className="bg-[#0a4a44] p-5 text-white relative overflow-hidden sm:p-8 lg:p-12">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-4xl">
+      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="relative overflow-hidden border-b border-gray-200 bg-[#0a4a44] p-5 text-white sm:p-6">
         <BackButton />
           <div className="relative z-10">
             <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#ff9f1c] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6 inline-block shadow-lg shadow-orange-950/20">
@@ -318,7 +318,7 @@ const AdminActionForm = ({ activeTab }) => {
           <Layers className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5 rotate-12" />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-6 sm:p-8 sm:space-y-8 lg:p-12 lg:space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-6 p-5 sm:p-6">
           <div className="grid gap-5 md:grid-cols-2 lg:gap-10">
             {renderInputField(
               <><GraduationCap size={14} /> Department</>,
@@ -327,7 +327,7 @@ const AdminActionForm = ({ activeTab }) => {
                   required
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
+                  className="w-full p-5 bg-gray-50 rounded-2xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
                 >
                   <option value="" disabled>Select Department</option>
                   {departments.map((dept) => (
@@ -347,7 +347,7 @@ const AdminActionForm = ({ activeTab }) => {
                   value={formData.course}
                   onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                   disabled={!formData.department}
-                  className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
+                  className="w-full p-5 bg-gray-50 rounded-2xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
                 >
                   <option value="" disabled>Select Course</option>
                   {courses.map((course) => (
@@ -367,7 +367,7 @@ const AdminActionForm = ({ activeTab }) => {
                   value={formData.semester}
                   onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
                   disabled={!formData.course}
-                  className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
+                  className="w-full p-5 bg-gray-50 rounded-2xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
                 >
                   <option value="" disabled>Select Semester</option>
                   {semesters.map((semester) => (
@@ -387,7 +387,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder="Example: B.Tech"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
               />,
               4
             )}
@@ -400,7 +400,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder="Example: 3rd Semester"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
               />,
               4
             )}
@@ -413,7 +413,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder="Example: Data Structures"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
               />,
               4
             )}
@@ -426,7 +426,7 @@ const AdminActionForm = ({ activeTab }) => {
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                   disabled={!formData.semester}
-                  className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
+                  className="w-full p-5 bg-gray-50 rounded-2xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
                 >
                   <option value="" disabled>Select Subject</option>
                   {subjects.map((subject) => (
@@ -446,7 +446,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder={activeTab === 'Add Notes' ? 'Notes Title' : 'Paper Title'}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
               />,
               5
             )}
@@ -458,7 +458,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder="Short description..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full min-h-[150px] p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm resize-none"
+                className="w-full min-h-[150px] p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm resize-none"
               />,
               6
             )}
@@ -471,7 +471,7 @@ const AdminActionForm = ({ activeTab }) => {
                 placeholder="2024"
                 value={formData.year}
                 onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
               />,
               7
             )}
@@ -482,7 +482,7 @@ const AdminActionForm = ({ activeTab }) => {
                 required
                 value={formData.examType}
                 onChange={(e) => setFormData({ ...formData, examType: e.target.value })}
-                className="w-full p-5 bg-gray-50 rounded-3xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
+                className="w-full p-5 bg-gray-50 rounded-2xl outline-none font-bold text-[#0a4a44] appearance-none cursor-pointer border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white transition-all shadow-sm"
               >
                 <option value="" disabled>Select Exam Type</option>
                 <option value="Mid-term">Mid-term</option>
@@ -504,14 +504,14 @@ const AdminActionForm = ({ activeTab }) => {
                   min="2000"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                  className="w-full p-5 bg-gray-50 rounded-3xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
+                  className="w-full p-5 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[#ff9f1c] focus:bg-white outline-none font-bold text-[#0a4a44] transition-all shadow-sm"
                 />
               </div>
             </motion.div>
           )}
 
           {(activeTab === 'Add Notes' || activeTab === 'Add Papers') && (
-            <motion.div custom={11} variants={fieldVariants} initial="hidden" animate="visible" className="relative border-4 border-dashed border-gray-100 rounded-[26px] p-5 text-center group hover:border-[#ff9f1c] bg-gray-50/20 transition-all cursor-pointer sm:rounded-[50px] sm:p-10 lg:p-16">
+            <motion.div custom={11} variants={fieldVariants} initial="hidden" animate="visible" className="relative border-4 border-dashed border-gray-100 rounded-[26px] p-5 text-center group hover:border-[#ff9f1c] bg-gray-50/20 transition-all cursor-pointer sm:rounded-[28px] sm:p-10 lg:p-16">
               <input type="file" accept=".pdf" className="absolute inset-0 opacity-0 cursor-pointer z-20" onChange={(e) => setFile(e.target.files[0])} />
               <div className="space-y-6">
                 <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-16 h-16 bg-white rounded-[24px] flex items-center justify-center mx-auto shadow-2xl sm:h-28 sm:w-28 sm:rounded-[40px]">
@@ -534,7 +534,7 @@ const AdminActionForm = ({ activeTab }) => {
           <div className="pt-6">
             <button
               disabled={isProcessing}
-              className={`flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center text-base font-black shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all sm:gap-4 sm:rounded-[35px] sm:py-7 sm:text-2xl ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
+              className={`flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center text-base font-black shadow-[0_30px_60px_-15px_rgba(255,159,28,0.3)] transition-all sm:gap-4 sm:rounded-2xl sm:py-7 sm:text-2xl ${isProcessing ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#ff9f1c] text-white hover:bg-[#e68a00] hover:-translate-y-2 active:scale-95'}`}
             >
               {isProcessing ? <Loader2 className="animate-spin" size={22} /> : <CheckCircle size={22} className="sm:h-7 sm:w-7" />}
               {isProcessing ? 'Processing...' : activeTab === 'Add Courses' ? 'Add Course' : activeTab === 'Add Semester' ? 'Add Semester' : activeTab === 'Add Subject' ? 'Add Subject' : activeTab === 'Add Notes' ? 'Upload Notes' : 'Upload Paper'}
@@ -620,7 +620,7 @@ const ResourceCard = ({ item, type, onOpen, onEdit, onDelete }) => (
 
     <div className="mt-auto grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 sm:gap-3">
       <button type="button" onClick={() => onOpen(item.fileUrl)} className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-[#0a4a44] px-2.5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-[#ff9f1c] sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm">
-        <Eye size={15} /> Open
+        <Download size={15} /> Open
       </button>
       <button type="button" onClick={() => onEdit(item, type)} className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-2.5 py-2 text-xs font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm">
         <Pencil size={14} /> Edit
@@ -884,10 +884,12 @@ const AdminResourceManager = ({ type, mode }) => {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><BookOpen className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">Total {isNotes ? 'Notes' : 'Papers'}</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">{resources.length}</p></div>
-        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><Search className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">Search Active</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">{searchQuery ? 1 : 0}</p></div>
-        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><Download className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">File Actions</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">Open</p></div>
+      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+        {[
+          { label: isNotes ? 'Notes' : 'Papers', value: resources.length, caption: isNotes ? 'Total admin notes' : 'Total admin papers', icon: isNotes ? BookOpen : FileText },
+          { label: 'Search Active', value: searchQuery ? 1 : 0, caption: 'Keyword search only', icon: Search },
+          { label: 'File Actions', value: 'Open', caption: 'Open, edit, delete', icon: Download },
+        ].map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 
       <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
@@ -902,7 +904,7 @@ const AdminResourceManager = ({ type, mode }) => {
       {isLoading ? (
         <div className="py-20 text-center"><Loader2 className="mx-auto mb-4 animate-spin text-[#ff9f1c]" size={42} /><p className="font-bold text-gray-400">Loading resources...</p></div>
       ) : filteredResources.length ? (
-        <motion.div layout className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredResources.map((item) => <ResourceCard key={item._id} item={item} type={type} onOpen={handleOpen} onEdit={handleEdit} onDelete={(id, resourceType) => setPendingDelete({ id, type: resourceType })} />)}
         </motion.div>
       ) : (
@@ -1104,98 +1106,60 @@ const DepartmentManagement = () => {
         )}
       </section>
 
-      <section className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
-        {isLoading ? (
-          <div className="p-16 text-center">
-            <Loader2 className="mx-auto mb-4 animate-spin text-[#ff9f1c]" size={42} />
-            <p className="font-bold text-gray-400">Loading departments...</p>
-          </div>
-        ) : departments.length === 0 ? (
-          <div className="p-12 text-center">
-            <AlertCircle className="mx-auto mb-4 text-gray-300" size={48} />
-            <p className="font-bold text-gray-400">No departments found.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto mobile-table-wrap">
-            <table className="responsive-table department-table w-full min-w-[760px] text-left">
-              <thead className="bg-gray-50 text-[10px] uppercase tracking-[0.22em] text-gray-400">
-                <tr>
-                  <th className="px-5 py-4 font-black">Department</th>
-                  <th className="px-5 py-4 font-black">Description</th>
-                  <th className="px-5 py-4 font-black">Created</th>
-                  <th className="px-5 py-4 font-black text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {departments.map((department) => {
-                  const isEditing = editingId === department._id;
-
-                  return (
-                    <tr key={department._id} className="transition-colors hover:bg-gray-50/60">
-                      <td className="px-5 py-4">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            required
-                            value={editData.name}
-                            onChange={(event) => setEditData((prev) => ({ ...prev, name: event.target.value }))}
-                            className="w-full rounded-xl bg-gray-50 px-3 py-3 text-sm font-black text-[#0a4a44] outline-none ring-2 ring-transparent focus:ring-[#22c7b8]"
-                          />
-                        ) : (
-                          <div className="flex items-center gap-3">
-                            <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#0a4a44] text-white">
-                              <Building2 size={17} />
-                            </div>
-                            <p className="text-sm font-black text-[#0a4a44]">{department.name}</p>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-5 py-4">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editData.description}
-                            onChange={(event) => setEditData((prev) => ({ ...prev, description: event.target.value }))}
-                            className="w-full rounded-xl bg-gray-50 px-3 py-3 text-sm font-bold text-[#0a4a44] outline-none ring-2 ring-transparent focus:ring-[#22c7b8]"
-                          />
-                        ) : (
-                          <p className="text-sm font-bold text-gray-500">{department.description || 'No description'}</p>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-sm font-bold text-gray-500">
-                        {department.createdAt ? new Date(department.createdAt).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex justify-end gap-2">
-                          {isEditing ? (
-                            <>
-                              <button type="button" onClick={() => handleUpdate(department._id)} disabled={isSaving} className="grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-green-600 transition hover:bg-green-100 disabled:text-gray-300" aria-label="Save department">
-                                <Save size={17} />
-                              </button>
-                              <button type="button" onClick={cancelEditing} className="grid h-10 w-10 place-items-center rounded-xl bg-gray-50 text-gray-500 transition hover:bg-gray-100" aria-label="Cancel edit">
-                                <X size={17} />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button type="button" onClick={() => startEditing(department)} className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600 transition hover:bg-blue-100" aria-label="Edit department">
-                                <Pencil size={17} />
-                              </button>
-                              <button type="button" onClick={() => handleDelete(department._id)} disabled={isSaving} className="grid h-10 w-10 place-items-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100 disabled:text-gray-300" aria-label="Delete department">
-                                <Trash2 size={17} />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      {isLoading ? (
+        <div className="py-20 text-center">
+          <Loader2 className="mx-auto mb-4 animate-spin text-[#ff9f1c]" size={42} />
+          <p className="font-bold text-gray-400">Loading departments...</p>
+        </div>
+      ) : departments.length === 0 ? (
+        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12">
+          <AlertCircle className="mx-auto mb-4 text-gray-300" size={48} />
+          <h3 className="text-2xl font-black text-[#0a4a44]">No departments found</h3>
+          <p className="mt-2 font-medium text-gray-400">Create a department to start building the academic structure.</p>
+        </div>
+      ) : (
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+          {departments.map((department) => {
+            const isEditing = editingId === department._id;
+            return (
+              <motion.div key={department._id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -4, scale: 1.005 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }} className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)]">
+                <div className="absolute inset-x-5 bottom-0 h-1 origin-left scale-x-0 rounded-full bg-[#ff9f1c]/80 transition-transform duration-500 group-hover:scale-x-100" />
+                {isEditing ? (
+                  <div className="space-y-3">
+                    <Field label="Department Name">
+                      <input value={editData.name} onChange={(event) => setEditData((prev) => ({ ...prev, name: event.target.value }))} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" />
+                    </Field>
+                    <Field label="Description">
+                      <input value={editData.description} onChange={(event) => setEditData((prev) => ({ ...prev, description: event.target.value }))} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" />
+                    </Field>
+                    <div className="grid grid-cols-2 gap-2 pt-2">
+                      <button type="button" onClick={() => handleUpdate(department._id)} disabled={isSaving} className="min-h-11 rounded-2xl bg-[#0a4a44] text-xs font-black text-white transition hover:bg-[#ff9f1c] disabled:bg-gray-200">Save</button>
+                      <button type="button" onClick={cancelEditing} className="min-h-11 rounded-2xl bg-gray-50 text-xs font-black text-[#0a4a44] transition hover:bg-gray-100">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-4 flex items-center gap-3">
+                      <motion.div whileHover={{ rotate: 8, scale: 1.05 }} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c] group-hover:bg-orange-50 group-hover:shadow-md">
+                        <Building2 size={19} />
+                      </motion.div>
+                      <div className="min-w-0">
+                        <h3 className="truncate text-base font-black text-[#0a4a44]">{department.name}</h3>
+                        <p className="truncate text-xs font-bold text-gray-400">Department</p>
+                      </div>
+                    </div>
+                    <p className="mb-4 line-clamp-2 min-h-[38px] text-sm font-medium leading-relaxed text-gray-500">{department.description || 'No description added yet.'}</p>
+                    <div className="mt-auto grid grid-cols-2 gap-2 border-t border-gray-100 pt-3">
+                      <button type="button" onClick={() => startEditing(department)} className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-2.5 py-2 text-xs font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white"><Pencil size={14} /> Edit</button>
+                      <button type="button" onClick={() => handleDelete(department._id)} disabled={isSaving} className="flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-red-50 px-2.5 py-2 text-xs font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white disabled:bg-gray-50 disabled:text-gray-300"><Trash2 size={14} /> Delete</button>
+                    </div>
+                  </>
+                )}
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
       <DeleteConfirmModal
         open={Boolean(pendingDelete)}
         title="Delete this department?"
@@ -1212,238 +1176,126 @@ const AdminOverview = ({ users, isLoadingUsers, setActiveTab, homeData }) => {
   const totalUsers = users.length;
   const students = users.filter((user) => user.role === 'student').length;
   const teachers = users.filter((user) => user.role === 'teacher').length;
-  const admins = users.filter((user) => user.role === 'admin').length;
-  const pendingRequests = 0;
-  const safeTotal = Math.max(totalUsers, 1);
   const resourceStats = homeData?.stats || {};
   const latestResources = homeData?.latestResources || [];
-
-  const overviewCards = [
-    { label: 'Total Users', value: totalUsers, icon: <Users size={22} />, accent: 'bg-[#0a4a44] text-white' },
-    { label: 'Students', value: students, icon: <GraduationCap size={22} />, accent: 'bg-blue-50 text-blue-600' },
-    { label: 'Admin Notes', value: resourceStats.notes ?? 0, icon: <BookOpen size={22} />, accent: 'bg-green-50 text-green-600' },
-    { label: 'Admin Papers', value: resourceStats.papers ?? 0, icon: <FileText size={22} />, accent: 'bg-orange-50 text-[#ff9f1c]' },
-  ];
-
-  const mixCards = [
-    { label: 'Students', value: students, percent: Math.max((students / safeTotal) * 100, students ? 12 : 3), color: 'bg-blue-500' },
-    { label: 'Teachers', value: teachers, percent: Math.max((teachers / safeTotal) * 100, teachers ? 12 : 3), color: 'bg-green-500' },
-    { label: 'Admins', value: admins, percent: Math.max((admins / safeTotal) * 100, admins ? 12 : 3), color: 'bg-[#ff9f1c]' },
+  const overviewStats = [
+    { label: 'Total Users', value: totalUsers, caption: 'Registered accounts', icon: Users },
+    { label: 'Admin Notes', value: resourceStats.notes ?? 0, caption: 'Notes in admin library', icon: BookOpen },
+    { label: 'Admin Papers', value: resourceStats.papers ?? 0, caption: 'Papers in admin library', icon: FileText },
   ];
 
   return (
-    <motion.div key="dash" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
-      <section className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <motion.div key="dash" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+      <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">EduAdmin Control</p>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#22b8a9]">Admin Dashboard</p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight text-[#0a4a44] md:text-4xl">EduHub Control Center</h1>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-gray-500">
-              Review users, teachers, students, academic content, and pending admin work from one compact view.
+            <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">Admin Dashboard</h2>
+            <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">
+              Manage users, academic structure, notes, and papers with the same dashboard experience teachers use every day.
             </p>
           </div>
-          <button onClick={() => setActiveTab('Users')} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-5 py-3 text-sm font-black text-white transition hover:bg-[#083b36]">
-            <Users size={18} />
-            View Users
+          <button type="button" onClick={() => setActiveTab('Upload Notes')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 text-sm font-black text-white shadow-lg shadow-orange-950/20">
+            <Upload size={18} /> Upload Resource
           </button>
         </div>
+      </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {overviewCards.map((card) => (
-            <div key={card.label} className="rounded-[20px] border border-gray-100 bg-gray-50 p-4">
-              <div className={`mb-4 grid h-10 w-10 place-items-center rounded-2xl ${card.accent}`}>
-                {card.icon}
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{card.label}</p>
-              <p className="mt-1 text-3xl font-black tracking-tight text-[#0a4a44]">{isLoadingUsers ? '-' : card.value}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+        {overviewStats.map((stat) => <StatCard key={stat.label} {...stat} />)}
+      </div>
 
-      <section className="grid gap-5 xl:grid-cols-[1.35fr_0.85fr]">
-        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
-          <div className="flex items-center justify-between gap-4">
+      <section className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-[32px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#22b8a9]">Account Mix</p>
-              <h2 className="mt-2 text-xl font-black tracking-tight text-[#0b1220]">Students, teachers, and admins</h2>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ff9f1c]">Latest Uploads</p>
+              <h3 className="mt-2 text-xl font-black tracking-tight text-[#0a4a44]">Admin library activity</h3>
             </div>
-            <TrendingUp className="text-[#22b8a9]" size={22} />
+            <CheckCircle size={22} className="text-[#ff9f1c]" />
           </div>
-
-          <div className="mt-5 space-y-4">
-            {mixCards.map((item) => (
-              <div key={item.label}>
-                <div className="mb-2 flex items-center justify-between text-sm font-black text-[#0b1220]">
-                  <span>{item.label}</span>
-                  <span>{isLoadingUsers ? '-' : item.value}</span>
-                </div>
-                <div className="h-3 overflow-hidden rounded-full bg-gray-100">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${item.percent}%` }}
-                    transition={{ duration: 0.7, ease: 'easeOut' }}
-                    className={`h-full rounded-full ${item.color}`}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="grid gap-3 md:grid-cols-2">
+            {latestResources.length ? latestResources.slice(0, 4).map((resource) => (
+              <button key={`${resource.type}-${resource.id}`} type="button" onClick={() => setActiveTab(resource.type === 'Paper' ? 'Papers' : 'Notes')} className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-left transition hover:border-[#ff9f1c]/30 hover:bg-orange-50/50">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{resource.type}</p>
+                <p className="mt-2 line-clamp-2 text-sm font-black text-[#0a4a44]">{resource.title}</p>
+                <p className="mt-1 truncate text-xs font-bold text-gray-400">{resource.subject || 'Unassigned subject'}</p>
+              </button>
+            )) : <p className="text-sm font-bold text-gray-400">No admin resources uploaded yet.</p>}
           </div>
         </div>
 
-        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#ff9f1c]">Admin Review</p>
-          <h3 className="mt-2 text-xl font-black leading-tight text-[#0a4a44]">EduHub activity summary</h3>
+        <div className="rounded-[32px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ff9f1c]">Account Mix</p>
+          <h3 className="mt-2 text-xl font-black tracking-tight text-[#0a4a44]">Users by role</h3>
           <div className="mt-5 space-y-3">
-            {[
-              ['Admin Material', `${resourceStats.resources ?? 0} admin notes and papers visible in the admin dashboard.`],
-              ['Teacher Accounts', `${teachers} teacher profile${teachers === 1 ? '' : 's'} available.`],
-              ['Student Access', `${students} student account${students === 1 ? '' : 's'} connected to EduHub.`],
-              ['Pending Requests', `${pendingRequests} request${pendingRequests === 1 ? '' : 's'} waiting for review.`],
-            ].map(([title, copy]) => (
-              <div key={title} className="rounded-[18px] border border-gray-100 bg-gray-50 p-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle size={16} className="text-[#22b8a9]" />
-                  <p className="text-sm font-black text-[#0b1220]">{title}</p>
-                </div>
-                <p className="mt-1 text-xs font-semibold leading-5 text-gray-500">{copy}</p>
+            {[['Students', students], ['Teachers', teachers], ['Admins', users.filter((user) => user.role === 'admin').length]].map(([label, value]) => (
+              <div key={label} className="rounded-2xl bg-gray-50 p-4">
+                <div className="flex items-center justify-between text-sm font-black text-[#0a4a44]"><span>{label}</span><span>{isLoadingUsers ? '-' : value}</span></div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#22b8a9]">Admin Library</p>
-            <h2 className="mt-2 text-xl font-black tracking-tight text-[#0b1220]">Latest admin uploads</h2>
-          </div>
-          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-600">Auto refresh</span>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {latestResources.length ? latestResources.map((resource) => (
-            <div key={`${resource.type}-${resource.id}`} className="rounded-[18px] border border-gray-100 bg-gray-50 p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{resource.type}</p>
-              <p className="mt-2 line-clamp-2 text-sm font-black text-[#0a4a44]">{resource.title}</p>
-              <p className="mt-1 truncate text-xs font-bold text-gray-400">{resource.subject}</p>
-            </div>
-          )) : (
-            <p className="text-sm font-bold text-gray-400">No admin resources uploaded yet.</p>
-          )}
         </div>
       </section>
     </motion.div>
   );
 };
-
 const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
   const [searchTerm, setSearchTerm] = useState('');
-
   const filteredUsers = users.filter((user) => {
     const query = searchTerm.toLowerCase();
-    const matchesSearch =
-      user.name?.toLowerCase().includes(query) ||
-      user.email?.toLowerCase().includes(query);
-
-    return matchesSearch;
+    return user.name?.toLowerCase().includes(query) || user.email?.toLowerCase().includes(query) || user.role?.toLowerCase().includes(query);
   });
 
   return (
-    <motion.div
-      key="users"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="space-y-0"
-    >
-      <div className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)]">
-        <div className="border-b border-gray-100 p-4 md:p-5">
-          <div className="relative max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or email"
-              className="w-full rounded-2xl border-2 border-transparent bg-gray-50 py-4 pl-12 pr-4 text-sm font-bold text-[#0a4a44] outline-none transition-all placeholder:text-gray-400 focus:border-[#22c7b8] focus:bg-white"
-            />
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="p-16 text-center">
-            <Loader2 className="mx-auto mb-4 animate-spin text-[#ff9f1c]" size={42} />
-            <p className="font-bold text-gray-400">Loading users...</p>
-          </div>
-        ) : errorMessage ? (
-          <div className="p-12 text-center text-red-600 font-bold">{errorMessage}</div>
-        ) : filteredUsers.length === 0 ? (
-          <div className="p-12 text-center">
-            <AlertCircle className="mx-auto mb-4 text-gray-300" size={48} />
-            <p className="font-bold text-gray-400">No users found.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto mobile-table-wrap">
-              <table className="responsive-table w-full min-w-[850px] text-left">
-                <thead className="bg-gray-50 text-[10px] uppercase tracking-[0.22em] text-gray-400">
-                  <tr>
-                    <th className="px-5 py-4 font-black">User</th>
-                    <th className="px-5 py-4 font-black">Email</th>
-                    <th className="px-5 py-4 font-black">Role</th>
-                    <th className="px-5 py-4 font-black">Joined</th>
-                    <th className="px-5 py-4 font-black text-right">Details</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filteredUsers.map((user) => (
-                    <tr key={user._id} className="transition-colors hover:bg-gray-50/60">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#22c7b8] bg-[#0a4a44] text-sm font-black text-white">
-                            {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="text-sm font-black text-[#0a4a44]">{user.name || 'Unnamed User'}</p>
-                            <p className="text-[11px] font-bold text-gray-400">Account profile</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-sm font-bold text-gray-500">{user.email}</td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-flex rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-widest ${
-                          user.role === 'admin'
-                            ? 'bg-orange-50 text-[#ff9f1c]'
-                            : user.role === 'teacher'
-                            ? 'bg-green-50 text-green-600'
-                            : 'bg-blue-50 text-blue-600'
-                        }`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-sm font-bold text-gray-500">
-                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-2 rounded-xl bg-[#07131f] px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-[#0a4a44]"
-                        >
-                          <Eye size={15} />
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-        )}
+    <motion.div key="users" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+      <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">Admin Users</p>
+        <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">User Directory</h2>
+        <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">Search and review student, teacher, and admin accounts from the same card-first dashboard experience.</p>
       </div>
+
+      <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search users"
+            className="w-full rounded-2xl bg-gray-50 py-4 pl-12 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]"
+          />
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="py-20 text-center"><div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#ff9f1c]/20 border-t-[#ff9f1c]" /><p className="font-bold text-gray-400">Loading users...</p></div>
+      ) : errorMessage ? (
+        <div className="rounded-[28px] border border-dashed border-red-100 bg-white p-6 text-center text-sm font-bold text-red-600 sm:p-12">{errorMessage}</div>
+      ) : filteredUsers.length ? (
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+          {filteredUsers.map((item) => (
+            <motion.div key={item._id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -4, scale: 1.005 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }} className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)]">
+              <div className="absolute inset-x-5 bottom-0 h-1 origin-left scale-x-0 rounded-full bg-[#ff9f1c]/80 transition-transform duration-500 group-hover:scale-x-100" />
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">{(item.name || item.email || 'U').charAt(0).toUpperCase()}</div>
+                <div className="min-w-0">
+                  <h3 className="truncate text-base font-black text-[#0a4a44]">{item.name || 'Unnamed User'}</h3>
+                  <p className="truncate text-xs font-bold text-gray-400">{item.email}</p>
+                </div>
+              </div>
+              <div className="mt-auto rounded-2xl bg-gray-50/90 p-3 text-sm font-bold text-gray-400">
+                <p className="capitalize text-[#0a4a44]">{item.role || 'student'}</p>
+                <p>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Joined date unavailable'}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12"><AlertCircle className="mx-auto mb-4 text-gray-300" size={48} /><h3 className="text-2xl font-black text-[#0a4a44]">No users found</h3><p className="mt-2 font-medium text-gray-400">Try changing the search keyword.</p></div>
+      )}
     </motion.div>
   );
 };
-
 // --- MAIN ADMIN DASHBOARD ---
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -1567,13 +1419,13 @@ const AdminDashboard = () => {
       <motion.aside
         animate={{
           x: isSidebarOpen || isDesktop ? 0 : '-100%',
-          width: isSidebarOpen ? 280 : 100,
+          width: isSidebarOpen || !isDesktop ? 280 : 96,
         }}
         transition={{ type: 'spring', stiffness: 260, damping: 30 }}
         className="fixed left-0 top-0 z-50 flex h-dvh max-w-[calc(100vw-16px)] flex-col overflow-hidden bg-[#0a4a44] text-white shadow-2xl lg:h-screen lg:translate-x-0"
       >
-        <div className="flex shrink-0 items-center gap-4 p-5 sm:p-8">
-          <div className="bg-[#ff9f1c] p-2.5 rounded-2xl shadow-xl shadow-orange-950/20"><PlusCircle className="text-white" size={24} /></div>
+        <div className="flex shrink-0 items-center gap-4 p-5 sm:p-7">
+          <div className="rounded-2xl bg-[#ff9f1c] p-2.5 shadow-xl shadow-orange-950/20"><GraduationCap size={24} /></div>
           {isSidebarOpen && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-2xl font-black tracking-tighter">EduAdmin<span className="text-[#ff9f1c]">.</span></motion.span>}
         </div>
 
@@ -1585,39 +1437,63 @@ const AdminDashboard = () => {
                 setActiveTab(item.name);
                 if (!isDesktop) setSidebarOpen(false);
               }}
-              className={`group relative flex w-full items-center gap-4 rounded-[22px] px-4 py-3.5 transition-all duration-300 sm:gap-5 sm:px-5 ${activeTab === item.name ? "bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.3)]" : "text-teal-100/40 hover:bg-white/5 hover:text-white"}`}
+              className={`group relative flex w-full items-center gap-4 rounded-[22px] px-4 py-3.5 transition-all duration-300 sm:px-5 ${activeTab === item.name ? "bg-[#ff9f1c] text-white shadow-[0_20px_40px_-10px_rgba(255,159,28,0.35)]" : "text-teal-100/50 hover:bg-white/5 hover:text-white"}`}
             >
               <span className="shrink-0">{item.icon}</span>
-              {isSidebarOpen && <span className="font-bold text-sm tracking-tight">{item.name}</span>}
-              {activeTab === item.name && <motion.div layoutId="activePill" className="absolute left-[-4px] w-2 h-8 bg-white rounded-full" />}
+              {isSidebarOpen && <span className="text-sm font-bold">{item.name}</span>}
+              {activeTab === item.name && <motion.div layoutId="adminActivePill" className="absolute -left-1 h-8 w-2 rounded-full bg-white" />}
             </button>
           ))}
         </nav>
 
-       
-      </motion.aside>
+        <div className="shrink-0 border-t border-white/5 p-5">
+          <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 border-[#ff9f1c] bg-white text-[#0a4a44] font-black">
+              {(user?.name || user?.email || 'A').charAt(0).toUpperCase()}
+            </div>
+            {isSidebarOpen && (
+              <div className="min-w-0">
+                <p className="truncate text-sm font-black">{user?.name || 'Admin'}</p>
+                <p className="truncate text-[10px] font-bold uppercase tracking-widest text-teal-100/40">Admin Access</p>
+              </div>
+            )}
+          </div>
+        </div></motion.aside>
 
       {/* MAIN CONTENT */}
-      <main ref={mainContentRef} className={`${isSidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[100px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/70 px-3 backdrop-blur-2xl sm:px-6 lg:h-24 lg:px-10">
-           <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4 lg:gap-6">
-              <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition-all hover:bg-gray-100">{isSidebarOpen ? <X size={20}/> : <Menu size={20}/>}</button><button onClick={() => navigate(-1)} aria-label="Back" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-[#0a4a44] transition hover:bg-gray-100"><ArrowLeft size={20} /></button>
-              <h2 className="truncate font-black text-[#0a4a44] text-lg tracking-tighter sm:text-xl lg:text-2xl">{activeTab} Hub</h2>
-           </div>
-           <div className="flex shrink-0 items-center gap-2 sm:gap-5">
-              <div className="hidden bg-gray-50 p-3 rounded-2xl text-gray-400 hover:text-[#ff9f1c] cursor-pointer transition-all sm:block"><Bell size={22}/></div>
-              <div className="hidden h-10 w-[1.5px] bg-gray-100 mx-2 sm:block" />
-              <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-3xl border border-gray-100 sm:gap-4 sm:pr-6">
-                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-[#ff9f1c] bg-[#0a4a44] text-sm font-black text-white shadow-lg">{(user?.name || user?.email || 'A').charAt(0).toUpperCase()}</div>
-                 <div className="text-left hidden sm:block">
-                    <p className="text-[13px] font-black text-[#0a4a44] leading-none mb-1">{user?.name || 'Admin'}</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{user?.email || 'admin@eduhub'}</p>
-                 </div>
+      <main ref={mainContentRef} className={`${isSidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[96px]'} min-w-0 overflow-x-hidden transition-[margin] duration-300`}>
+        <header className="eduhub-dashboard-header sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-gray-100 bg-white/80 px-3 backdrop-blur-2xl sm:px-4 md:px-8 lg:h-24 lg:px-10">
+          <div className="eduhub-dashboard-header-left flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+              className="eduhub-dashboard-menu-button inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-[#0a4a44] shadow-sm transition hover:bg-gray-100"
+              aria-label="Toggle sidebar"
+            >
+              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-black tracking-tighter text-[#0a4a44] sm:text-xl md:text-2xl">
+                {activeTab}
+              </h1>
+            </div>
+          </div>
+
+          <div className="eduhub-dashboard-header-actions flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+            <BackButton />
+            <div className="hidden items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-2 pr-5 sm:flex">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">
+                {(user?.name || user?.email || 'A').charAt(0).toUpperCase()}
               </div>
-           </div>
+              <div>
+                <p className="text-sm font-black leading-none text-[#0a4a44]">{user?.name || 'Admin'}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">{user?.email || 'admin@eduhub'}</p>
+              </div>
+            </div>
+          </div>
         </header>
 
-        <div className="min-w-0 p-3 sm:p-6 lg:p-12">
+        <div className="min-w-0 p-3 sm:p-6 md:p-8 lg:p-10">
           <AnimatePresence mode="wait">
             
             {activeTab === 'Dashboard' ? (

@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { AlertCircle, ArrowRight, BookOpen, Download, FileText, Loader2, Star } from 'lucide-react'
+import { AlertCircle, ArrowRight, BookOpen, Download, Eye, FileText, Loader2, Star } from 'lucide-react'
 import Hero from '../components/Hero'
 import Services from '../components/Services'
 import About from '../components/About'
@@ -317,7 +317,7 @@ const Home = () => {
                         {resource.fileAvailable === false ? 'Missing file' : fileUrl ? 'Ready' : 'Missing file'} <ArrowRight size={14} />
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 mt-5">
+                    <div className="mt-5 flex items-center gap-2">
                       <button
                         type="button"
                         onClick={(event) => {
@@ -326,9 +326,10 @@ const Home = () => {
                           else setFileError('This uploaded file is missing on the server. Please re-upload it.');
                         }}
                         disabled={isOpening || isDownloading}
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-xs font-black text-white disabled:opacity-70"
+                        className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-4 py-3 text-xs font-black text-white shadow-lg shadow-teal-100 transition hover:bg-[#083b36] disabled:opacity-70"
+                        aria-label={`Open ${resource.title}`}
                       >
-                        {isOpening ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                        {isOpening ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />}
                         Open
                       </button>
                       <button
@@ -336,12 +337,14 @@ const Home = () => {
                         onClick={(event) => {
                           event.stopPropagation();
                           if (fileUrl) downloadResource(resource, fileUrl);
+                          else setFileError('This uploaded file is missing on the server. Please re-upload it.');
                         }}
                         disabled={!fileUrl || isOpening || isDownloading}
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#ff9f00] px-3 py-3 text-xs font-black text-white disabled:opacity-50"
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f00] text-white shadow-lg shadow-orange-100 transition hover:bg-[#e68a00] disabled:opacity-50"
+                        aria-label={`Download ${resource.title}`}
+                        title="Download"
                       >
-                        {isDownloading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
-                        Download
+                        {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                       </button>
                     </div>
                   </>

@@ -24,6 +24,11 @@ const getFileUrl = (fileUrl) => {
   return `${ASSET_URL}/uploads/${encodeURIComponent(fileUrl)}`;
 };
 
+const getResourceFileUrl = (resource) => {
+  if (!resource || resource.fileAvailable === false) return '';
+  return getFileUrl(resource.fileUrl || resource.fileName || '');
+};
+
 const getFileExtension = (fileUrl = '') => {
   const cleanUrl = fileUrl.split('?')[0].split('#')[0];
   const match = cleanUrl.match(/\.([a-z0-9]+)$/i);
@@ -127,12 +132,19 @@ const Home = () => {
 
   const openResource = async (resource, fileUrl) => {
     const resourceKey = `${resource.type}-${resource.id}`;
+    const pendingWindow = window.open('', '_blank');
     setOpeningResource(resourceKey);
     setFileError('');
     try {
       await assertReachableFile(fileUrl);
-      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      if (pendingWindow) {
+        pendingWindow.opener = null;
+        pendingWindow.location.href = fileUrl;
+      } else {
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      }
     } catch (error) {
+      if (pendingWindow) pendingWindow.close();
       setFileError(error.message || 'Unable to open this file.');
     } finally {
       setOpeningResource('');
@@ -276,8 +288,7 @@ const Home = () => {
           ) : (
             <motion.div variants={staggerGrid} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {latestResources.map((resource) => {
-                const fileUrl = resource.fileAvailable === false ? '' : getFileUrl(resource.fileUrl);
-                const fallbackPath = resource.type === 'note' ? '/notes' : '/papers';
+                const fileUrl = getResourceFileUrl(resource);
                 const resourceKey = `${resource.type}-${resource.id}`;
                 const isOpening = openingResource === resourceKey;
                 const isDownloading = downloadingResource === resourceKey;
@@ -338,14 +349,10 @@ const Home = () => {
 
                 return (
                   <motion.div key={resourceKey} variants={cardReveal}>
-                    <button
-                      type="button"
-                      onClick={() => fileUrl ? openResource(resource, fileUrl) : setFileError('This uploaded file is missing on the server. Please re-upload it.')}
-                      className="group block w-full text-left bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden"
-                    >
+                    <div className="group block w-full text-left bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden">
                       <div className="absolute inset-x-0 top-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                       {content}
-                    </button>
+                    </div>
                   </motion.div>
                 );
               })}

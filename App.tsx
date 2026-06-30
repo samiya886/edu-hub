@@ -868,6 +868,42 @@ const MOBILE_OPTIMIZATION_CSS = `
         flex: 0 0 13px !important;
       }
 
+      .eduhub-resource-actions-download-layout {
+        gap: 8px !important;
+      }
+
+      .eduhub-resource-actions-download-layout > .eduhub-resource-action-open {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-height: 44px !important;
+        height: 44px !important;
+        border-radius: 14px !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        gap: 7px !important;
+      }
+
+      .eduhub-resource-actions-download-layout > .eduhub-resource-action-download {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        border-radius: 14px !important;
+        padding: 0 !important;
+      }
+
+      .eduhub-resource-actions-download-layout > .eduhub-resource-action-open svg,
+      .eduhub-resource-actions-download-layout > .eduhub-resource-action-download svg {
+        width: 16px !important;
+        height: 16px !important;
+        flex: 0 0 16px !important;
+      }
+
+      .eduhub-resource-actions-download-layout > .eduhub-resource-action-download span {
+        display: none !important;
+      }
+
       header {
         position: sticky !important;
         top: 0 !important;
@@ -1799,7 +1835,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
   function normalizeResourceActionButtons() {
     var iconPaths = {
-      open: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+      open: 'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+      download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
       edit: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z',
       delete: 'M3 6h18 M8 6V4h8v2 M6 6l1 14h10l1-14 M10 11v5 M14 11v5'
     };
@@ -1813,7 +1850,8 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
 
     function actionKey(button) {
       var label = buttonLabel(button);
-      if (label === 'open' || label.indexOf(' open') >= 0 || label.indexOf('read') >= 0 || label.indexOf('download') >= 0) return 'open';
+      if (label === 'download' || label.indexOf('download') >= 0) return 'download';
+      if (label === 'open' || label.indexOf(' open') >= 0 || label.indexOf('read') >= 0) return 'open';
       if (label === 'edit' || label.indexOf(' edit') >= 0) return 'edit';
       if (label === 'delete' || label.indexOf(' delete') >= 0 || label.indexOf('remove') >= 0) return 'delete';
       return '';
@@ -1835,14 +1873,18 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     }
 
     function styleGroup(group) {
+      var buttons = Array.prototype.slice.call(group.querySelectorAll('button'));
+      var keys = buttons.map(actionKey).filter(Boolean);
+      var hasDownload = keys.indexOf('download') >= 0;
       group.classList.add('eduhub-resource-actions');
+      group.classList.toggle('eduhub-resource-actions-download-layout', hasDownload);
       group.setAttribute('data-eduhub-actions-normalized', 'true');
       group.style.display = 'flex';
       group.style.gridTemplateColumns = 'none';
       group.style.justifyContent = 'flex-start';
       group.style.alignItems = 'center';
       group.style.flexWrap = 'nowrap';
-      group.style.gap = '6px';
+      group.style.gap = hasDownload ? '8px' : '6px';
       group.style.width = '100%';
       group.style.maxWidth = '100%';
       group.style.overflow = 'visible';
@@ -1878,11 +1920,39 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       button.style.flex = '0 1 auto';
       button.style.scrollSnapAlign = 'none';
 
+      if (action === 'open' && button.parentElement && button.parentElement.classList.contains('eduhub-resource-actions-download-layout')) {
+        button.style.flex = '1 1 auto';
+        button.style.minHeight = '44px';
+        button.style.height = '44px';
+        button.style.borderRadius = '14px';
+        button.style.padding = '10px 14px';
+        button.style.fontSize = '12px';
+        button.style.gap = '7px';
+      }
+
+      if (action === 'download') {
+        button.style.flex = '0 0 44px';
+        button.style.width = '44px';
+        button.style.minWidth = '44px';
+        button.style.height = '44px';
+        button.style.minHeight = '44px';
+        button.style.borderRadius = '14px';
+        button.style.padding = '0';
+      }
+
       if (button.getAttribute('data-eduhub-action-rendered') !== action) {
         button.innerHTML =
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:13px;height:13px;flex:0 0 13px"><path d="' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:' +
+          (action === 'download' || action === 'open' ? '16' : '13') +
+          'px;height:' +
+          (action === 'download' || action === 'open' ? '16' : '13') +
+          'px;flex:0 0 ' +
+          (action === 'download' || action === 'open' ? '16' : '13') +
+          'px"><path d="' +
           iconPaths[action] +
-          '"></path></svg><span>' +
+          '"></path></svg><span' +
+          (action === 'download' ? ' style="display:none"' : '') +
+          '>' +
           label +
           '</span>';
         button.setAttribute('data-eduhub-action-rendered', action);

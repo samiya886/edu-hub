@@ -9,7 +9,6 @@ export default function HomeScreen() {
       <View style={styles.links}>
         <Link href="/login" style={styles.link}>Student Login</Link>
         <Link href="/register" style={styles.link}>Register</Link>
-        <Link href="/admin/login" style={styles.link}>Admin Login</Link>
       </View>
     </View>
   );

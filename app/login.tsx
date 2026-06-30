@@ -10,6 +10,7 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      <Link href="/admin/login" style={styles.adminLink}>Admin Login</Link>
       <Link href="/student/dashboard" style={styles.link}>Continue to student dashboard</Link>
     </View>
   );
@@ -45,6 +46,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#ffffff',
     fontWeight: '700',
+  },
+  adminLink: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#0f766e',
+    color: '#0f766e',
+    fontSize: 15,
+    fontWeight: '800',
+    padding: 12,
+    textAlign: 'center',
   },
   link: {
     color: '#2563eb',

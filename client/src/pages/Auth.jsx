@@ -14,6 +14,7 @@ import {
   Globe,
   ArrowLeft,
   X,
+  ShieldCheck,
 } from 'lucide-react';
 
 const Auth = () => {
@@ -519,6 +520,16 @@ const Auth = () => {
                 </div>
               )}
 
+              {isLogin && !isForgot && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin-login')}
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 px-4 py-3 text-sm font-black text-[#0a4a44] transition-all hover:border-[#ff9f1c]/40 hover:bg-orange-50 hover:text-[#ff9f1c]"
+                >
+                  <ShieldCheck size={16} />
+                  Admin Login
+                </button>
+              )}
               {/* SUBMIT BUTTON */}
               <button
                 disabled={isLoading}

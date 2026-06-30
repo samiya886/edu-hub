@@ -71,9 +71,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     [departments.length, notes.length, papers.length]
   );
 
+  const recentNotes = notes.slice(0, 3);
+
   const handleRefresh = () => {
     setRefreshing(true);
     loadHomeData();
+  };
+
+  const openNote = (note: Note) => {
+    navigation.navigate('PDFViewer', { title: note.title, url: note.fileUrl });
   };
 
   if (loading) {
@@ -233,6 +239,45 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* ── Recent Notes ── */}
+        {recentNotes.length > 0 ? (
+          <View style={styles.recentSection}>
+            <View style={styles.sectionHeader}>
+              <View>
+                <Text style={styles.servicesKicker}>RECENT NOTES</Text>
+                <Text style={styles.servicesTitle}>Start reading now</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.seeAllBtn}
+                onPress={() => navigation.navigate('Browse', { initialTab: 'notes' })}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.seeAllText}>See All</Text>
+              </TouchableOpacity>
+            </View>
+
+            {recentNotes.map((note) => (
+              <TouchableOpacity
+                key={note.id}
+                style={styles.noteCard}
+                onPress={() => openNote(note)}
+                activeOpacity={0.86}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${note.title}`}
+              >
+                <View style={styles.noteIcon}>
+                  <Ionicons name="reader-outline" size={20} color={COLORS.primary} />
+                </View>
+                <View style={styles.noteBody}>
+                  <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
+                  <Text style={styles.noteMeta} numberOfLines={1}>{note.subject} - By {note.uploadedBy.name}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : null}
 
         {/* ── CTA Banner ── */}
         <View style={styles.ctaBanner}>
@@ -563,6 +608,64 @@ const styles = StyleSheet.create({
   },
 
   /* ── CTA Banner ── */
+  recentSection: {
+    marginHorizontal: 16,
+    marginBottom: 22,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 12,
+  },
+  seeAllBtn: {
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: COLORS.warningBg,
+  },
+  seeAllText: {
+    color: COLORS.primaryDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  noteCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+    padding: 14,
+    marginBottom: 10,
+    ...SHADOWS.card,
+  },
+  noteIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: COLORS.warningBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noteBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  noteTitle: {
+    color: COLORS.textDark,
+    fontSize: 14,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  noteMeta: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
   ctaBanner: {
     marginHorizontal: 16,
     marginBottom: 16,

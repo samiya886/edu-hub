@@ -329,40 +329,48 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               const kind = resource.fileAvailable === false ? 'Missing file' : getDocumentKind(resource.fileUrl);
               return (
                 <View key={`${resource.resourceType}-${resource.id}`} style={styles.noteCard}>
-                  <TouchableOpacity
-                    style={styles.noteOpenArea}
-                    onPress={() => openResource(resource)}
-                    activeOpacity={0.86}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Open ${resource.title}`}
-                    disabled={isOpening || isDownloading || resource.fileAvailable === false}
-                  >
+                  <View style={styles.noteHeader}>
                     <View style={styles.noteIcon}>
-                      {isOpening ? (
-                        <ActivityIndicator size="small" color={COLORS.primary} />
-                      ) : (
-                        <Ionicons name={resource.resourceType === 'note' ? 'reader-outline' : 'document-text-outline'} size={20} color={COLORS.primary} />
-                      )}
+                      <Ionicons name={resource.resourceType === 'note' ? 'reader-outline' : 'document-text-outline'} size={20} color={COLORS.primary} />
                     </View>
                     <View style={styles.noteBody}>
                       <Text style={styles.noteTitle} numberOfLines={1}>{resource.title}</Text>
                       <Text style={styles.noteMeta} numberOfLines={1}>{kind} - {resource.subject}</Text>
                     </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.downloadBtnSmall}
-                    onPress={() => downloadResource(resource)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Download ${resource.title}`}
-                    disabled={isOpening || isDownloading || resource.fileAvailable === false}
-                  >
-                    {isDownloading ? (
-                      <ActivityIndicator size="small" color={COLORS.white} />
-                    ) : (
-                      <Ionicons name="download-outline" size={18} color={COLORS.white} />
-                    )}
-                  </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.noteActions}>
+                    <TouchableOpacity
+                      style={[styles.openBtn, (isOpening || isDownloading || resource.fileAvailable === false) && styles.disabledAction]}
+                      onPress={() => openResource(resource)}
+                      activeOpacity={0.86}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open ${resource.title}`}
+                      disabled={isOpening || isDownloading || resource.fileAvailable === false}
+                    >
+                      {isOpening ? (
+                        <ActivityIndicator size="small" color={COLORS.white} />
+                      ) : (
+                        <Ionicons name="eye-outline" size={18} color={COLORS.white} />
+                      )}
+                      <Text style={styles.openBtnText}>Open</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.downloadBtnSmall, (isOpening || isDownloading || resource.fileAvailable === false) && styles.disabledAction]}
+                      onPress={() => downloadResource(resource)}
+                      activeOpacity={0.8}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Download ${resource.title}`}
+                      disabled={isOpening || isDownloading || resource.fileAvailable === false}
+                    >
+                      {isDownloading ? (
+                        <ActivityIndicator size="small" color={COLORS.white} />
+                      ) : (
+                        <Ionicons name="download-outline" size={18} color={COLORS.white} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               );
             })}
@@ -731,8 +739,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   noteCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 12,
     borderRadius: 16,
     borderWidth: 1,
@@ -742,12 +748,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     ...SHADOWS.card,
   },
-  noteOpenArea: {
-    flex: 1,
-    minWidth: 0,
+  noteHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  noteActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  openBtn: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.brand,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  openBtnText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  disabledAction: {
+    opacity: 0.55,
   },
   noteIcon: {
     width: 42,
@@ -773,9 +800,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   downloadBtnSmall: {
-    width: 38,
-    height: 38,
-    borderRadius: 13,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',

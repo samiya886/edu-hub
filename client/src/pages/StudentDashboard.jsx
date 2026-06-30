@@ -578,6 +578,52 @@ const ProfileForm = ({
   </motion.form>
 );
 
+const DeleteConfirmModal = ({ open, title = 'Delete this resource?', message, isDeleting, onCancel, onConfirm }) => (
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-[#061816]/55 px-4 py-6 backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        role="presentation"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !isDeleting) onCancel();
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 18, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.96 }}
+          transition={{ duration: 0.18 }}
+          className="w-full max-w-sm rounded-[28px] bg-white p-5 shadow-[0_28px_80px_-24px_rgba(2,24,22,0.55)]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-confirm-title"
+        >
+          <div className="mb-5 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+              <Trash2 size={22} />
+            </div>
+            <div className="min-w-0">
+              <h2 id="delete-confirm-title" className="text-lg font-black text-[#0a4a44]">{title}</h2>
+              <p className="mt-2 text-sm font-semibold leading-relaxed text-gray-500">{message}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button type="button" onClick={onCancel} disabled={isDeleting} className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 text-sm font-black text-gray-600 transition hover:bg-gray-50 disabled:opacity-60">
+              Cancel
+            </button>
+            <button type="button" onClick={onConfirm} disabled={isDeleting} className="min-h-12 rounded-2xl bg-red-500 px-4 text-sm font-black text-white shadow-lg shadow-red-100 transition hover:bg-red-600 disabled:bg-red-300">
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
 const StudentDashboard = () => {
   const { user, updateUser, refreshUser } = useAuth();
   const location = useLocation();
@@ -592,6 +638,8 @@ const StudentDashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [departments, setDepartments] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -869,12 +917,17 @@ const StudentDashboard = () => {
     setActiveSection(type === 'papers' ? 'upload-papers' : 'upload-notes');
   };
 
-  const handleDeleteResource = async (id) => {
-    if (!window.confirm('Delete this resource?')) return;
+  const handleDeleteResource = (id) => {
+    setPendingDelete({ id, type: resourceType });
+  };
+
+  const confirmDeleteResource = async () => {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
     setMessage('');
 
     try {
-      const response = await fetch(`${API_URL}/${resourceType}/${id}`, {
+      const response = await fetch(`${API_URL}/${pendingDelete.type}/${pendingDelete.id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -885,10 +938,13 @@ const StudentDashboard = () => {
       if (!response.ok) throw new Error(data.message || 'Unable to delete resource');
 
       setMessage('Resource deleted successfully.');
-      await fetchItems(resourceType);
+      setPendingDelete(null);
+      await fetchItems(pendingDelete.type);
     } catch (error) {
       setMessage(error.message);
     }
+
+    setIsDeleting(false);
   };
 
   const handleProfileSave = async (e) => {
@@ -1133,7 +1189,13 @@ const StudentDashboard = () => {
           {content()}
         </motion.div>
       </AnimatePresence>
-    </Shell>
+      <DeleteConfirmModal
+        open={Boolean(pendingDelete)}
+        message="This resource will be permanently removed from your library."
+        isDeleting={isDeleting}
+        onCancel={() => !isDeleting && setPendingDelete(null)}
+        onConfirm={confirmDeleteResource}
+      />    </Shell>
   );
 };
 

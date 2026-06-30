@@ -35,6 +35,24 @@ const BackButton = () => {
   );
 };
 
+const DeleteConfirmModal = ({ open, title = 'Delete this item?', message, isDeleting, onCancel, onConfirm }) => (
+  <AnimatePresence>
+    {open && (
+      <motion.div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#061816]/55 px-4 py-6 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !isDeleting) onCancel(); }}>
+        <motion.div initial={{ opacity: 0, y: 18, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.96 }} transition={{ duration: 0.18 }} className="w-full max-w-sm rounded-[28px] bg-white p-5 shadow-[0_28px_80px_-24px_rgba(2,24,22,0.55)]" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
+          <div className="mb-5 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-500"><Trash2 size={22} /></div>
+            <div className="min-w-0"><h2 id="delete-confirm-title" className="text-lg font-black text-[#0a4a44]">{title}</h2><p className="mt-2 text-sm font-semibold leading-relaxed text-gray-500">{message}</p></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button type="button" onClick={onCancel} disabled={isDeleting} className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 text-sm font-black text-gray-600 transition hover:bg-gray-50 disabled:opacity-60">Cancel</button>
+            <button type="button" onClick={onConfirm} disabled={isDeleting} className="min-h-12 rounded-2xl bg-red-500 px-4 text-sm font-black text-white shadow-lg shadow-red-100 transition hover:bg-red-600 disabled:bg-red-300">{isDeleting ? 'Deleting...' : 'Delete'}</button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
 const API_URL = '/api';
 const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
@@ -52,6 +70,7 @@ const AdminActionForm = ({ activeTab }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const [departments, setDepartments] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -544,6 +563,7 @@ const DepartmentManagement = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const authHeaders = () => ({
     'Content-Type': 'application/json',
@@ -644,16 +664,18 @@ const DepartmentManagement = () => {
     setIsSaving(false);
   };
 
-  const handleDelete = async (departmentId) => {
-    const confirmed = window.confirm('Delete this department? Linked courses must be removed first.');
-    if (!confirmed) return;
+  const handleDelete = (departmentId) => {
+    setPendingDelete(departmentId);
+  };
 
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
     setIsSaving(true);
     setMessage('');
     setErrorMessage('');
 
     try {
-      const response = await fetch(`${API_URL}/departments/${departmentId}`, {
+      const response = await fetch(`${API_URL}/departments/${pendingDelete}`, {
         method: 'DELETE',
         headers: authHeaders(),
       });
@@ -663,6 +685,7 @@ const DepartmentManagement = () => {
         throw new Error(data.message || 'Unable to delete department');
       }
 
+      setPendingDelete(null);
       setMessage('Department deleted successfully');
       await loadDepartments();
     } catch (error) {
@@ -813,7 +836,15 @@ const DepartmentManagement = () => {
           </div>
         )}
       </section>
-    </motion.div>
+      <DeleteConfirmModal
+        open={Boolean(pendingDelete)}
+        title="Delete this department?"
+        message="Linked courses must be removed first. This action cannot be undone."
+        isDeleting={isSaving}
+        onCancel={() => !isSaving && setPendingDelete(null)}
+        onConfirm={confirmDelete}
+      />    </motion.div>
+
   );
 };
 

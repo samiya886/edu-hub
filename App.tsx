@@ -2225,6 +2225,70 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
     return button;
   }
 
+  function showEduHubConfirm(title, message, onConfirm) {
+    var existing = document.getElementById('eduhub-confirm-modal');
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+    var overlay = document.createElement('div');
+    overlay.id = 'eduhub-confirm-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;background:rgba(6,24,22,.58);backdrop-filter:blur(4px);padding:18px;';
+
+    var dialog = document.createElement('div');
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.style.cssText = 'width:min(340px,100%);border-radius:24px;background:#fff;padding:20px;box-shadow:0 28px 80px rgba(2,24,22,.45);font-family:Inter,system-ui,sans-serif;';
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;';
+
+    var icon = document.createElement('div');
+    icon.style.cssText = 'width:48px;height:48px;border-radius:16px;background:#fef2f2;color:#ef4444;display:flex;align-items:center;justify-content:center;flex:0 0 48px;font-weight:900;';
+    icon.textContent = '!';
+
+    var copy = document.createElement('div');
+    copy.style.cssText = 'min-width:0;';
+    var heading = document.createElement('h2');
+    heading.textContent = title || 'Delete item?';
+    heading.style.cssText = 'margin:0;color:#0a4a44;font-size:18px;line-height:1.2;font-weight:900;';
+    var body = document.createElement('p');
+    body.textContent = message || 'This action cannot be undone.';
+    body.style.cssText = 'margin:8px 0 0;color:#64748b;font-size:14px;line-height:1.45;font-weight:600;';
+    copy.appendChild(heading);
+    copy.appendChild(body);
+    row.appendChild(icon);
+    row.appendChild(copy);
+
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;';
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.textContent = 'Cancel';
+    cancel.style.cssText = 'min-height:46px;border-radius:16px;border:1px solid #e5e7eb;background:#fff;color:#475569;font-size:14px;font-weight:900;';
+    var confirm = document.createElement('button');
+    confirm.type = 'button';
+    confirm.textContent = 'Delete';
+    confirm.style.cssText = 'min-height:46px;border-radius:16px;border:0;background:#ef4444;color:#fff;font-size:14px;font-weight:900;';
+
+    function close() {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) close();
+    });
+    cancel.addEventListener('click', close);
+    confirm.addEventListener('click', function () {
+      close();
+      onConfirm();
+    });
+
+    actions.appendChild(cancel);
+    actions.appendChild(confirm);
+    dialog.appendChild(row);
+    dialog.appendChild(actions);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+  }
   function createTeacherMaterialCard(item, type) {
     var card = createTeacherElement('article', 'eduhub-teacher-material-card');
     var header = createTeacherElement('div', 'eduhub-teacher-material-header');
@@ -2251,16 +2315,17 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       navigateTeacher('/teacher/upload?type=' + encodeURIComponent(type) + '&id=' + encodeURIComponent(item.id));
     }));
     actions.appendChild(createTeacherIconButton('Delete', 'Delete', function () {
-      if (!window.confirm('Delete this ' + type + '?')) return;
-      var endpoint = type === 'paper' ? '/api/papers/' : '/api/notes/';
-      window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE', headers: { Authorization: 'Bearer ' + (window.localStorage ? window.localStorage.getItem('token') : '') } })
-        .then(function () {
-          var screen = document.getElementById('eduhub-teacher-dashboard');
-          if (screen) loadTeacherDashboardData(screen);
-        })
-        .catch(function () {
-          window.alert('Unable to delete this resource. Please try again.');
-        });
+      showEduHubConfirm('Delete this ' + type + '?', 'This resource will be permanently removed from your uploads.', function () {
+        var endpoint = type === 'paper' ? '/api/papers/' : '/api/notes/';
+        window.fetch(endpoint + encodeURIComponent(item.id), { method: 'DELETE', headers: { Authorization: 'Bearer ' + (window.localStorage ? window.localStorage.getItem('token') : '') } })
+          .then(function () {
+            var screen = document.getElementById('eduhub-teacher-dashboard');
+            if (screen) loadTeacherDashboardData(screen);
+          })
+          .catch(function () {
+            window.alert('Unable to delete this resource. Please try again.');
+          });
+      });
     }, true));
     card.appendChild(actions);
     return card;

@@ -726,44 +726,78 @@ const MOBILE_OPTIMIZATION_CSS = `
         border: 1px solid #eef2f7 !important;
       }
       body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] {
-        width: min(286px, calc(100vw - 34px)) !important;
-        max-width: min(286px, calc(100vw - 34px)) !important;
-        height: calc(100dvh - 22px) !important;
-        max-height: calc(100dvh - 22px) !important;
-        top: 11px !important;
-        left: 11px !important;
-        bottom: auto !important;
-        border-radius: 20px !important;
+        width: min(240px, 72vw) !important;
+        max-width: min(240px, 72vw) !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
         overflow: hidden !important;
-        box-shadow: 0 22px 56px rgba(2, 24, 22, 0.34) !important;
+        box-shadow: 16px 0 46px rgba(2, 24, 22, 0.24) !important;
         z-index: 2147483200 !important;
-        background: linear-gradient(180deg, #0a4a44 0%, #073a35 100%) !important;
+        background: #07564b !important;
         transform-origin: left center !important;
       }
 
       body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] > div:first-child {
-        min-height: 64px !important;
-        padding: 14px 14px 10px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        min-height: 96px !important;
+        padding: 22px 12px 12px !important;
+        border-bottom: 0 !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] > div:first-child > div:first-child {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 14px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #ff9f1c !important;
+        padding: 0 !important;
       }
 
       body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;
-        padding: 12px 10px calc(14px + env(safe-area-inset-bottom)) !important;
+        gap: 10px !important;
+        padding: 0 12px 16px !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
       }
 
       body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button {
-        min-height: 44px !important;
+        min-height: 48px !important;
         width: 100% !important;
-        border-radius: 14px !important;
-        padding: 10px 12px !important;
+        border-radius: 9px !important;
+        padding: 12px 14px !important;
         justify-content: flex-start !important;
-        gap: 10px !important;
+        gap: 14px !important;
         white-space: nowrap !important;
+        color: rgba(209, 250, 244, 0.54) !important;
+        background: transparent !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button[class*="bg-[#ff9f1c]"],
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button[class*="bg-\\[\\#ff9f1c\\]"] {
+        background: #ff9f1c !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+      }
+
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] > div:last-child:not(:first-child) {
+        margin-top: auto !important;
+        padding: 12px !important;
+        border-top: 0 !important;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] > div:last-child:not(:first-child) > div {
+        border-radius: 14px !important;
+        background: rgba(255, 255, 255, 0.07) !important;
+        padding: 10px !important;
       }
 
       body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button span:not([class*="absolute"]) {
@@ -784,8 +818,8 @@ const MOBILE_OPTIMIZATION_CSS = `
         inset: 0 !important;
         width: 100vw !important;
         height: 100dvh !important;
-        background: rgba(5, 18, 17, 0.48) !important;
-        backdrop-filter: blur(3px) !important;
+        background: rgba(3, 19, 17, 0.42) !important;
+        backdrop-filter: none !important;
         z-index: 2147483100 !important;
         border: 0 !important;
         border-radius: 0 !important;

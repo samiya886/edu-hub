@@ -338,6 +338,18 @@ const NotesPage = () => {
                         {note.subject?.name || 'General Subject'}
                       </p>
 
+                      {fileUrl && (
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full bg-[#ff9f00] hover:bg-[#e68a00] text-white font-bold py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-100 mb-4 group-hover:shadow-xl text-sm"
+                          title="Open note document"
+                        >
+                          <BookOpen size={14} /> Open Document
+                        </a>
+                      )}
+
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                         <div className="flex gap-4">
                           <div className="text-center">

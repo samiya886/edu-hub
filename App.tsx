@@ -680,6 +680,120 @@ const MOBILE_OPTIMIZATION_CSS = `
         width: 44px !important;
       }
 
+      body:has([role="menu"][aria-label="Mobile navigation"]) > div[class*="fixed"][class*="inset-0"],
+      body:has([role="menu"][aria-label="Mobile navigation"]) div[class*="fixed"][class*="inset-0"][class*="bg-white"] {
+        background: rgba(5, 18, 17, 0.46) !important;
+        backdrop-filter: blur(4px) !important;
+        padding: 10px !important;
+        padding-bottom: calc(86px + env(safe-area-inset-bottom)) !important;
+        z-index: 2147483000 !important;
+      }
+
+      [role="menu"][aria-label="Mobile navigation"] {
+        width: min(360px, calc(100vw - 20px)) !important;
+        max-width: min(360px, calc(100vw - 20px)) !important;
+        height: calc(100dvh - 106px - env(safe-area-inset-bottom)) !important;
+        max-height: calc(100dvh - 106px - env(safe-area-inset-bottom)) !important;
+        margin-left: auto !important;
+        border-radius: 24px !important;
+        background: #ffffff !important;
+        box-shadow: 0 30px 80px rgba(2, 24, 22, 0.34) !important;
+        padding: 16px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      [role="menu"][aria-label="Mobile navigation"] > div:first-child {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 2 !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(12px) !important;
+        margin: -16px -16px 12px !important;
+        padding: 16px !important;
+        border-bottom: 1px solid #eef2f7 !important;
+      }
+
+      [role="menu"][aria-label="Mobile navigation"] a,
+      [role="menu"][aria-label="Mobile navigation"] button {
+        min-height: 46px !important;
+        border-radius: 14px !important;
+      }
+
+      [role="menu"][aria-label="Mobile navigation"] .space-y-2 > div {
+        border-radius: 18px !important;
+        background: #f8fafc !important;
+        border: 1px solid #eef2f7 !important;
+      }
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] {
+        width: min(320px, calc(100vw - 28px)) !important;
+        max-width: min(320px, calc(100vw - 28px)) !important;
+        height: calc(100dvh - 18px) !important;
+        max-height: calc(100dvh - 18px) !important;
+        top: 9px !important;
+        left: 9px !important;
+        bottom: auto !important;
+        border-radius: 24px !important;
+        overflow: hidden !important;
+        box-shadow: 0 30px 80px rgba(2, 24, 22, 0.38) !important;
+        z-index: 2147483200 !important;
+        background: linear-gradient(180deg, #0a4a44 0%, #073a35 100%) !important;
+        transform-origin: left center !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] > div:first-child {
+        min-height: 76px !important;
+        padding: 18px 18px 12px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 14px 12px calc(18px + env(safe-area-inset-bottom)) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button {
+        min-height: 48px !important;
+        width: 100% !important;
+        border-radius: 16px !important;
+        padding: 12px 14px !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        white-space: nowrap !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] nav button span:not([class*="absolute"]) {
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) aside[class*="fixed"][class*="left-0"][class*="top-0"] + main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) button[aria-label="Close sidebar overlay"],
+      body:has(header button[aria-label="Toggle sidebar"]) button[aria-label="Close admin sidebar overlay"] {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        background: rgba(5, 18, 17, 0.48) !important;
+        backdrop-filter: blur(3px) !important;
+        z-index: 2147483100 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+      }
+
+      body:has(header button[aria-label="Toggle sidebar"]) .eduhub-native-bottom-nav {
+        z-index: 2147482500 !important;
+      }
       .eduhub-resource-actions {
         display: flex !important;
         grid-template-columns: none !important;

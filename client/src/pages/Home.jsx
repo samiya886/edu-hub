@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { AlertCircle, ArrowRight, BookOpen, FileText, Loader2, Star } from 'lucide-react'
+import { AlertCircle, ArrowRight, BookOpen, Download, FileText, Loader2, Star } from 'lucide-react'
 import Hero from '../components/Hero'
 import Services from '../components/Services'
 import About from '../components/About'
@@ -21,7 +21,35 @@ const getFileUrl = (fileUrl) => {
   if (!fileUrl) return '';
   if (fileUrl.startsWith('http')) return fileUrl;
   if (fileUrl.startsWith('/uploads')) return `${ASSET_URL}${fileUrl}`;
-  return `${ASSET_URL}/uploads/${fileUrl}`;
+  return `${ASSET_URL}/uploads/${encodeURIComponent(fileUrl)}`;
+};
+
+const getFileExtension = (fileUrl = '') => {
+  const cleanUrl = fileUrl.split('?')[0].split('#')[0];
+  const match = cleanUrl.match(/\.([a-z0-9]+)$/i);
+  return match ? match[1].toLowerCase() : '';
+};
+
+const sanitizeFileName = (name) => name.trim().replace(/[^a-z0-9._-]+/gi, '_').replace(/^_+|_+$/g, '') || 'eduhub-file';
+
+const getDownloadFileName = (resource, fileUrl) => {
+  const extension = getFileExtension(fileUrl);
+  const base = sanitizeFileName(resource.title || 'eduhub-file');
+  if (!extension || base.toLowerCase().endsWith(`.${extension}`)) return base;
+  return `${base}.${extension}`;
+};
+
+const getDownloadUrl = (fileUrl, fileName) => {
+  const url = new URL(fileUrl, window.location.origin);
+  url.searchParams.set('download', '1');
+  url.searchParams.set('filename', fileName);
+  return url.toString();
+};
+
+const assertReachableFile = async (fileUrl) => {
+  if (!fileUrl) throw new Error('This upload does not have a valid file URL.');
+  const response = await fetch(fileUrl, { method: 'HEAD' });
+  if (!response.ok) throw new Error('The file is missing or the URL is invalid.');
 };
 
 const sectionReveal = {
@@ -43,6 +71,9 @@ const Home = () => {
   const [homeData, setHomeData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fileError, setFileError] = useState('');
+  const [openingResource, setOpeningResource] = useState('');
+  const [downloadingResource, setDownloadingResource] = useState('');
 
   useEffect(() => {
     let isMounted = true;
@@ -93,6 +124,40 @@ const Home = () => {
   }, [homeData]);
 
   const latestResources = homeData?.latestResources || [];
+
+  const openResource = async (resource, fileUrl) => {
+    const resourceKey = `${resource.type}-${resource.id}`;
+    setOpeningResource(resourceKey);
+    setFileError('');
+    try {
+      await assertReachableFile(fileUrl);
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      setFileError(error.message || 'Unable to open this file.');
+    } finally {
+      setOpeningResource('');
+    }
+  };
+
+  const downloadResource = async (resource, fileUrl) => {
+    const resourceKey = `${resource.type}-${resource.id}`;
+    setDownloadingResource(resourceKey);
+    setFileError('');
+    try {
+      await assertReachableFile(fileUrl);
+      const fileName = getDownloadFileName(resource, fileUrl);
+      const link = document.createElement('a');
+      link.href = getDownloadUrl(fileUrl, fileName);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      setFileError(error.message || 'Unable to download this file.');
+    } finally {
+      setDownloadingResource('');
+    }
+  };
 
   return (
     <>
@@ -194,6 +259,12 @@ const Home = () => {
             </div>
           </div>
 
+          {fileError && (
+            <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm font-bold text-red-600 flex items-center gap-2">
+              <AlertCircle size={16} /> {fileError}
+            </div>
+          )}
+
           {isLoading ? (
             <div className="flex items-center gap-3 text-gray-400 font-bold">
               <Loader2 className="animate-spin" /> Loading latest resources
@@ -207,6 +278,10 @@ const Home = () => {
               {latestResources.map((resource) => {
                 const fileUrl = getFileUrl(resource.fileUrl);
                 const fallbackPath = resource.type === 'note' ? '/notes' : '/papers';
+                const resourceKey = `${resource.type}-${resource.id}`;
+                const isOpening = openingResource === resourceKey;
+                const isDownloading = downloadingResource === resourceKey;
+
                 const content = (
                   <>
                     <div className="flex items-center justify-between mb-6">
@@ -228,33 +303,49 @@ const Home = () => {
                         <Star size={16} fill="currentColor" /> {resource.rating || 0}
                       </span>
                       <span className="text-xs font-black text-[#0a4a44] inline-flex items-center gap-1">
-                        Open <ArrowRight size={14} />
+                        {fileUrl ? 'Ready' : 'Missing file'} <ArrowRight size={14} />
                       </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-5">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          if (fileUrl) openResource(resource, fileUrl);
+                          else window.location.assign(fallbackPath);
+                        }}
+                        disabled={isOpening || isDownloading}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-xs font-black text-white disabled:opacity-70"
+                      >
+                        {isOpening ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                        Open
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          if (fileUrl) downloadResource(resource, fileUrl);
+                        }}
+                        disabled={!fileUrl || isOpening || isDownloading}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#ff9f00] px-3 py-3 text-xs font-black text-white disabled:opacity-50"
+                      >
+                        {isDownloading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+                        Download
+                      </button>
                     </div>
                   </>
                 );
 
-                return fileUrl ? (
-                  <motion.div key={`${resource.type}-${resource.id}`} variants={cardReveal}>
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group block bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden"
-                  >
-                    <div className="absolute inset-x-0 top-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                    {content}
-                  </a>
-                  </motion.div>
-                ) : (
-                  <motion.div key={`${resource.type}-${resource.id}`} variants={cardReveal}>
-                  <Link
-                    to={fallbackPath}
-                    className="group block bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden"
-                  >
-                    <div className="absolute inset-x-0 top-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-                    {content}
-                  </Link>
+                return (
+                  <motion.div key={resourceKey} variants={cardReveal}>
+                    <button
+                      type="button"
+                      onClick={() => fileUrl ? openResource(resource, fileUrl) : window.location.assign(fallbackPath)}
+                      className="group block w-full text-left bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden"
+                    >
+                      <div className="absolute inset-x-0 top-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                      {content}
+                    </button>
                   </motion.div>
                 );
               })}

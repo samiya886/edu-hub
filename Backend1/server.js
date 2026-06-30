@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
@@ -22,10 +23,35 @@ dotenv.config();
 const app = express();
 const __dirname = import.meta.dirname || path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.resolve(__dirname, "../client/dist");
+const uploadsPath = path.resolve(__dirname, "uploads");
 
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
+
+app.get("/uploads/:fileName", (req, res, next) => {
+  const fileName = path.basename(req.params.fileName);
+  const filePath = path.join(uploadsPath, fileName);
+
+  if (!filePath.startsWith(uploadsPath) || !fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "File not found" });
+  }
+
+  const downloadName = path.basename(String(req.query.filename || fileName));
+  const disposition = req.query.download === "1" ? "attachment" : "inline";
+  res.setHeader("Content-Disposition", `${disposition}; filename="${downloadName}"`);
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.sendFile(filePath, (error) => {
+    if (error) next(error);
+  });
+});
+
+app.use("/uploads", express.static(uploadsPath, {
+  setHeaders: (res) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+  },
+}));
 
 app.get("/api/health", (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;

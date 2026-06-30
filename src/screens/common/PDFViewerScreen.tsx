@@ -1,89 +1,143 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, Share, Linking } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants';
 import { Button } from '../../components/Button';
+import {
+  assertReachableFile,
+  canPreviewInApp,
+  getDocumentKind,
+  getDownloadFileName,
+  getDownloadUrl,
+  resolveFileUrl,
+} from '../../utils/files';
 
 export default function PDFViewerScreen({ route, navigation }: { route: any; navigation: any }) {
-  const { title, url } = route.params || { title: 'Study Resource', url: '' };
-  const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState(0);
+  const { title = 'Study Resource', url = '', mimeType } = route.params || {};
+  const fileUrl = useMemo(() => resolveFileUrl(url), [url]);
+  const fileName = useMemo(() => getDownloadFileName(title, fileUrl, mimeType), [fileUrl, mimeType, title]);
+  const documentKind = useMemo(() => getDocumentKind(fileUrl, mimeType), [fileUrl, mimeType]);
+  const previewable = useMemo(() => canPreviewInApp(fileUrl, mimeType), [fileUrl, mimeType]);
+  const [busyAction, setBusyAction] = useState<'open' | 'download' | ''>('');
+  const [viewerLoading, setViewerLoading] = useState(previewable);
+  const [viewerError, setViewerError] = useState('');
 
-  const handleDownload = async () => {
-    if (!url) {
-      Alert.alert('Download unavailable', 'No file URL was provided for this resource.');
+  const showMissingFile = () => {
+    Alert.alert('File unavailable', 'This file is missing or the URL is invalid.');
+  };
+
+  const openExternal = async () => {
+    if (!fileUrl) {
+      showMissingFile();
       return;
     }
 
-    setDownloading(true);
-    setDownloadProgress(0);
+    setBusyAction('open');
     try {
-      const canOpen = await Linking.canOpenURL(url);
-      if (!canOpen) {
-        throw new Error('Android cannot open this file URL.');
-      }
-      setDownloadProgress(100);
-      await Linking.openURL(url);
-    } catch {
-      Alert.alert('Download failed', 'Unable to open this PDF. Please try again later.');
+      await assertReachableFile(fileUrl);
+      await Linking.openURL(fileUrl);
+    } catch (error: any) {
+      Alert.alert('Open failed', error.message || 'Unable to open this file.');
     } finally {
-      setDownloading(false);
+      setBusyAction('');
     }
   };
 
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `Check out this study material from EduHub: ${title}\nURL: ${url}`,
-        title: title,
-      });
-    } catch (error: any) {
-      console.error(error.message);
+  const handleDownload = async () => {
+    if (!fileUrl) {
+      showMissingFile();
+      return;
     }
+
+    setBusyAction('download');
+    try {
+      await assertReachableFile(fileUrl);
+      await Linking.openURL(getDownloadUrl(fileUrl, fileName));
+    } catch (error: any) {
+      Alert.alert('Download failed', error.message || 'Unable to download this file.');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const renderPreview = () => {
+    if (!fileUrl) {
+      return (
+        <View style={styles.messageCard}>
+          <Ionicons name="alert-circle-outline" size={54} color={COLORS.error} />
+          <Text style={styles.messageTitle}>File unavailable</Text>
+          <Text style={styles.messageText}>No valid file URL was provided for this resource.</Text>
+        </View>
+      );
+    }
+
+    if (!previewable || Platform.OS === 'web') {
+      return (
+        <View style={styles.messageCard}>
+          <Ionicons name="document-attach-outline" size={64} color={COLORS.primary} />
+          <Text style={styles.messageTitle}>{documentKind}</Text>
+          <Text style={styles.messageText}>
+            This file type opens in the browser or an installed document app. Use Open or Download below.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.viewerWrap}>
+        {viewerLoading ? (
+          <View style={styles.viewerLoader}>
+            <ActivityIndicator color={COLORS.primary} />
+            <Text style={styles.viewerLoaderText}>Opening file...</Text>
+          </View>
+        ) : null}
+        {viewerError ? (
+          <View style={styles.messageCard}>
+            <Ionicons name="alert-circle-outline" size={54} color={COLORS.error} />
+            <Text style={styles.messageTitle}>Preview failed</Text>
+            <Text style={styles.messageText}>{viewerError}</Text>
+          </View>
+        ) : (
+          <WebView
+            source={{ uri: fileUrl }}
+            style={styles.webview}
+            originWhitelist={['*']}
+            onLoadEnd={() => setViewerLoading(false)}
+            onError={() => {
+              setViewerLoading(false);
+              setViewerError('Unable to preview this file. You can still open or download it.');
+            }}
+          />
+        )}
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      {/* Top action header */}
       <View style={styles.actionHeader}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.title} numberOfLines={1}>{title}</Text>
-        <TouchableOpacity style={styles.shareBtn} onPress={handleShare}>
-          <Ionicons name="share-social-outline" size={22} color={COLORS.text} />
+        <View style={styles.titleBlock}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={styles.subtitle} numberOfLines={1}>{fileName}</Text>
+        </View>
+        <TouchableOpacity style={styles.headerButton} onPress={openExternal} disabled={busyAction === 'open'}>
+          {busyAction === 'open' ? <ActivityIndicator size="small" color={COLORS.text} /> : <Ionicons name="open-outline" size={22} color={COLORS.text} />}
         </TouchableOpacity>
       </View>
 
-      {/* Simulated PDF Canvas */}
-      <View style={styles.pdfCanvas}>
-        <View style={styles.canvasContent}>
-          <Ionicons name="document-text" size={80} color={COLORS.primary} style={styles.pdfIcon} />
-          <Text style={styles.pdfLabel}>{title}</Text>
-          <Text style={styles.pdfSub}>[Simulated PDF Document View]</Text>
-          <Text style={styles.pdfBody}>
-            This screen displays the document in a webview / PDF reader container.
-            Click the download button below to store this file on your local storage.
-          </Text>
-        </View>
-      </View>
+      <View style={styles.previewArea}>{renderPreview()}</View>
 
-      {/* Bottom controls */}
       <View style={styles.bottomBar}>
-        {downloading ? (
-          <View style={styles.progressContainer}>
-            <Text style={styles.progressText}>Downloading... {downloadProgress}%</Text>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${downloadProgress}%` }]} />
-            </View>
-          </View>
-        ) : (
-          <Button
-            title="Download PDF"
-            onPress={handleDownload}
-            style={styles.downloadBtn}
-          />
-        )}
+        <Button
+          title={busyAction === 'download' ? 'Preparing download...' : `Download ${documentKind}`}
+          onPress={handleDownload}
+          loading={busyAction === 'download'}
+          style={styles.downloadBtn}
+        />
       </View>
     </View>
   );
@@ -92,69 +146,88 @@ export default function PDFViewerScreen({ route, navigation }: { route: any; nav
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // Dark canvas similar to typical PDF viewers
+    backgroundColor: '#0f172a',
   },
   actionHeader: {
-    height: 56,
+    minHeight: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     backgroundColor: COLORS.white,
   },
-  backBtn: {
-    padding: 4,
+  headerButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleBlock: {
+    flex: 1,
+    marginHorizontal: 8,
   },
   title: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '900',
     color: COLORS.text,
-    flex: 1,
     textAlign: 'center',
-    marginHorizontal: 12,
   },
-  shareBtn: {
-    padding: 4,
+  subtitle: {
+    marginTop: 2,
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+    textAlign: 'center',
   },
-  pdfCanvas: {
+  previewArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
+    padding: 14,
   },
-  canvasContent: {
+  viewerWrap: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 16,
     backgroundColor: COLORS.white,
+  },
+  webview: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  viewerLoader: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+  },
+  viewerLoaderText: {
+    marginTop: 10,
+    color: COLORS.textSecondary,
+    fontWeight: '800',
+  },
+  messageCard: {
+    flex: 1,
     borderRadius: 16,
     padding: 24,
-    width: '100%',
+    backgroundColor: COLORS.white,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
-    shadowRadius: 18,
-    elevation: 5,
+    justifyContent: 'center',
   },
-  pdfIcon: {
-    marginBottom: 16,
-  },
-  pdfLabel: {
+  messageTitle: {
+    marginTop: 14,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '900',
     color: COLORS.text,
     textAlign: 'center',
-    marginBottom: 8,
   },
-  pdfSub: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  pdfBody: {
+  messageText: {
+    marginTop: 8,
     fontSize: 14,
+    fontWeight: '600',
     color: COLORS.textSecondary,
-    textAlign: 'center',
     lineHeight: 20,
+    textAlign: 'center',
   },
   bottomBar: {
     padding: 16,
@@ -164,25 +237,5 @@ const styles = StyleSheet.create({
   },
   downloadBtn: {
     width: '100%',
-  },
-  progressContainer: {
-    paddingVertical: 8,
-  },
-  progressText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  progressBarBg: {
-    height: 8,
-    backgroundColor: COLORS.background,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: COLORS.primary,
   },
 });

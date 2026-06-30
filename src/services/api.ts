@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { UserRole } from '../constants';
+import { resolveFileUrl } from '../utils/files';
 
 // --- TYPES ---
 
@@ -216,7 +217,7 @@ function normalizeMaterial(raw: RawMaterial): Note {
     subject: getEntityName(raw.subject) || 'General',
     course: getEntityName(raw.course),
     department: getEntityName(raw.department),
-    fileUrl: raw.fileUrl ?? raw.file ?? raw.url ?? '',
+    fileUrl: resolveFileUrl(raw.fileUrl ?? raw.file ?? raw.url ?? ''),
     uploadedBy: {
       id: uploader?.id ?? uploader?._id ?? '',
       name: uploader?.name ?? 'Unknown',

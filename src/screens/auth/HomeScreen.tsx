@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import {
+  ActivityIndicator,
+  Alert,
+  Linking,
   Platform,
   RefreshControl,
   ScrollView,
@@ -20,6 +23,13 @@ import {
   notesService,
   papersService,
 } from '../../services/api';
+import {
+  assertReachableFile,
+  getDocumentKind,
+  getDownloadFileName,
+  getDownloadUrl,
+  resolveFileUrl,
+} from '../../utils/files';
 
 type PublicRoute = 'Login' | 'Signup' | 'Browse' | 'Departments' | 'PDFViewer';
 
@@ -27,6 +37,10 @@ type HomeScreenProps = {
   navigation: {
     navigate: (screen: PublicRoute, params?: Record<string, unknown>) => void;
   };
+};
+
+type HomeResource = (Note | Paper) & {
+  resourceType: 'note' | 'paper';
 };
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
@@ -37,6 +51,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'Home' | 'Notes' | 'Paper' | 'Profile'>('Home');
+  const [openingId, setOpeningId] = useState('');
+  const [downloadingId, setDownloadingId] = useState('');
+  const [fileError, setFileError] = useState('');
 
   const loadHomeData = async () => {
     try {
@@ -71,15 +88,63 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     [departments.length, notes.length, papers.length]
   );
 
-  const recentNotes = notes.slice(0, 3);
+  const latestResources = useMemo<HomeResource[]>(
+    () => [
+      ...notes.slice(0, 2).map((note) => ({ ...note, resourceType: 'note' as const })),
+      ...papers.slice(0, 2).map((paper) => ({ ...paper, resourceType: 'paper' as const })),
+    ].sort((a, b) => Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '')).slice(0, 4),
+    [notes, papers]
+  );
 
   const handleRefresh = () => {
     setRefreshing(true);
     loadHomeData();
   };
 
-  const openNote = (note: Note) => {
-    navigation.navigate('PDFViewer', { title: note.title, url: note.fileUrl });
+  const openResource = async (resource: HomeResource) => {
+    const fileUrl = resolveFileUrl(resource.fileUrl);
+    if (!fileUrl) {
+      setFileError('This file is missing a valid URL.');
+      return;
+    }
+
+    setOpeningId(resource.id);
+    setFileError('');
+    try {
+      await assertReachableFile(fileUrl);
+      navigation.navigate('PDFViewer', {
+        title: resource.title,
+        url: fileUrl,
+        fileName: getDownloadFileName(resource.title, fileUrl),
+      });
+    } catch (error: any) {
+      const message = error.message || 'Unable to open this file.';
+      setFileError(message);
+      Alert.alert('Open failed', message);
+    } finally {
+      setOpeningId('');
+    }
+  };
+
+  const downloadResource = async (resource: HomeResource) => {
+    const fileUrl = resolveFileUrl(resource.fileUrl);
+    if (!fileUrl) {
+      setFileError('This file is missing a valid URL.');
+      return;
+    }
+
+    setDownloadingId(resource.id);
+    setFileError('');
+    try {
+      await assertReachableFile(fileUrl);
+      await Linking.openURL(getDownloadUrl(fileUrl, getDownloadFileName(resource.title, fileUrl)));
+    } catch (error: any) {
+      const message = error.message || 'Unable to download this file.';
+      setFileError(message);
+      Alert.alert('Download failed', message);
+    } finally {
+      setDownloadingId('');
+    }
   };
 
   if (loading) {
@@ -240,13 +305,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </View>
         </View>
 
-        {/* ── Recent Notes ── */}
-        {recentNotes.length > 0 ? (
+        {/* Recent Uploads */}
+        {fileError ? <Text style={styles.fileErrorText}>{fileError}</Text> : null}
+        {latestResources.length > 0 ? (
           <View style={styles.recentSection}>
             <View style={styles.sectionHeader}>
               <View>
-                <Text style={styles.servicesKicker}>RECENT NOTES</Text>
-                <Text style={styles.servicesTitle}>Start reading now</Text>
+                <Text style={styles.servicesKicker}>RECENT UPLOADS</Text>
+                <Text style={styles.servicesTitle}>Open notes and papers</Text>
               </View>
               <TouchableOpacity
                 style={styles.seeAllBtn}
@@ -257,28 +323,51 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               </TouchableOpacity>
             </View>
 
-            {recentNotes.map((note) => (
-              <TouchableOpacity
-                key={note.id}
-                style={styles.noteCard}
-                onPress={() => openNote(note)}
-                activeOpacity={0.86}
-                accessibilityRole="button"
-                accessibilityLabel={`Open ${note.title}`}
-              >
-                <View style={styles.noteIcon}>
-                  <Ionicons name="reader-outline" size={20} color={COLORS.primary} />
+            {latestResources.map((resource) => {
+              const isOpening = openingId === resource.id;
+              const isDownloading = downloadingId === resource.id;
+              const kind = getDocumentKind(resource.fileUrl);
+              return (
+                <View key={`${resource.resourceType}-${resource.id}`} style={styles.noteCard}>
+                  <TouchableOpacity
+                    style={styles.noteOpenArea}
+                    onPress={() => openResource(resource)}
+                    activeOpacity={0.86}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Open ${resource.title}`}
+                    disabled={isOpening || isDownloading}
+                  >
+                    <View style={styles.noteIcon}>
+                      {isOpening ? (
+                        <ActivityIndicator size="small" color={COLORS.primary} />
+                      ) : (
+                        <Ionicons name={resource.resourceType === 'note' ? 'reader-outline' : 'document-text-outline'} size={20} color={COLORS.primary} />
+                      )}
+                    </View>
+                    <View style={styles.noteBody}>
+                      <Text style={styles.noteTitle} numberOfLines={1}>{resource.title}</Text>
+                      <Text style={styles.noteMeta} numberOfLines={1}>{kind} - {resource.subject}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.downloadBtnSmall}
+                    onPress={() => downloadResource(resource)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Download ${resource.title}`}
+                    disabled={isOpening || isDownloading}
+                  >
+                    {isDownloading ? (
+                      <ActivityIndicator size="small" color={COLORS.white} />
+                    ) : (
+                      <Ionicons name="download-outline" size={18} color={COLORS.white} />
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.noteBody}>
-                  <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
-                  <Text style={styles.noteMeta} numberOfLines={1}>{note.subject} - By {note.uploadedBy.name}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            ))}
+              );
+            })}
           </View>
         ) : null}
-
         {/* ── CTA Banner ── */}
         <View style={styles.ctaBanner}>
           <Text style={styles.ctaTitle}>Ready to get started?</Text>
@@ -607,7 +696,18 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  /* ── CTA Banner ── */
+  fileErrorText: {
+    color: COLORS.error,
+    fontSize: 13,
+    fontWeight: '800',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: COLORS.errorBg,
+    borderRadius: 8,
+    padding: 10,
+  },
+
+  /* ── Recent Uploads ── */
   recentSection: {
     marginHorizontal: 16,
     marginBottom: 22,
@@ -638,9 +738,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.white,
-    padding: 14,
+    padding: 12,
     marginBottom: 10,
     ...SHADOWS.card,
+  },
+  noteOpenArea: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   noteIcon: {
     width: 42,
@@ -665,7 +772,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  downloadBtnSmall: {
+    width: 38,
+    height: 38,
+    borderRadius: 13,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
+  /* ── CTA Banner ── */
   ctaBanner: {
     marginHorizontal: 16,
     marginBottom: 16,

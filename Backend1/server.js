@@ -17,13 +17,13 @@ import noteRoutes from "./routes/noteRoutes.js";
 import paperRoutes from "./routes/paperRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
+import { logMissingFile, uploadsPath } from "./utils/fileStorage.js";
 
 dotenv.config();
 
 const app = express();
 const __dirname = import.meta.dirname || path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.resolve(__dirname, "../client/dist");
-const uploadsPath = path.resolve(__dirname, "uploads");
 
 app.set("trust proxy", 1);
 app.use(cors());
@@ -32,9 +32,21 @@ app.use(express.json());
 app.get("/uploads/:fileName", (req, res, next) => {
   const fileName = path.basename(req.params.fileName);
   const filePath = path.join(uploadsPath, fileName);
+  const exists = filePath.startsWith(uploadsPath) && fs.existsSync(filePath);
 
-  if (!filePath.startsWith(uploadsPath) || !fs.existsSync(filePath)) {
-    return res.status(404).json({ message: "File not found" });
+  if (!exists) {
+    logMissingFile(req, {
+      type: "direct-upload-request",
+      storedFileUrl: req.originalUrl,
+      resolvedFileName: fileName,
+      resolvedDiskPath: filePath,
+      fileExists: false,
+    });
+    return res.status(404).json({
+      message: "File not found",
+      reason: "missing_upload_file",
+      fileName,
+    });
   }
 
   const downloadName = path.basename(String(req.query.filename || fileName));

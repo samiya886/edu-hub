@@ -4,21 +4,31 @@ import Note from "../models/Note.js";
 import Paper from "../models/Paper.js";
 import Subject from "../models/Subject.js";
 import User from "../models/User.js";
+import { getFileDiagnostics, logMissingFile } from "../utils/fileStorage.js";
 
-const compactResource = (resource, type) => ({
-  id: resource._id,
-  type,
-  uploaderRole: resource.uploaderRole || "student",
-  title: resource.title,
-  description: resource.description,
-  subject: resource.subject?.name || "General",
-  category: resource.category || resource.examType || type,
-  year: resource.year,
-  rating: resource.rating || 0,
-  views: resource.views || 0,
-  fileUrl: resource.fileUrl,
-  createdAt: resource.createdAt,
-});
+const compactResource = (req, resource, type) => {
+  const file = getFileDiagnostics(req, resource, type);
+  if (file.resolvedFileName && !file.fileExists) {
+    logMissingFile(req, file);
+  }
+
+  return {
+    id: resource._id,
+    type,
+    uploaderRole: resource.uploaderRole || "student",
+    title: resource.title,
+    description: resource.description,
+    subject: resource.subject?.name || "General",
+    category: resource.category || resource.examType || type,
+    year: resource.year,
+    rating: resource.rating || 0,
+    views: resource.views || 0,
+    fileUrl: file.publicFileUrl,
+    fileAvailable: file.fileExists,
+    fileName: file.resolvedFileName,
+    createdAt: resource.createdAt,
+  };
+};
 
 const resolveSubjectFilter = async ({ department, course, semester, subject }) => {
   if (subject) return subject;
@@ -107,12 +117,12 @@ export const getHomeSummary = async (req, res) => {
         resources: notes + papers,
       },
       latestResources: [
-        ...latestNotes.map((note) => compactResource(note, "note")),
-        ...latestPapers.map((paper) => compactResource(paper, "paper")),
+        ...latestNotes.map((note) => compactResource(req, note, "note")),
+        ...latestPapers.map((paper) => compactResource(req, paper, "paper")),
       ]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 4),
-      popularNotes: popularNotes.map((note) => compactResource(note, "note")),
+      popularNotes: popularNotes.map((note) => compactResource(req, note, "note")),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

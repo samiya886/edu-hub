@@ -276,7 +276,7 @@ const Home = () => {
           ) : (
             <motion.div variants={staggerGrid} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {latestResources.map((resource) => {
-                const fileUrl = getFileUrl(resource.fileUrl);
+                const fileUrl = resource.fileAvailable === false ? '' : getFileUrl(resource.fileUrl);
                 const fallbackPath = resource.type === 'note' ? '/notes' : '/papers';
                 const resourceKey = `${resource.type}-${resource.id}`;
                 const isOpening = openingResource === resourceKey;
@@ -303,7 +303,7 @@ const Home = () => {
                         <Star size={16} fill="currentColor" /> {resource.rating || 0}
                       </span>
                       <span className="text-xs font-black text-[#0a4a44] inline-flex items-center gap-1">
-                        {fileUrl ? 'Ready' : 'Missing file'} <ArrowRight size={14} />
+                        {resource.fileAvailable === false ? 'Missing file' : fileUrl ? 'Ready' : 'Missing file'} <ArrowRight size={14} />
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 mt-5">
@@ -312,7 +312,7 @@ const Home = () => {
                         onClick={(event) => {
                           event.stopPropagation();
                           if (fileUrl) openResource(resource, fileUrl);
-                          else window.location.assign(fallbackPath);
+                          else setFileError('This uploaded file is missing on the server. Please re-upload it.');
                         }}
                         disabled={isOpening || isDownloading}
                         className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-3 py-3 text-xs font-black text-white disabled:opacity-70"
@@ -340,7 +340,7 @@ const Home = () => {
                   <motion.div key={resourceKey} variants={cardReveal}>
                     <button
                       type="button"
-                      onClick={() => fileUrl ? openResource(resource, fileUrl) : window.location.assign(fallbackPath)}
+                      onClick={() => fileUrl ? openResource(resource, fileUrl) : setFileError('This uploaded file is missing on the server. Please re-upload it.')}
                       className="group block w-full text-left bg-white rounded-[32px] border border-gray-100 p-6 hover:-translate-y-2 hover:shadow-[0_34px_80px_-28px_rgba(10,74,68,0.5)] transition-all relative overflow-hidden"
                     >
                       <div className="absolute inset-x-0 top-0 h-1 bg-[#ff9f00]/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />

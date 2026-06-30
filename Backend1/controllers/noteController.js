@@ -1,11 +1,7 @@
 import Note from "../models/Note.js";
 import Subject from "../models/Subject.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
-
-const getUploadedFileUrl = (req) => {
-  if (!req.file) return req.body.fileUrl;
-  return `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-};
+import { getUploadedFileUrl } from "../utils/fileStorage.js";
 
 const populateNote = (query) =>
   query

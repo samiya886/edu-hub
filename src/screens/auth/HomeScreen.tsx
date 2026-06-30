@@ -103,8 +103,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const openResource = async (resource: HomeResource) => {
     const fileUrl = resolveFileUrl(resource.fileUrl);
-    if (!fileUrl) {
-      setFileError('This file is missing a valid URL.');
+    if (resource.fileAvailable === false || !fileUrl) {
+      setFileError('This uploaded file is missing on the server. Please re-upload it.');
       return;
     }
 
@@ -128,8 +128,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const downloadResource = async (resource: HomeResource) => {
     const fileUrl = resolveFileUrl(resource.fileUrl);
-    if (!fileUrl) {
-      setFileError('This file is missing a valid URL.');
+    if (resource.fileAvailable === false || !fileUrl) {
+      setFileError('This uploaded file is missing on the server. Please re-upload it.');
       return;
     }
 
@@ -326,7 +326,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             {latestResources.map((resource) => {
               const isOpening = openingId === resource.id;
               const isDownloading = downloadingId === resource.id;
-              const kind = getDocumentKind(resource.fileUrl);
+              const kind = resource.fileAvailable === false ? 'Missing file' : getDocumentKind(resource.fileUrl);
               return (
                 <View key={`${resource.resourceType}-${resource.id}`} style={styles.noteCard}>
                   <TouchableOpacity
@@ -335,7 +335,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                     activeOpacity={0.86}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${resource.title}`}
-                    disabled={isOpening || isDownloading}
+                    disabled={isOpening || isDownloading || resource.fileAvailable === false}
                   >
                     <View style={styles.noteIcon}>
                       {isOpening ? (
@@ -355,7 +355,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                     activeOpacity={0.8}
                     accessibilityRole="button"
                     accessibilityLabel={`Download ${resource.title}`}
-                    disabled={isOpening || isDownloading}
+                    disabled={isOpening || isDownloading || resource.fileAvailable === false}
                   >
                     {isDownloading ? (
                       <ActivityIndicator size="small" color={COLORS.white} />

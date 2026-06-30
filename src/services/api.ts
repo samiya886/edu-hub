@@ -55,6 +55,8 @@ type RawMaterial = {
   year?: number | string;
   examYear?: number | string;
   fileUrl?: string;
+  fileAvailable?: boolean;
+  fileName?: string;
   file?: string;
   url?: string;
   downloadsCount?: number;
@@ -73,6 +75,8 @@ export interface Note {
   course?: string;
   department?: string;
   fileUrl: string;
+  fileAvailable?: boolean;
+  fileName?: string;
   uploadedBy: {
     id: string;
     name: string;
@@ -89,6 +93,8 @@ export interface Paper {
   department?: string;
   year: number;
   fileUrl: string;
+  fileAvailable?: boolean;
+  fileName?: string;
   uploadedBy: {
     id: string;
     name: string;
@@ -218,6 +224,8 @@ function normalizeMaterial(raw: RawMaterial): Note {
     course: getEntityName(raw.course),
     department: getEntityName(raw.department),
     fileUrl: resolveFileUrl(raw.fileUrl ?? raw.file ?? raw.url ?? ''),
+    fileAvailable: raw.fileAvailable,
+    fileName: raw.fileName,
     uploadedBy: {
       id: uploader?.id ?? uploader?._id ?? '',
       name: uploader?.name ?? 'Unknown',

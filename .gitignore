@@ -11,6 +11,8 @@ web-build/
 expo-env.d.ts
 expo-server*.log
 expo-server*.err.log
+expo-go-server*.log
+expo-go-server*.err.log
 eas-build-log*.txt
 eas-build-log*.br
 

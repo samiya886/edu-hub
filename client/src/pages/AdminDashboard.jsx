@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 import {
   GraduationCap, Menu, ArrowRight, ArrowLeft, LogOut,
   LayoutDashboard, UserCircle, BookOpen, FileText, PenTool,
@@ -8,7 +9,7 @@ import {
   TrendingUp, PlusCircle, Clock, CheckCircle,
   Upload, Loader2, AlertCircle, Plus, ChevronRight, ChevronDown,
   Layers, Hash, Activity,
-  Briefcase, Code, BarChart3, File, Eye,
+  Briefcase, Code, BarChart3, File, Eye, Download, Search,
   ShieldCheck, FileClock, Building2, Pencil, Trash2, Save, X
 } from 'lucide-react';
 
@@ -554,6 +555,365 @@ const AdminActionForm = ({ activeTab }) => {
   );
 };
 
+const emptyResource = {
+  title: '',
+  description: '',
+  department: '',
+  course: '',
+  semester: '',
+  subject: '',
+  file: null,
+  existingFileUrl: '',
+  category: 'Digital PDF',
+  year: new Date().getFullYear(),
+  examType: 'Final',
+  isPremium: false,
+  chapters: 1,
+};
+
+const authHeaders = () => ({
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${localStorage.getItem('token')}`,
+});
+
+const Field = ({ label, children }) => (
+  <div className="space-y-2">
+    <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{label}</label>
+    {children}
+  </div>
+);
+
+const ResourceCard = ({ item, type, onOpen, onEdit, onDelete }) => (
+  <motion.div
+    layout
+    initial={{ opacity: 0, y: 18 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -4, scale: 1.005 }}
+    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+    className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)] sm:p-5"
+  >
+    <div className="absolute inset-x-5 bottom-0 h-1 origin-left scale-x-0 rounded-full bg-[#ff9f1c]/80 transition-transform duration-500 group-hover:scale-x-100" />
+    <div className="mb-4 flex min-w-0 items-start gap-3">
+      <motion.div whileHover={{ rotate: 8, scale: 1.05 }} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f1c]/10 text-[#ff9f1c] group-hover:bg-orange-50 group-hover:shadow-md">
+        {type === 'notes' ? <BookOpen size={19} /> : <FileText size={19} />}
+      </motion.div>
+      <div className="min-w-0">
+        <h3 className="line-clamp-2 text-base font-black leading-tight text-[#0a4a44]">{item.title}</h3>
+        <p className="mt-1 truncate text-xs font-bold text-gray-400">{item.subject?.name || 'Unassigned subject'}</p>
+      </div>
+    </div>
+
+    <p className="mb-4 line-clamp-2 min-h-[38px] text-sm font-medium leading-relaxed text-gray-500">
+      {item.description || 'No description added yet.'}
+    </p>
+
+    <div className="mb-4 grid grid-cols-1 gap-3 text-sm font-bold text-gray-400 sm:grid-cols-2">
+      <div className="rounded-2xl bg-gray-50/90 p-3">
+        <p className="truncate text-[#0a4a44]">{item.subject?.course?.name || item.course?.name || 'Course'}</p>
+        <p>Course</p>
+      </div>
+      <div className="rounded-2xl bg-gray-50/90 p-3">
+        <p className="truncate text-[#0a4a44]">{item.subject?.semester?.name || item.semester?.name || 'Semester'}</p>
+        <p>Semester</p>
+      </div>
+    </div>
+
+    <div className="mt-auto grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 sm:gap-3">
+      <button type="button" onClick={() => onOpen(item.fileUrl)} className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-[#0a4a44] px-2.5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-[#ff9f1c] sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm">
+        <Eye size={15} /> Open
+      </button>
+      <button type="button" onClick={() => onEdit(item, type)} className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-2.5 py-2 text-xs font-black text-[#0a4a44] shadow-sm transition hover:bg-[#0a4a44] hover:text-white sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm">
+        <Pencil size={14} /> Edit
+      </button>
+      <button type="button" onClick={() => onDelete(item._id, type)} className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-2xl bg-red-50 px-2.5 py-2 text-xs font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white sm:min-h-12 sm:gap-2 sm:px-3 sm:text-sm">
+        <Trash2 size={14} /> Delete
+      </button>
+    </div>
+  </motion.div>
+);
+
+const AdminResourceManager = ({ type, mode }) => {
+  const [resources, setResources] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [formData, setFormData] = useState(emptyResource);
+  const [editingId, setEditingId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showForm, setShowForm] = useState(mode === 'upload');
+
+  const isNotes = type === 'notes';
+  const isUploadMode = mode === 'upload';
+
+  useEffect(() => {
+    loadResources();
+    loadDepartments();
+    setShowForm(mode === 'upload');
+    resetForm(mode === 'upload');
+  }, [type, mode]);
+
+  useEffect(() => {
+    if (formData.department) loadCourses(formData.department);
+  }, [formData.department]);
+
+  useEffect(() => {
+    if (formData.course) loadSemesters(formData.course);
+  }, [formData.course]);
+
+  useEffect(() => {
+    if (formData.semester) loadSubjects(formData.semester);
+  }, [formData.semester]);
+
+  const loadResources = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/${type}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || `Unable to load ${type}`);
+      setResources(Array.isArray(data) ? data : data.items || []);
+    } catch (error) {
+      setMessage(error.message);
+      setResources([]);
+    }
+    setIsLoading(false);
+  };
+
+  const loadDepartments = async () => {
+    try {
+      const response = await fetch(`${API_URL}/departments`);
+      setDepartments(await response.json());
+    } catch (error) {
+      console.error('Unable to load departments:', error);
+    }
+  };
+
+  const loadCourses = async (departmentId) => {
+    try {
+      const response = await fetch(`${API_URL}/courses?department=${departmentId}`);
+      setCourses(await response.json());
+    } catch (error) {
+      console.error('Unable to load courses:', error);
+    }
+  };
+
+  const loadSemesters = async (courseId) => {
+    try {
+      const response = await fetch(`${API_URL}/semesters?course=${courseId}`);
+      setSemesters(await response.json());
+    } catch (error) {
+      console.error('Unable to load semesters:', error);
+    }
+  };
+
+  const loadSubjects = async (semesterId) => {
+    try {
+      const response = await fetch(`${API_URL}/subjects?semester=${semesterId}`);
+      setSubjects(await response.json());
+    } catch (error) {
+      console.error('Unable to load subjects:', error);
+    }
+  };
+
+  const resetForm = (keepForm = mode === 'upload') => {
+    setFormData(emptyResource);
+    setEditingId(null);
+    setShowForm(keepForm);
+  };
+
+  const handleOpen = (fileUrl) => {
+    if (!fileUrl) {
+      setMessage('File is missing or the URL is invalid.');
+      return;
+    }
+    window.open(fileUrl, '_blank');
+  };
+
+  const handleEdit = (item, editType = type) => {
+    setFormData({
+      title: item.title || '',
+      description: item.description || '',
+      department: item.subject?.department?._id || item.department?._id || item.department || '',
+      course: item.subject?.course?._id || item.course?._id || item.course || '',
+      semester: item.subject?.semester?._id || item.semester?._id || item.semester || '',
+      subject: item.subject?._id || item.subject || '',
+      file: null,
+      existingFileUrl: item.fileUrl || '',
+      category: item.category || 'Digital PDF',
+      year: item.year || new Date().getFullYear(),
+      examType: item.examType || 'Final',
+      isPremium: Boolean(item.isPremium),
+      chapters: item.chapters || 1,
+    });
+    setEditingId(item._id);
+    setShowForm(true);
+    setMessage(`Editing ${editType === 'notes' ? 'note' : 'paper'}. Leave the file empty to keep the current document.`);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setMessage('');
+
+    try {
+      const payload = new FormData();
+      payload.append('title', formData.title);
+      payload.append('description', formData.description);
+      payload.append('department', formData.department);
+      payload.append('course', formData.course);
+      payload.append('semester', formData.semester);
+      payload.append('subject', formData.subject);
+      payload.append('isPremium', formData.isPremium);
+      if (formData.file) payload.append('file', formData.file);
+
+      if (isNotes) {
+        payload.append('category', formData.category);
+        payload.append('chapters', formData.chapters || 1);
+      } else {
+        payload.append('year', Number(formData.year));
+        payload.append('examType', formData.examType);
+      }
+
+      const response = await fetch(`${API_URL}/${type}${editingId ? `/${editingId}` : ''}`, {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: payload,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to save resource');
+
+      setMessage(editingId ? 'Resource updated successfully.' : 'Resource uploaded successfully.');
+      resetForm(mode === 'upload');
+      await loadResources();
+    } catch (error) {
+      setMessage(error.message);
+    }
+
+    setIsSaving(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
+    setMessage('');
+    try {
+      const response = await fetch(`${API_URL}/${pendingDelete.type}/${pendingDelete.id}`, { method: 'DELETE', headers: authHeaders() });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to delete resource');
+      setPendingDelete(null);
+      setMessage('Resource deleted successfully.');
+      await loadResources();
+    } catch (error) {
+      setMessage(error.message);
+    }
+    setIsDeleting(false);
+  };
+
+  const filteredResources = resources.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    return item.title?.toLowerCase().includes(query) || item.description?.toLowerCase().includes(query) || item.subject?.name?.toLowerCase().includes(query);
+  });
+
+  const renderForm = () => (
+    <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-4xl">
+      <div className="mb-5 border-b border-gray-200 pb-5">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ff9f1c]">Admin Resource Control</p>
+        <h2 className="mt-2 text-2xl font-black tracking-tight text-[#0a4a44] sm:text-3xl">{editingId ? 'Edit' : 'Upload'} {isNotes ? 'Notes' : 'Question Paper'}</h2>
+        <p className="mt-2 text-sm font-semibold leading-relaxed text-gray-500">Use the same upload and edit workflow available in the teacher dashboard.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <section className="border-b border-gray-200 p-5 sm:p-6">
+          <h3 className="text-base font-black text-[#0a4a44]">Resource Information</h3>
+          <div className="mt-5 grid gap-5">
+            <Field label="Title"><input required value={formData.title} onChange={(event) => setFormData({ ...formData, title: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" /></Field>
+            <Field label="Description"><textarea required rows="4" value={formData.description} onChange={(event) => setFormData({ ...formData, description: event.target.value })} className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" /></Field>
+          </div>
+        </section>
+
+        <section className="border-b border-gray-200 p-5 sm:p-6">
+          <h3 className="text-base font-black text-[#0a4a44]">Academic Details</h3>
+          <div className="mt-5 grid gap-5 md:grid-cols-2">
+            <Field label="Department"><select required value={formData.department} onChange={(event) => setFormData({ ...formData, department: event.target.value, course: '', semester: '', subject: '' })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="">Select Department</option>{departments.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}</select></Field>
+            <Field label="Course"><select required disabled={!formData.department} value={formData.course} onChange={(event) => setFormData({ ...formData, course: event.target.value, semester: '', subject: '' })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="">Select Course</option>{courses.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}</select></Field>
+            <Field label="Semester"><select required disabled={!formData.course} value={formData.semester} onChange={(event) => setFormData({ ...formData, semester: event.target.value, subject: '' })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="">Select Semester</option>{semesters.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}</select></Field>
+            <Field label="Subject"><select required disabled={!formData.semester} value={formData.subject} onChange={(event) => setFormData({ ...formData, subject: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="">Select Subject</option>{subjects.map((item) => <option key={item._id} value={item._id}>{item.name}</option>)}</select></Field>
+            {isNotes ? (
+              <><Field label="Category"><select value={formData.category} onChange={(event) => setFormData({ ...formData, category: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option>Digital PDF</option><option>Handwritten</option><option>Revision Sheets</option><option>Topper Special</option></select></Field><Field label="Chapters"><input type="number" min="1" value={formData.chapters} onChange={(event) => setFormData({ ...formData, chapters: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]" /></Field></>
+            ) : (
+              <><Field label="Year"><input required type="number" min="2000" max="2100" value={formData.year} onChange={(event) => setFormData({ ...formData, year: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]" /></Field><Field label="Exam Type"><select value={formData.examType} onChange={(event) => setFormData({ ...formData, examType: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option>Mid-term</option><option>Final</option><option>Quiz</option><option>Assignment</option></select></Field></>
+            )}
+          </div>
+        </section>
+
+        <section className="border-b border-gray-200 p-5 sm:p-6">
+          <h3 className="text-base font-black text-[#0a4a44]">Document Upload</h3>
+          <div className="mt-5 rounded-md border border-gray-300 bg-gray-50 p-4">
+            <input required={!editingId && !formData.existingFileUrl} type="file" accept="application/pdf,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,image/*" onChange={(event) => setFormData({ ...formData, file: event.target.files[0] || null })} className="block w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] file:mr-4 file:rounded-md file:border-0 file:bg-[#0a4a44] file:px-4 file:py-2 file:text-sm file:font-black file:text-white" />
+            <p className="mt-3 text-xs font-semibold text-gray-500">{formData.file ? `${formData.file.name} - ${(formData.file.size / 1024 / 1024).toFixed(2)} MB` : editingId ? 'Leave empty to keep the current document.' : 'Upload a document, maximum 15MB.'}</p>
+          </div>
+        </section>
+
+        {message && <div className="mx-5 mt-5 rounded-md border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44] sm:mx-6">{message}</div>}
+
+        <div className="grid gap-3 p-5 sm:flex sm:justify-end sm:p-6">
+          {(editingId || (!isUploadMode && showForm)) && <button type="button" onClick={() => resetForm(false)} className="rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-black text-[#0a4a44] transition hover:bg-gray-50">Cancel</button>}
+          <button type="submit" disabled={isSaving} className="flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#ff9f1c] px-6 py-3 text-sm font-black text-white transition hover:bg-[#e68a00] disabled:bg-gray-300"><Upload size={18} /> {isSaving ? 'Submitting...' : editingId ? 'Update Resource' : `Submit ${isNotes ? 'Notes' : 'Paper'}`}</button>
+        </div>
+      </form>
+    </motion.div>
+  );
+
+  if (isUploadMode || showForm || editingId) return renderForm();
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">Admin Library</p>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">{isNotes ? 'Notes Library' : 'Paper Vault'}</h2>
+            <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">Open, edit, delete, and maintain uploaded {type} with the same workflow as the teacher dashboard.</p>
+          </div>
+          <button type="button" onClick={() => resetForm(true)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#ff9f1c] px-5 text-sm font-black text-white shadow-lg shadow-orange-950/20"><Plus size={18} /> New {isNotes ? 'Note' : 'Paper'}</button>
+        </div>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-3">
+        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><BookOpen className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">Total {isNotes ? 'Notes' : 'Papers'}</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">{resources.length}</p></div>
+        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><Search className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">Search Active</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">{searchQuery ? 1 : 0}</p></div>
+        <div className="rounded-[26px] border border-gray-100 bg-white p-5 shadow-sm"><Download className="mb-4 text-[#ff9f1c]" /><p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">File Actions</p><p className="mt-1 text-3xl font-black text-[#0a4a44]">Open</p></div>
+      </div>
+
+      <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+          <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={`Search ${type}`} className="w-full rounded-2xl bg-gray-50 py-4 pl-12 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]" />
+        </div>
+      </div>
+
+      {message && <div className="rounded-2xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44]">{message}</div>}
+
+      {isLoading ? (
+        <div className="py-20 text-center"><Loader2 className="mx-auto mb-4 animate-spin text-[#ff9f1c]" size={42} /><p className="font-bold text-gray-400">Loading resources...</p></div>
+      ) : filteredResources.length ? (
+        <motion.div layout className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {filteredResources.map((item) => <ResourceCard key={item._id} item={item} type={type} onOpen={handleOpen} onEdit={handleEdit} onDelete={(id, resourceType) => setPendingDelete({ id, type: resourceType })} />)}
+        </motion.div>
+      ) : (
+        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12"><AlertCircle className="mx-auto mb-4 text-gray-300" size={48} /><h3 className="text-2xl font-black text-[#0a4a44]">No resources found</h3><p className="mt-2 font-medium text-gray-400">Upload a new {isNotes ? 'note' : 'paper'} or try another search.</p></div>
+      )}
+
+      <DeleteConfirmModal open={Boolean(pendingDelete)} message="This resource will be permanently removed from the admin library." isDeleting={isDeleting} onCancel={() => !isDeleting && setPendingDelete(null)} onConfirm={confirmDelete} />
+    </div>
+  );
+};
+
 const DepartmentManagement = () => {
   const [departments, setDepartments] = useState([]);
   const [formData, setFormData] = useState({ name: '', description: '' });
@@ -1087,6 +1447,7 @@ const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
 // --- MAIN ADMIN DASHBOARD ---
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isDesktop, setIsDesktop] = useState(getIsDesktop);
   const [isSidebarOpen, setSidebarOpen] = useState(getIsDesktop);
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -1175,12 +1536,14 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={22} /> },
+    { name: 'Notes', icon: <BookOpen size={22} /> },
+    { name: 'Papers', icon: <FileText size={22} /> },
+    { name: 'Upload Notes', icon: <Upload size={22} /> },
+    { name: 'Upload Papers', icon: <Upload size={22} /> },
     { name: 'Departments', icon: <Building2 size={22} /> },
     { name: 'Add Courses', icon: <BookOpen size={22} /> },
     { name: 'Add Semester', icon: <Calendar size={22} /> },
     { name: 'Add Subject', icon: <LayoutGrid size={22} /> },
-    { name: 'Add Papers', icon: <FileText size={22} /> },
-    { name: 'Add Notes', icon: <PenTool size={22} /> },
     { name: 'Users', icon: <Users size={22} /> },
   ];
 
@@ -1245,10 +1608,10 @@ const AdminDashboard = () => {
               <div className="hidden bg-gray-50 p-3 rounded-2xl text-gray-400 hover:text-[#ff9f1c] cursor-pointer transition-all sm:block"><Bell size={22}/></div>
               <div className="hidden h-10 w-[1.5px] bg-gray-100 mx-2 sm:block" />
               <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-3xl border border-gray-100 sm:gap-4 sm:pr-6">
-                 <div className="w-10 h-10 rounded-2xl bg-[#0a4a44] border-2 border-[#ff9f1c] overflow-hidden shadow-lg"><img src="https://i.pravatar.cc/100?img=12" alt="admin" /></div>
+                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-[#ff9f1c] bg-[#0a4a44] text-sm font-black text-white shadow-lg">{(user?.name || user?.email || 'A').charAt(0).toUpperCase()}</div>
                  <div className="text-left hidden sm:block">
-                    <p className="text-[13px] font-black text-[#0a4a44] leading-none mb-1">Chief Manager</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID: #SYS_882</p>
+                    <p className="text-[13px] font-black text-[#0a4a44] leading-none mb-1">{user?.name || 'Admin'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{user?.email || 'admin@eduhub'}</p>
                  </div>
               </div>
            </div>
@@ -1259,12 +1622,19 @@ const AdminDashboard = () => {
             
             {activeTab === 'Dashboard' ? (
               <AdminOverview users={users} isLoadingUsers={isLoadingUsers} setActiveTab={setActiveTab} homeData={homeData} />
+            ) : activeTab === 'Notes' ? (
+              <AdminResourceManager key="admin-notes" type="notes" mode="library" />
+            ) : activeTab === 'Papers' ? (
+              <AdminResourceManager key="admin-papers" type="papers" mode="library" />
+            ) : activeTab === 'Upload Notes' ? (
+              <AdminResourceManager key="admin-upload-notes" type="notes" mode="upload" />
+            ) : activeTab === 'Upload Papers' ? (
+              <AdminResourceManager key="admin-upload-papers" type="papers" mode="upload" />
             ) : activeTab === 'Departments' ? (
               <DepartmentManagement />
             ) : activeTab === 'Users' ? (
               <AdminUsersPanel users={users} isLoading={isLoadingUsers} errorMessage={usersErrorMessage} />
             ) : (
-              /* THE DYNAMIC ACTION FORM (Used for Notes, Papers, Subjects, etc.) */
               <AdminActionForm activeTab={activeTab} key={activeTab} />
             )}
           </AnimatePresence>

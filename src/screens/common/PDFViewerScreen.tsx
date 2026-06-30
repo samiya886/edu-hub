@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,6 +22,44 @@ export default function PDFViewerScreen({ route, navigation }: { route: any; nav
   const [busyAction, setBusyAction] = useState<'open' | 'download' | ''>('');
   const [viewerLoading, setViewerLoading] = useState(previewable);
   const [viewerError, setViewerError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    if (!fileUrl) {
+      setViewerLoading(false);
+      setViewerError('No valid file URL was provided for this resource.');
+      return () => {
+        active = false;
+      };
+    }
+
+    if (!previewable || Platform.OS === 'web') {
+      setViewerLoading(false);
+      setViewerError('');
+      return () => {
+        active = false;
+      };
+    }
+
+    setViewerLoading(true);
+    setViewerError('');
+    assertReachableFile(fileUrl)
+      .catch((error: any) => {
+        if (active) {
+          setViewerError(error.message || 'This file is missing or the URL is invalid.');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setViewerLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [fileUrl, previewable]);
 
   const showMissingFile = () => {
     Alert.alert('File unavailable', 'This file is missing or the URL is invalid.');
@@ -62,12 +100,12 @@ export default function PDFViewerScreen({ route, navigation }: { route: any; nav
   };
 
   const renderPreview = () => {
-    if (!fileUrl) {
+    if (!fileUrl || viewerError) {
       return (
         <View style={styles.messageCard}>
           <Ionicons name="alert-circle-outline" size={54} color={COLORS.error} />
           <Text style={styles.messageTitle}>File unavailable</Text>
-          <Text style={styles.messageText}>No valid file URL was provided for this resource.</Text>
+          <Text style={styles.messageText}>{viewerError || 'No valid file URL was provided for this resource.'}</Text>
         </View>
       );
     }
@@ -84,32 +122,28 @@ export default function PDFViewerScreen({ route, navigation }: { route: any; nav
       );
     }
 
+    if (viewerLoading) {
+      return (
+        <View style={styles.messageCard}>
+          <ActivityIndicator color={COLORS.primary} />
+          <Text style={styles.viewerLoaderText}>Opening file...</Text>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.viewerWrap}>
-        {viewerLoading ? (
-          <View style={styles.viewerLoader}>
-            <ActivityIndicator color={COLORS.primary} />
-            <Text style={styles.viewerLoaderText}>Opening file...</Text>
-          </View>
-        ) : null}
-        {viewerError ? (
-          <View style={styles.messageCard}>
-            <Ionicons name="alert-circle-outline" size={54} color={COLORS.error} />
-            <Text style={styles.messageTitle}>Preview failed</Text>
-            <Text style={styles.messageText}>{viewerError}</Text>
-          </View>
-        ) : (
-          <WebView
-            source={{ uri: fileUrl }}
-            style={styles.webview}
-            originWhitelist={['*']}
-            onLoadEnd={() => setViewerLoading(false)}
-            onError={() => {
-              setViewerLoading(false);
-              setViewerError('Unable to preview this file. You can still open or download it.');
-            }}
-          />
-        )}
+        <WebView
+          source={{ uri: fileUrl }}
+          style={styles.webview}
+          originWhitelist={['*']}
+          onError={() => {
+            setViewerError('Unable to preview this file. You can still open or download it.');
+          }}
+          onHttpError={(event) => {
+            setViewerError(`File unavailable. Server returned ${event.nativeEvent.statusCode}.`);
+          }}
+        />
       </View>
     );
   };

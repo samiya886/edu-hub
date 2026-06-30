@@ -17,6 +17,8 @@ import type { WebView as WebViewType } from 'react-native-webview';
 const WEBSITE_URL = 'https://edu-hub-production.up.railway.app';
 const WEBSITE_HOST = new URL(WEBSITE_URL).host;
 const WEBSITE_ORIGIN = new URL(WEBSITE_URL).origin;
+const ADMIN_LOGIN_URL = `${WEBSITE_ORIGIN}/admin-login`;
+const ADMIN_PATH_PREFIXES = ['/admin-login', '/admin'];
 
 const MOBILE_OPTIMIZATION_CSS = `
     @media (max-width: 640px) {
@@ -2418,6 +2420,7 @@ function NativeWebViewApp() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [currentUrl, setCurrentUrl] = useState(WEBSITE_URL);
 
   const clearLoadingTimeout = useCallback(() => {
     if (loadingTimeoutRef.current) {
@@ -2454,6 +2457,7 @@ function NativeWebViewApp() {
   const handleNavigationStateChange = useCallback(
     (event: WebViewNavigation) => {
       setCanGoBack(event.canGoBack);
+      setCurrentUrl(event.url || WEBSITE_URL);
 
       if (!event.loading) {
         clearLoadingTimeout();
@@ -2484,6 +2488,33 @@ function NativeWebViewApp() {
     setReloadKey((key) => key + 1);
   };
 
+  const openAdminLogin = () => {
+    clearLoadingTimeout();
+    setHasError(false);
+    setIsLoading(true);
+    startLoadingTimeout();
+    setCurrentUrl(ADMIN_LOGIN_URL);
+    webViewRef.current?.injectJavaScript(`window.location.href = ${JSON.stringify(ADMIN_LOGIN_URL)}; true;`);
+  };
+
+  const handleFileDownload = useCallback((event: { nativeEvent: { downloadUrl?: string } }) => {
+    const downloadUrl = event.nativeEvent.downloadUrl;
+    if (!downloadUrl) return;
+
+    Linking.openURL(normalizeWebsiteUrl(downloadUrl)).catch((error) => {
+      console.warn('Failed to open download URL', downloadUrl, error);
+    });
+  }, []);
+
+  const isAdminRoute = (() => {
+    try {
+      const path = new URL(normalizeWebsiteUrl(currentUrl), WEBSITE_URL).pathname;
+      return ADMIN_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+    } catch {
+      return false;
+    }
+  })();
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -2498,6 +2529,9 @@ function NativeWebViewApp() {
           sharedCookiesEnabled
           thirdPartyCookiesEnabled
           setSupportMultipleWindows={false}
+          javaScriptCanOpenWindowsAutomatically
+          allowFileAccess
+          allowFileAccessFromFileURLs
           startInLoadingState
           pullToRefreshEnabled
           allowsBackForwardNavigationGestures
@@ -2544,7 +2578,14 @@ function NativeWebViewApp() {
           }}
           onNavigationStateChange={handleNavigationStateChange}
           onShouldStartLoadWithRequest={handleShouldStartLoad}
+          onFileDownload={handleFileDownload}
         />
+
+        {!isAdminRoute && !hasError ? (
+          <TouchableOpacity style={styles.adminLoginButton} onPress={openAdminLogin} activeOpacity={0.86}>
+            <Text style={styles.adminLoginText}>Admin Login</Text>
+          </TouchableOpacity>
+        ) : null}
 
         {isLoading && !hasError ? (
           <View pointerEvents="none" style={styles.loadingOverlay}>
@@ -2666,6 +2707,30 @@ const styles = StyleSheet.create({
   retryText: {
     color: '#ffffff',
     fontSize: 15,
+    fontWeight: '900',
+  },
+  adminLoginButton: {
+    position: 'absolute',
+    right: 14,
+    top: 14,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: '#0a4a44',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 159, 28, 0.55)',
+    paddingHorizontal: 14,
+    shadowColor: '#0a4a44',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 20,
+  },
+  adminLoginText: {
+    color: '#ffffff',
+    fontSize: 12,
     fontWeight: '900',
   },
 });

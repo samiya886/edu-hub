@@ -49,6 +49,10 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
     navigation.navigate('NotesPapers', { searchQuery: search });
   };
 
+  const openDocument = (item: Note | Paper) => {
+    navigation.navigate('PDFViewer', { title: item.title, url: item.fileUrl });
+  };
+
   if (loading) return <Loader fullScreen message="Loading Dashboard..." />;
 
   return (
@@ -110,6 +114,7 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
           <Card
             key={note.id}
             title={note.title}
+            onPress={() => openDocument(note)}
             headerRight={
               <View style={styles.downloadsBadge}>
                 <Ionicons name="download-outline" size={12} color={COLORS.primary} />
@@ -130,7 +135,7 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
             <View style={styles.cardActions}>
               <TouchableOpacity
                 style={styles.openIconButton}
-                onPress={() => navigation.navigate('PDFViewer', { title: note.title, url: note.fileUrl })}
+                onPress={() => openDocument(note)}
                 accessibilityLabel="Open"
               >
                 <Ionicons name="eye-outline" size={17} color={COLORS.primary} />
@@ -175,7 +180,7 @@ export default function StudentDashboardScreen({ navigation }: { navigation: any
             <View style={styles.cardActions}>
               <TouchableOpacity
                 style={styles.openIconButton}
-                onPress={() => navigation.navigate('PDFViewer', { title: paper.title, url: paper.fileUrl })}
+                onPress={() => openDocument(paper)}
                 accessibilityLabel="Open"
               >
                 <Ionicons name="eye-outline" size={17} color={COLORS.primary} />
@@ -343,4 +348,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, View, Text, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
 import { COLORS, SHADOWS } from '../constants';
 
 interface CardProps {
@@ -8,6 +8,7 @@ interface CardProps {
   style?: ViewStyle;
   titleStyle?: TextStyle;
   headerRight?: React.ReactNode;
+  onPress?: () => void;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -16,9 +17,10 @@ export const Card: React.FC<CardProps> = ({
   style,
   titleStyle,
   headerRight,
+  onPress,
 }) => {
-  return (
-    <View style={[styles.card, style]}>
+  const content = (
+    <>
       {(title || headerRight) && (
         <View style={styles.header}>
           {title ? <Text style={[styles.title, titleStyle]}>{title}</Text> : <View />}
@@ -26,8 +28,23 @@ export const Card: React.FC<CardProps> = ({
         </View>
       )}
       <View style={styles.body}>{children}</View>
-    </View>
+    </>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity
+        style={[styles.card, style]}
+        onPress={onPress}
+        activeOpacity={0.86}
+        accessibilityRole="button"
+      >
+        {content}
+      </TouchableOpacity>
+    );
+  }
+
+  return <View style={[styles.card, style]}>{content}</View>;
 };
 
 const styles = StyleSheet.create({

@@ -1305,6 +1305,9 @@ const MOBILE_OPTIMIZATION_CSS = `
       .eduhub-teacher-material-actions {
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
         gap: 7px !important;
         border-top: 1px solid #f8fafc !important;
         margin-top: auto !important;
@@ -1315,6 +1318,7 @@ const MOBILE_OPTIMIZATION_CSS = `
         width: 100% !important;
         height: 38px !important;
         min-height: 38px !important;
+        min-width: 0 !important;
         border: 0 !important;
         border-radius: 12px !important;
         background: #ecfdf5 !important;

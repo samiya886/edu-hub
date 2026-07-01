@@ -13,9 +13,12 @@ import ManageUsersScreen from '../screens/admin/ManageUsersScreen';
 import ManageContentScreen from '../screens/admin/ManageContentScreen';
 import ProfileScreen from '../screens/student/ProfileScreen';
 import DepartmentsCoursesScreen from '../screens/common/DepartmentsCoursesScreen';
+import UploadScreen from '../screens/student/UploadScreen';
+import PDFViewerScreen from '../screens/common/PDFViewerScreen';
 
 export type AdminStackParamList = {
   HomeTabs: undefined;
+  PDFViewer: { title: string; url: string };
 };
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
@@ -34,6 +37,7 @@ function AdminTabNavigator() {
           else if (route.name === 'Users') iconName = 'people-outline';
           else if (route.name === 'Content') iconName = 'folder-open-outline';
           else if (route.name === 'Catalog') iconName = 'business-outline';
+          else if (route.name === 'Upload') iconName = 'add-circle-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -62,6 +66,7 @@ function AdminTabNavigator() {
       <Tab.Screen name="Users" component={ManageUsersScreen} options={{ title: 'Users' }} />
       <Tab.Screen name="Content" component={ManageContentScreen} options={{ title: 'Content' }} />
       <Tab.Screen name="Catalog" component={DepartmentsCoursesScreen} />
+      <Tab.Screen name="Upload" component={UploadScreen} options={{ title: 'Upload' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
@@ -72,6 +77,11 @@ function AdminStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeTabs" component={AdminTabNavigator} />
+      <Stack.Screen
+        name="PDFViewer"
+        component={PDFViewerScreen}
+        options={{ headerShown: true, title: 'Document Reader' }}
+      />
     </Stack.Navigator>
   );
 }

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { notesService, papersService, filterService, Department, Course, Subject } from '../../services/api';
+import { notesService, papersService, filterService, Department, Course, Subject, Note, Paper } from '../../services/api';
 import { COLORS } from '../../constants';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 
-export default function UploadScreen({ navigation }: { navigation: any }) {
+export default function UploadScreen({ navigation, route }: { navigation: any; route?: any }) {
   const [title, setTitle] = useState('');
   const [docType, setDocType] = useState<'note' | 'paper'>('note');
   const [year, setYear] = useState('');
@@ -28,6 +28,20 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
   const [fileUrl, setFileUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const editItem = route?.params?.editItem as (Note | Paper | undefined);
+  const editType = (route?.params?.type as 'note' | 'paper' | undefined) || (editItem && 'year' in editItem ? 'paper' : 'note');
+  const isEditMode = Boolean(editItem?.id);
+
+  useEffect(() => {
+    if (!editItem) return;
+    setTitle(editItem.title || '');
+    setDocType(editType);
+    setSelectedDept(editItem.department || '');
+    setSelectedCourse(editItem.course || '');
+    setSelectedSubject(editItem.subject || '');
+    setFileUrl(editItem.fileUrl || '');
+    setYear('year' in editItem ? String(editItem.year || '') : '');
+  }, [editItem, editType]);
 
   // Load departments
   useEffect(() => {
@@ -89,25 +103,46 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
     setLoading(true);
     try {
       if (docType === 'note') {
-        await notesService.upload({
-          title,
-          subject: selectedSubject,
-          course: selectedCourse,
-          department: selectedDept,
-          fileUrl,
-        });
+        if (isEditMode && editItem) {
+          await notesService.update(editItem.id, {
+            title,
+            subject: selectedSubject,
+            course: selectedCourse,
+            department: selectedDept,
+            fileUrl,
+          });
+        } else {
+          await notesService.upload({
+            title,
+            subject: selectedSubject,
+            course: selectedCourse,
+            department: selectedDept,
+            fileUrl,
+          });
+        }
       } else {
-        await papersService.upload({
-          title,
-          subject: selectedSubject,
-          course: selectedCourse,
-          department: selectedDept,
-          year: parseInt(year) || new Date().getFullYear(),
-          fileUrl,
-        });
+        if (isEditMode && editItem) {
+          await papersService.update(editItem.id, {
+            title,
+            subject: selectedSubject,
+            course: selectedCourse,
+            department: selectedDept,
+            year: parseInt(year) || new Date().getFullYear(),
+            fileUrl,
+          });
+        } else {
+          await papersService.upload({
+            title,
+            subject: selectedSubject,
+            course: selectedCourse,
+            department: selectedDept,
+            year: parseInt(year) || new Date().getFullYear(),
+            fileUrl,
+          });
+        }
       }
 
-      Alert.alert('Success', 'Resource uploaded successfully!', [
+      Alert.alert('Success', isEditMode ? 'Resource updated successfully!' : 'Resource uploaded successfully!', [
         { text: 'OK', onPress: () => navigation.navigate('Dashboard') }
       ]);
       // Reset form
@@ -127,10 +162,10 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
     <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
         <View style={styles.hero}>
-          <Text style={styles.kicker}>Resource upload</Text>
-          <Text style={styles.title}>Upload Resource</Text>
+          <Text style={styles.kicker}>{isEditMode ? 'Resource edit' : 'Resource upload'}</Text>
+          <Text style={styles.title}>{isEditMode ? 'Edit Resource' : 'Upload Resource'}</Text>
           <Text style={styles.subtitle}>
-            Share notes and previous year papers with the same academic structure used on the website.
+            {isEditMode ? 'Update this resource while keeping the same academic structure used on the website.' : 'Share notes and previous year papers with the same academic structure used on the website.'}
           </Text>
         </View>
 
@@ -177,7 +212,7 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
         <Text style={styles.label}>Department *</Text>
         <TouchableOpacity style={styles.dropdown} onPress={() => { setShowDepts(!showDepts); setShowCourses(false); setShowSubjects(false); }}>
           <Text style={selectedDept ? styles.dropdownSelectedText : styles.dropdownPlaceholder}>
-            {departments.find(d => d.id === selectedDept)?.name || 'Select Department'}
+            {departments.find(d => d.id === selectedDept)?.name || selectedDept || 'Select Department'}
           </Text>
           <Ionicons name={showDepts ? 'chevron-up' : 'chevron-down'} size={18} color={COLORS.textSecondary} />
         </TouchableOpacity>
@@ -201,7 +236,7 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
             <Text style={[styles.label, { marginTop: 12 }]}>Course *</Text>
             <TouchableOpacity style={styles.dropdown} onPress={() => { setShowCourses(!showCourses); setShowDepts(false); setShowSubjects(false); }}>
               <Text style={selectedCourse ? styles.dropdownSelectedText : styles.dropdownPlaceholder}>
-                {courses.find(c => c.id === selectedCourse)?.name || 'Select Course'}
+                {courses.find(c => c.id === selectedCourse)?.name || selectedCourse || 'Select Course'}
               </Text>
               <Ionicons name={showCourses ? 'chevron-up' : 'chevron-down'} size={18} color={COLORS.textSecondary} />
             </TouchableOpacity>
@@ -227,7 +262,7 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
             <Text style={[styles.label, { marginTop: 12 }]}>Subject *</Text>
             <TouchableOpacity style={styles.dropdown} onPress={() => { setShowSubjects(!showSubjects); setShowDepts(false); setShowCourses(false); }}>
               <Text style={selectedSubject ? styles.dropdownSelectedText : styles.dropdownPlaceholder}>
-                {subjects.find(s => s.id === selectedSubject)?.name || 'Select Subject'}
+                {subjects.find(s => s.id === selectedSubject)?.name || selectedSubject || 'Select Subject'}
               </Text>
               <Ionicons name={showSubjects ? 'chevron-up' : 'chevron-down'} size={18} color={COLORS.textSecondary} />
             </TouchableOpacity>
@@ -256,7 +291,7 @@ export default function UploadScreen({ navigation }: { navigation: any }) {
         />
 
         <Button
-          title="Upload Resource"
+          title={isEditMode ? 'Update Resource' : 'Upload Resource'}
           onPress={handleUpload}
           loading={loading}
           style={styles.uploadBtn}

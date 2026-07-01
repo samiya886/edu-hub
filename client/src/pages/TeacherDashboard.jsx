@@ -791,7 +791,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 
@@ -813,7 +813,7 @@ const TeacherDashboard = () => {
           <p className="font-bold text-gray-400">Loading resources...</p>
         </div>
       ) : currentItems.length ? (
-        <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {currentItems.map((item) => (
             <ResourceCard key={item._id} item={item} type={resourceType} onDownload={handleDownload} onEdit={handleEdit} onDelete={handleDelete} canManage />
           ))}

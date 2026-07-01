@@ -1013,7 +1013,7 @@ const StudentDashboard = () => {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 
@@ -1035,7 +1035,7 @@ const StudentDashboard = () => {
           <p className="font-bold text-gray-400">Loading resources...</p>
         </div>
       ) : filteredItems.length ? (
-        <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredItems.map((item) => (
             <ResourceCard
               key={item._id}
@@ -1097,7 +1097,7 @@ const StudentDashboard = () => {
         />
         <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
           <h3 className="mb-6 text-2xl font-black text-[#0a4a44]">Learning Activity</h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
+          <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
             <StatCard icon={BookOpen} label="Notes Viewed" value={resourceType === 'notes' ? filteredItems.length : items.length} caption="Current result set" />
             <StatCard icon={FileText} label="Papers Found" value={resourceType === 'papers' ? filteredItems.length : items.length} caption="Available to download" />
             <StatCard icon={Upload} label="Uploads" value="Ready" caption="Student publishing enabled" />

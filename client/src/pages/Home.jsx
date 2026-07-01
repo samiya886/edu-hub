@@ -317,7 +317,7 @@ const Home = () => {
                         {resource.fileAvailable === false ? 'Missing file' : fileUrl ? 'Ready' : 'Missing file'} <ArrowRight size={14} />
                       </span>
                     </div>
-                    <div className="mt-5 flex items-center gap-2">
+                    <div className="eduhub-resource-actions eduhub-resource-actions-download-layout mt-5 grid grid-cols-[minmax(0,1fr)_44px] items-center gap-2">
                       <button
                         type="button"
                         onClick={(event) => {
@@ -326,7 +326,7 @@ const Home = () => {
                           else setFileError('This uploaded file is missing on the server. Please re-upload it.');
                         }}
                         disabled={isOpening || isDownloading}
-                        className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-4 py-3 text-xs font-black text-white shadow-lg shadow-teal-100 transition hover:bg-[#083b36] disabled:opacity-70"
+                        className="eduhub-resource-action eduhub-resource-action-open inline-flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-2xl bg-[#0a4a44] px-4 py-3 text-xs font-black text-white shadow-lg shadow-teal-100 transition hover:bg-[#083b36] disabled:opacity-70"
                         aria-label={`Open ${resource.title}`}
                       >
                         {isOpening ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />}
@@ -340,7 +340,7 @@ const Home = () => {
                           else setFileError('This uploaded file is missing on the server. Please re-upload it.');
                         }}
                         disabled={!fileUrl || isOpening || isDownloading}
-                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f00] text-white shadow-lg shadow-orange-100 transition hover:bg-[#e68a00] disabled:opacity-50"
+                        className="eduhub-resource-action eduhub-resource-action-download inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff9f00] text-white shadow-lg shadow-orange-100 transition hover:bg-[#e68a00] disabled:opacity-50"
                         aria-label={`Download ${resource.title}`}
                         title="Download"
                       >

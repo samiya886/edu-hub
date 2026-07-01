@@ -1013,7 +1013,7 @@ const StudentDashboard = () => {
         </div>
       ) : null}
 
-      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 
@@ -1097,7 +1097,7 @@ const StudentDashboard = () => {
         />
         <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
           <h3 className="mb-6 text-2xl font-black text-[#0a4a44]">Learning Activity</h3>
-          <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
             <StatCard icon={BookOpen} label="Notes Viewed" value={resourceType === 'notes' ? filteredItems.length : items.length} caption="Current result set" />
             <StatCard icon={FileText} label="Papers Found" value={resourceType === 'papers' ? filteredItems.length : items.length} caption="Available to download" />
             <StatCard icon={Upload} label="Uploads" value="Ready" caption="Student publishing enabled" />

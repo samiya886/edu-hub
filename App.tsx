@@ -460,9 +460,9 @@ const MOBILE_OPTIMIZATION_CSS = `
       body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)),
       body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)),
       body[data-eduhub-route="resources"] .eduhub-resource-actions {
-        display: flex !important;
-        grid-template-columns: none !important;
-        justify-content: flex-start !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        justify-content: stretch !important;
         align-items: center !important;
         flex-wrap: nowrap !important;
         gap: 6px !important;
@@ -483,10 +483,10 @@ const MOBILE_OPTIMIZATION_CSS = `
       body[data-eduhub-route="resources"] .grid:has(> button:nth-child(3)) > button,
       body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)) > button,
       body[data-eduhub-route="resources"] .eduhub-resource-actions > button {
-        width: auto !important;
+        width: 100% !important;
         min-width: 0 !important;
-        max-width: none !important;
-        flex: 0 1 auto !important;
+        max-width: 100% !important;
+        flex: 1 1 0 !important;
       }
 
       body[data-eduhub-route="resources"] .mobile-carousel,
@@ -827,9 +827,9 @@ const MOBILE_OPTIMIZATION_CSS = `
         z-index: 2147482500 !important;
       }
       .eduhub-resource-actions {
-        display: flex !important;
-        grid-template-columns: none !important;
-        justify-content: flex-start !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        justify-content: stretch !important;
         align-items: center !important;
         flex-wrap: nowrap !important;
         gap: 6px !important;
@@ -843,10 +843,10 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       .eduhub-resource-actions > * {
-        width: auto !important;
+        width: 100% !important;
         min-width: 0 !important;
-        max-width: none !important;
-        flex: 0 1 auto !important;
+        max-width: 100% !important;
+        flex: 1 1 0 !important;
         scroll-snap-align: none !important;
       }
 
@@ -1881,9 +1881,9 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       group.classList.add('eduhub-resource-actions');
       group.classList.toggle('eduhub-resource-actions-download-layout', hasDownload);
       group.setAttribute('data-eduhub-actions-normalized', 'true');
-      group.style.display = 'flex';
-      group.style.gridTemplateColumns = 'none';
-      group.style.justifyContent = 'flex-start';
+      group.style.display = 'grid';
+      group.style.gridTemplateColumns = 'repeat(' + Math.min(Math.max(buttons.length, 1), 3) + ', minmax(0, 1fr))';
+      group.style.justifyContent = 'stretch';
       group.style.alignItems = 'center';
       group.style.flexWrap = 'nowrap';
       group.style.gap = hasDownload ? '8px' : '6px';
@@ -1903,9 +1903,9 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       button.classList.add('eduhub-resource-action-' + action);
       button.setAttribute('aria-label', label);
       button.title = label;
-      button.style.width = 'auto';
+      button.style.width = '100%';
       button.style.minWidth = '0';
-      button.style.maxWidth = 'none';
+      button.style.maxWidth = '100%';
       button.style.minHeight = '36px';
       button.style.height = '36px';
       button.style.display = 'inline-flex';
@@ -1919,11 +1919,11 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       button.style.lineHeight = '1';
       button.style.whiteSpace = 'nowrap';
       button.style.overflow = 'hidden';
-      button.style.flex = '0 1 auto';
+      button.style.flex = '1 1 0';
       button.style.scrollSnapAlign = 'none';
 
       if (action === 'open' && button.parentElement && button.parentElement.classList.contains('eduhub-resource-actions-download-layout')) {
-        button.style.flex = '1 1 auto';
+        button.style.flex = '1 1 0';
         button.style.minHeight = '44px';
         button.style.height = '44px';
         button.style.borderRadius = '14px';

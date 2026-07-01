@@ -791,7 +791,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
         {stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
       </div>
 

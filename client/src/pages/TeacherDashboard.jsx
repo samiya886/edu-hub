@@ -402,7 +402,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete, canManage = tr
     animate={{ opacity: 1, y: 0 }}
     whileHover={{ y: -4, scale: 1.005 }}
     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-    className="eduhub-resource-card group relative flex h-full w-full min-w-0 max-w-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)] sm:p-5"
+    className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)] sm:p-5"
   >
     <div className="absolute inset-x-5 bottom-0 h-1 rounded-full bg-[#ff9f1c]/80 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
     <div className="mb-4 flex items-start gap-3">

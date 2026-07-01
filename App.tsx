@@ -428,7 +428,7 @@ const MOBILE_OPTIMIZATION_CSS = `
         white-space: nowrap !important;
       }
 
-      body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(button):not(.eduhub-resource-card),
+      body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(button),
       body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(input),
       body[data-eduhub-route="resources"] [class*="overflow-hidden"]:has(select) {
         overflow: visible !important;
@@ -512,20 +512,7 @@ const MOBILE_OPTIMIZATION_CSS = `
         min-width: 0 !important;
         max-width: 100% !important;
         flex: 1 1 auto !important;
-        overflow: hidden !important;
         scroll-snap-align: none !important;
-      }
-
-      .eduhub-resource-card {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        overflow: hidden !important;
-        contain: paint !important;
-      }
-
-      .eduhub-resource-card * {
-        max-width: 100% !important;
       }
 
       body[data-eduhub-route="resources"] select,

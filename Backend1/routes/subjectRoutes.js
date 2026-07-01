@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import {
   getSubjects,
   getSubject,
@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.get("/", getSubjects);
 router.get("/:id", getSubject);
-router.post("/", createSubject);
-router.put("/:id", authenticate, authorize(), updateSubject);
-router.delete("/:id", authenticate, authorize(), deleteSubject);
+router.post("/", authenticate, authorize("admin"), createSubject);
+router.put("/:id", authenticate, authorize("admin"), updateSubject);
+router.delete("/:id", authenticate, authorize("admin"), deleteSubject);
 
 export default router;

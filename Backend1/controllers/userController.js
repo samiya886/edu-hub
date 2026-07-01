@@ -1,9 +1,11 @@
+﻿import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import Note from "../models/Note.js";
 import Paper from "../models/Paper.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
 
 const getId = (value) => value?._id?.toString?.() || value?.toString?.() || "";
+const allowedRoles = ["student", "teacher", "admin"];
 
 const populateUser = (query) =>
   query
@@ -60,11 +62,79 @@ const populateResource = (query) =>
     .populate("author", "name email role")
     .populate("uploaderId", "name email role");
 
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role = "student" } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Role must be student, teacher, or admin" });
+    }
+
+    const existingUser = await User.findOne({ email: String(email).toLowerCase().trim() });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashedPassword, role });
+    const populatedUser = await populateUser(User.findById(user._id).select("-password"));
+
+    res.status(201).json(serializeUser(populatedUser));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const getUsers = async (_req, res) => {
   try {
     const users = await populateUser(User.find().select("-password")).sort({ createdAt: -1 });
+    res.json(users.map(serializeUser));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    res.json(users);
+export const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Role must be student, teacher, or admin" });
+    }
+
+    if (getId(req.user._id) === req.params.id && role !== "admin") {
+      return res.status(400).json({ message: "You cannot remove admin access from your active account" });
+    }
+
+    const user = await populateUser(
+      User.findByIdAndUpdate(req.params.id, { role }, { new: true, runValidators: true }).select("-password")
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(serializeUser(user));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    if (getId(req.user._id) === req.params.id) {
+      return res.status(400).json({ message: "You cannot delete your active admin account" });
+    }
+
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -170,3 +240,4 @@ export const getMyResources = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

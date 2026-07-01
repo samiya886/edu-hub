@@ -1,4 +1,4 @@
-import Paper from "../models/Paper.js";
+﻿import Paper from "../models/Paper.js";
 import Subject from "../models/Subject.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
 import { getUploadedFileUrl } from "../utils/fileStorage.js";
@@ -51,6 +51,7 @@ const resolveSubjectFilter = async ({ department, course, semester, subject }) =
 
 const canManageResource = (user, resource) => {
   if (!user) return false;
+  if (user.role === "admin") return true;
   const userId = user._id?.toString?.();
   const resourceRole = resource.uploaderRole || user.role;
 
@@ -63,10 +64,13 @@ const canManageResource = (user, resource) => {
 };
 
 const roleScopedFilter = (req) => {
-  if (["student", "teacher", "admin"].includes(req.user?.role)) {
-    return { uploaderRole: req.user.role };
+  if (req.user && ["student", "teacher"].includes(req.user.role)) {
+    const filter = { uploaderRole: req.user.role };
+    if (req.user._id) {
+      filter.uploaderId = { $ne: req.user._id };
+    }
+    return filter;
   }
-  // Public (unauthenticated) visitors can see all papers
   return {};
 };
 
@@ -249,3 +253,4 @@ export const ratePaper = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

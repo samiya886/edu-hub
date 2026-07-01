@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -1240,59 +1240,134 @@ const AdminOverview = ({ users, isLoadingUsers, setActiveTab, homeData }) => {
     </motion.div>
   );
 };
-const AdminUsersPanel = ({ users, isLoading, errorMessage }) => {
+const AdminUsersPanel = ({ users, isLoading, errorMessage, onReload }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'student' });
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, roleFilter]);
+
   const filteredUsers = users.filter((user) => {
     const query = searchTerm.toLowerCase();
-    return user.name?.toLowerCase().includes(query) || user.email?.toLowerCase().includes(query) || user.role?.toLowerCase().includes(query);
+    const roleMatches = roleFilter === 'all' || user.role === roleFilter;
+    const searchMatches = user.name?.toLowerCase().includes(query) || user.email?.toLowerCase().includes(query) || user.role?.toLowerCase().includes(query);
+    return roleMatches && searchMatches;
   });
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / 8));
+  const pagedUsers = filteredUsers.slice((page - 1) * 8, page * 8);
+
+  const createUser = async (event) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setMessage('');
+    try {
+      const response = await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(newUser),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to create user');
+      setNewUser({ name: '', email: '', password: '', role: 'student' });
+      setMessage('User created successfully.');
+      await onReload();
+    } catch (error) {
+      setMessage(error.message);
+    }
+    setIsSaving(false);
+  };
+
+  const updateRole = async (userId, role) => {
+    setIsSaving(true);
+    setMessage('');
+    try {
+      const response = await fetch(`${API_URL}/users/${userId}/role`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify({ role }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to update role');
+      setMessage('Role updated successfully.');
+      await onReload();
+    } catch (error) {
+      setMessage(error.message);
+    }
+    setIsSaving(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setIsSaving(true);
+    setMessage('');
+    try {
+      const response = await fetch(`${API_URL}/users/${pendingDelete._id || pendingDelete.id}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to delete user');
+      setPendingDelete(null);
+      setMessage('User deleted successfully.');
+      await onReload();
+    } catch (error) {
+      setMessage(error.message);
+    }
+    setIsSaving(false);
+  };
 
   return (
     <motion.div key="users" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
       <div className="rounded-[28px] bg-[#0a4a44] p-5 text-white sm:p-8 md:rounded-[40px] md:p-10">
         <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-[#ff9f1c]">Admin Users</p>
         <h2 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl md:tracking-tighter">User Directory</h2>
-        <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">Search and review student, teacher, and admin accounts from the same card-first dashboard experience.</p>
+        <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-teal-100/60">Create accounts, search users, filter by role, update access, and delete accounts with the same dashboard card system.</p>
       </div>
 
-      <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search users"
-            className="w-full rounded-2xl bg-gray-50 py-4 pl-12 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]"
-          />
+      <form onSubmit={createUser} className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field label="Name"><input required value={newUser.name} onChange={(event) => setNewUser({ ...newUser, name: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" /></Field>
+          <Field label="Email"><input required type="email" value={newUser.email} onChange={(event) => setNewUser({ ...newUser, email: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" /></Field>
+          <Field label="Password"><input required type="password" value={newUser.password} onChange={(event) => setNewUser({ ...newUser, password: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44] outline-none transition focus:border-[#ff9f1c] focus:ring-2 focus:ring-orange-100" /></Field>
+          <Field label="Role"><select value={newUser.role} onChange={(event) => setNewUser({ ...newUser, role: event.target.value })} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="student">student</option><option value="teacher">teacher</option><option value="admin">admin</option></select></Field>
         </div>
+        <div className="mt-5 flex justify-end"><button disabled={isSaving} className="min-h-12 rounded-md bg-[#ff9f1c] px-6 py-3 text-sm font-black text-white transition hover:bg-[#e68a00] disabled:bg-gray-300">{isSaving ? 'Saving...' : 'Create User'}</button></div>
+      </form>
+
+      <div className="grid gap-3 lg:grid-cols-[1fr_220px]">
+        <div className="rounded-[32px] border border-gray-100 bg-white p-4 shadow-sm"><div className="relative flex-1"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} /><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search users" className="w-full rounded-2xl bg-gray-50 py-4 pl-12 pr-4 font-bold text-[#0a4a44] outline-none transition focus:bg-white focus:ring-2 focus:ring-[#ff9f1c]" /></div></div>
+        <Field label="Role Filter"><select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-bold text-[#0a4a44] shadow-sm"><option value="all">All roles</option><option value="student">Students</option><option value="teacher">Teachers</option><option value="admin">Admins</option></select></Field>
       </div>
+
+      {(message || errorMessage) ? <div className="rounded-2xl border border-[#0a4a44]/10 bg-[#0a4a44]/5 p-4 text-sm font-bold text-[#0a4a44]">{message || errorMessage}</div> : null}
 
       {isLoading ? (
         <div className="py-20 text-center"><div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#ff9f1c]/20 border-t-[#ff9f1c]" /><p className="font-bold text-gray-400">Loading users...</p></div>
-      ) : errorMessage ? (
-        <div className="rounded-[28px] border border-dashed border-red-100 bg-white p-6 text-center text-sm font-bold text-red-600 sm:p-12">{errorMessage}</div>
-      ) : filteredUsers.length ? (
+      ) : pagedUsers.length ? (
         <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
-          {filteredUsers.map((item) => (
-            <motion.div key={item._id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -4, scale: 1.005 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }} className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)]">
+          {pagedUsers.map((item) => (
+            <motion.div key={item._id || item.id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -4, scale: 1.005 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }} className="group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-[0_24px_70px_-38px_rgba(10,74,68,0.35)]">
               <div className="absolute inset-x-5 bottom-0 h-1 origin-left scale-x-0 rounded-full bg-[#ff9f1c]/80 transition-transform duration-500 group-hover:scale-x-100" />
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">{(item.name || item.email || 'U').charAt(0).toUpperCase()}</div>
-                <div className="min-w-0">
-                  <h3 className="truncate text-base font-black text-[#0a4a44]">{item.name || 'Unnamed User'}</h3>
-                  <p className="truncate text-xs font-bold text-gray-400">{item.email}</p>
-                </div>
-              </div>
-              <div className="mt-auto rounded-2xl bg-gray-50/90 p-3 text-sm font-bold text-gray-400">
-                <p className="capitalize text-[#0a4a44]">{item.role || 'student'}</p>
-                <p>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Joined date unavailable'}</p>
-              </div>
+              <div className="mb-4 flex items-center gap-3"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">{(item.name || item.email || 'U').charAt(0).toUpperCase()}</div><div className="min-w-0"><h3 className="truncate text-base font-black text-[#0a4a44]">{item.name || 'Unnamed User'}</h3><p className="truncate text-xs font-bold text-gray-400">{item.email}</p></div></div>
+              <Field label="Role"><select value={item.role || 'student'} onChange={(event) => updateRole(item._id || item.id, event.target.value)} disabled={isSaving} className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm font-semibold text-[#0a4a44]"><option value="student">student</option><option value="teacher">teacher</option><option value="admin">admin</option></select></Field>
+              <div className="mt-auto rounded-2xl bg-gray-50/90 p-3 text-sm font-bold text-gray-400"><p>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Joined date unavailable'}</p></div>
+              <div className="mt-3 border-t border-gray-100 pt-3"><button type="button" onClick={() => setPendingDelete(item)} className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-2xl bg-red-50 px-2.5 py-2 text-xs font-black text-red-500 shadow-sm transition hover:bg-red-500 hover:text-white"><Trash2 size={14} /> Delete</button></div>
             </motion.div>
           ))}
         </motion.div>
       ) : (
-        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12"><AlertCircle className="mx-auto mb-4 text-gray-300" size={48} /><h3 className="text-2xl font-black text-[#0a4a44]">No users found</h3><p className="mt-2 font-medium text-gray-400">Try changing the search keyword.</p></div>
+        <div className="rounded-[28px] border border-dashed border-gray-200 bg-white p-6 text-center sm:p-12"><AlertCircle className="mx-auto mb-4 text-gray-300" size={48} /><h3 className="text-2xl font-black text-[#0a4a44]">No users found</h3><p className="mt-2 font-medium text-gray-400">Try changing the search keyword or role filter.</p></div>
       )}
+
+      <div className="flex flex-col items-center justify-between gap-3 rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm sm:flex-row"><button type="button" onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1} className="min-h-11 rounded-2xl border border-gray-200 bg-white px-5 text-sm font-black text-[#0a4a44] disabled:opacity-40">Prev</button><p className="text-sm font-black text-gray-400">Page {page} of {totalPages}</p><button type="button" onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page >= totalPages} className="min-h-11 rounded-2xl border border-gray-200 bg-white px-5 text-sm font-black text-[#0a4a44] disabled:opacity-40">Next</button></div>
+
+      <DeleteConfirmModal open={Boolean(pendingDelete)} title="Delete this user?" message="This account will be permanently removed from the platform." isDeleting={isSaving} onCancel={() => !isSaving && setPendingDelete(null)} onConfirm={confirmDelete} />
     </motion.div>
   );
 };
@@ -1509,7 +1584,7 @@ const AdminDashboard = () => {
             ) : activeTab === 'Departments' ? (
               <DepartmentManagement />
             ) : activeTab === 'Users' ? (
-              <AdminUsersPanel users={users} isLoading={isLoadingUsers} errorMessage={usersErrorMessage} />
+              <AdminUsersPanel users={users} isLoading={isLoadingUsers} errorMessage={usersErrorMessage} onReload={fetchUsers} />
             ) : (
               <AdminActionForm activeTab={activeTab} key={activeTab} />
             )}
@@ -1521,3 +1596,7 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
+

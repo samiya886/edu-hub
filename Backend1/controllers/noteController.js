@@ -1,4 +1,4 @@
-import Note from "../models/Note.js";
+﻿import Note from "../models/Note.js";
 import Subject from "../models/Subject.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
 import { getUploadedFileUrl } from "../utils/fileStorage.js";
@@ -51,6 +51,7 @@ const resolveSubjectFilter = async ({ department, course, semester, subject }) =
 
 const canManageResource = (user, resource) => {
   if (!user) return false;
+  if (user.role === "admin") return true;
   const userId = user._id?.toString?.();
   const resourceRole = resource.uploaderRole || user.role;
 
@@ -253,3 +254,4 @@ export const rateNote = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

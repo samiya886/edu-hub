@@ -110,7 +110,21 @@ button {
 
 .mobile-scroll-track > * {
   flex: 0 0 min(82vw, 320px);
+  min-width: 0;
+  max-width: calc(100vw - 2rem);
   scroll-snap-align: start;
+}
+
+.eduhub-resource-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  contain: paint;
+}
+
+.eduhub-resource-card * {
+  max-width: 100%;
 }
 
 .mobile-pill-track {

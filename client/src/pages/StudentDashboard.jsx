@@ -1035,7 +1035,7 @@ const StudentDashboard = () => {
           <p className="font-bold text-gray-400">Loading resources...</p>
         </div>
       ) : filteredItems.length ? (
-        <motion.div layout className="mobile-carousel mobile-scroll-track sm:grid-cols-2 sm:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+        <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredItems.map((item) => (
             <ResourceCard
               key={item._id}

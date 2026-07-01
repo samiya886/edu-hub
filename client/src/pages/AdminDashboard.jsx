@@ -1409,6 +1409,37 @@ const AdminDashboard = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+
+  const fetchUsers = async () => {
+    setIsLoadingUsers(true);
+    setUsersErrorMessage('');
+
+    try {
+      const response = await fetch('/api/users', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const rawResponse = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(rawResponse);
+      } catch {
+        throw new Error('Users API is not available yet. Restart the backend server so /api/users is loaded.');
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Unable to load users');
+      }
+
+      setUsers(data);
+    } catch (error) {
+      setUsersErrorMessage(error.message);
+    }
+
+    setIsLoadingUsers(false);
+  };
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
@@ -1424,36 +1455,6 @@ const AdminDashboard = () => {
       }
     };
 
-    const fetchUsers = async () => {
-      setIsLoadingUsers(true);
-      setUsersErrorMessage('');
-
-      try {
-        const response = await fetch('/api/users', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const rawResponse = await response.text();
-        let data;
-
-        try {
-          data = JSON.parse(rawResponse);
-        } catch {
-          throw new Error('Users API is not available yet. Restart the backend server so /api/users is loaded.');
-        }
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Unable to load users');
-        }
-
-        setUsers(data);
-      } catch (error) {
-        setUsersErrorMessage(error.message);
-      }
-
-      setIsLoadingUsers(false);
-    };
 
     fetchUsers();
     fetchHomeData();
@@ -1596,6 +1597,7 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
 
 

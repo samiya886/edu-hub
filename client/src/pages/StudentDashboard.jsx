@@ -291,7 +291,7 @@ const ResourceCard = ({ item, type, onDownload, onEdit, onDelete }) => (
       </div>
     </div>
 
-    <div className="eduhub-resource-actions mt-auto grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 sm:gap-3">
+    <div className="eduhub-resource-actions mt-auto grid grid-cols-1 gap-2 border-t border-gray-100 pt-3 sm:gap-3">
       <button
         type="button"
         onClick={() => onDownload(item.fileUrl)}

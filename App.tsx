@@ -461,7 +461,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       body[data-eduhub-route="resources"] .flex:has(> button:nth-child(3)),
       body[data-eduhub-route="resources"] .eduhub-resource-actions {
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: 1fr !important;
         justify-content: stretch !important;
         align-items: center !important;
         flex-wrap: nowrap !important;
@@ -547,9 +547,9 @@ const MOBILE_OPTIMIZATION_CSS = `
 
 
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) {
-        display: flex !important;
-        grid-template-columns: none !important;
-        justify-content: flex-start !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        justify-content: stretch !important;
         align-items: center !important;
         flex-wrap: nowrap !important;
         gap: 6px !important;
@@ -560,10 +560,10 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
 
       div[class*="rounded-3xl"][class*="bg-white"][class*="shadow-sm"] > div.grid[class*="grid-cols-3"]:has(> button:nth-child(3)) > button {
-        width: auto !important;
+        width: 100% !important;
         min-width: 0 !important;
         min-height: 36px !important;
-        flex: 0 1 auto !important;
+        flex: 1 1 0 !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -828,7 +828,7 @@ const MOBILE_OPTIMIZATION_CSS = `
       }
       .eduhub-resource-actions {
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: 1fr !important;
         justify-content: stretch !important;
         align-items: center !important;
         flex-wrap: nowrap !important;
@@ -1304,7 +1304,7 @@ const MOBILE_OPTIMIZATION_CSS = `
 
       .eduhub-teacher-material-actions {
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: 1fr !important;
         width: 100% !important;
         min-width: 0 !important;
         overflow: visible !important;
@@ -1882,7 +1882,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
       group.classList.toggle('eduhub-resource-actions-download-layout', hasDownload);
       group.setAttribute('data-eduhub-actions-normalized', 'true');
       group.style.display = 'grid';
-      group.style.gridTemplateColumns = 'repeat(' + Math.min(Math.max(buttons.length, 1), 3) + ', minmax(0, 1fr))';
+      group.style.gridTemplateColumns = '1fr';
       group.style.justifyContent = 'stretch';
       group.style.alignItems = 'center';
       group.style.flexWrap = 'nowrap';

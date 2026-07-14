@@ -26,10 +26,42 @@ const app = express();
 const __dirname = import.meta.dirname || path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.resolve(__dirname, "../client/dist");
 
-app.set("trust proxy", 1);
-app.use(cors());
-app.use(express.json());
+// Ensure uploads directory exists at startup (important for ephemeral file systems)
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 
+app.set("trust proxy", 1);
+
+// CORS — allow same origin and any configured CLIENT_URL / FRONTEND_URL
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, mobile apps, server-to-server)
+      if (!origin) return callback(null, true);
+      // If no explicit origins configured, allow all (same-origin deployment)
+      if (allowedOrigins.length === 0) return callback(null, true);
+      if (allowedOrigins.some((o) => origin.startsWith(o))) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Body parsers — 10 MB limit prevents "Bad Request" on large JSON payloads
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Serve uploaded files with security headers
 app.get("/uploads/:fileName", (req, res, next) => {
   const fileName = path.basename(req.params.fileName);
   const filePath = path.join(uploadsPath, fileName);
@@ -66,6 +98,7 @@ app.use("/uploads", express.static(uploadsPath, {
   },
 }));
 
+// Health check endpoint
 app.get("/api/health", (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
   res.status(dbConnected ? 200 : 503).json({
@@ -76,6 +109,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/departments", departmentRoutes);
@@ -87,13 +121,38 @@ app.use("/api/papers", paperRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+// Serve React frontend static files
 app.use(express.static(clientDistPath));
 
-app.get(/.*/, (req, res, next) => {
-  if (req.path.startsWith("/api")) {
-    return next();
+// SPA fallback — serve index.html for all non-API routes
+app.get(/^(?!\/api).*/, (req, res) => {
+  const indexPath = path.join(clientDistPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(503).json({
+      message: "Frontend not built. Run: npm run build --prefix client",
+    });
   }
-  res.sendFile(path.join(clientDistPath, "index.html"));
+});
+
+// Global error handler
+app.use((err, req, res, _next) => {
+  console.error("[server error]", err.message || err);
+
+  if (err.type === "entity.too.large" || err.status === 413) {
+    return res.status(413).json({
+      message: "Request payload too large. Maximum allowed size is 10 MB.",
+    });
+  }
+
+  if (err.message?.startsWith("CORS")) {
+    return res.status(403).json({ message: err.message });
+  }
+
+  res.status(err.status || 500).json({
+    message: err.message || "Internal server error",
+  });
 });
 
 const PORT = process.env.PORT || 5000;

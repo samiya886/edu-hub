@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import NotificationBell from '../components/NotificationBell';
 import {
   AlertCircle,
   BookOpen,
@@ -165,6 +166,7 @@ const DashboardShell = ({ activeSection, setActiveSection, sidebarOpen, setSideb
         </div>
 
         <div className="eduhub-dashboard-header-actions flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+          <NotificationBell />
           <BackButton />
           <div className="hidden items-center gap-3 rounded-3xl border border-gray-100 bg-gray-50 p-2 pr-5 sm:flex">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0a4a44] text-sm font-black text-white">

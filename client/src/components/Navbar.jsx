@@ -123,8 +123,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white text-gray-800 px-3 py-3 sticky top-0 z-50 w-full max-w-full shadow-sm border-b border-gray-100 sm:px-5 lg:px-6">
-      <div className="eduhub-public-nav-inner mx-auto flex w-full max-w-7xl items-center justify-between gap-3">
-        <Link to="/" className="eduhub-public-nav-brand flex min-w-0 items-center gap-2 group">
+      <div className="eduhub-public-nav-inner relative mx-auto flex w-full max-w-7xl items-center justify-between gap-3">
+        <Link to="/" className="eduhub-public-nav-brand flex min-w-0 shrink-0 items-center gap-2 group">
           <div className="bg-[#10b981] p-2 rounded-full transition-transform group-hover:scale-105">
             <GraduationCap className="text-white w-5 h-5" />
           </div>
@@ -133,7 +133,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <ul className="hidden lg:flex items-center gap-6 bg-gray-50/80 px-6 py-2 rounded-full border border-gray-200">
+        <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 rounded-full border border-gray-200 bg-gray-50/80 px-6 py-2 lg:flex">
           {navLinks.map((link) => (
             <li
               key={link.name}

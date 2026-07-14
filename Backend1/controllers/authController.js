@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
+import { sendNotification } from "../utils/notificationHelper.js";
 
 const populateUser = (query) =>
   query
@@ -196,6 +197,16 @@ export const login = async (req, res) => {
     }
 
     const token = signToken(user);
+
+    // Fire login notification
+    sendNotification({
+      title: "New Login Detected",
+      message: `${user.name || user.email} (${user.role}) logged in at ${new Date().toLocaleTimeString()}.`,
+      type: "login",
+      recipientUsers: [user._id.toString()],
+      recipientRoles: ["admin"],
+      createdBy: user._id.toString(),
+    });
 
     res.json({
       message: "Login successful",

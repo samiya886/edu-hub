@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://edu-hub-production.up.railway.app/api';
+export const API_BASE_URL = 'https://edu-hub-production-f5d4.up.railway.app';
 
 export const COLORS = {
   primary: '#ff9f1c',

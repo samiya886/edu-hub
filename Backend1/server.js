@@ -17,6 +17,7 @@ import noteRoutes from "./routes/noteRoutes.js";
 import paperRoutes from "./routes/paperRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import { logMissingFile, uploadsPath } from "./utils/fileStorage.js";
 
 dotenv.config();
@@ -84,6 +85,7 @@ app.use("/api/subjects", subjectRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/papers", paperRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use(express.static(clientDistPath));
 

@@ -1,7 +1,8 @@
-﻿import Paper from "../models/Paper.js";
+import Paper from "../models/Paper.js";
 import Subject from "../models/Subject.js";
 import { validateAcademicSelection } from "../utils/academicValidation.js";
 import { getUploadedFileUrl } from "../utils/fileStorage.js";
+import { sendNotification } from "../utils/notificationHelper.js";
 
 const populatePaper = (query) =>
   query
@@ -154,6 +155,16 @@ export const createPaper = async (req, res) => {
 
     const populatedPaper = await populatePaper(Paper.findById(paper._id));
 
+    // Fire upload notification
+    sendNotification({
+      title: "New Paper Uploaded",
+      message: `"${title}" was uploaded by ${req.user?.name || req.user?.email || 'a user'} (${req.user?.role}).`,
+      type: "upload",
+      recipientRoles: ["admin"],
+      recipientUsers: req.user?._id ? [req.user._id.toString()] : [],
+      createdBy: req.user?._id?.toString(),
+    });
+
     res.status(201).json(populatedPaper);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -201,6 +212,15 @@ export const updatePaper = async (req, res) => {
       return res.status(404).json({ message: "Paper not found" });
     }
 
+    // Fire edit notification
+    sendNotification({
+      title: "Paper Updated",
+      message: `"${paper.title}" was edited by ${req.user?.name || req.user?.email || 'a user'}.`,
+      type: "edit",
+      recipientRoles: ["admin"],
+      createdBy: req.user?._id?.toString(),
+    });
+
     res.json(paper);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -224,6 +244,16 @@ export const deletePaper = async (req, res) => {
     if (!paper) {
       return res.status(404).json({ message: "Paper not found" });
     }
+
+    // Fire delete notification
+    sendNotification({
+      title: "Paper Deleted",
+      message: `A paper was deleted by ${req.user?.name || req.user?.email || 'a user'} (${req.user?.role}).`,
+      type: "delete",
+      recipientRoles: ["admin"],
+      createdBy: req.user?._id?.toString(),
+    });
+
     res.json({ message: "Paper deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

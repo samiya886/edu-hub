@@ -8,8 +8,7 @@ import {
   Loader2, AlertCircle
 } from 'lucide-react';
 
-const API_URL = '/api';
-const ASSET_URL = '';
+import { API_URL, ASSET_URL } from '../config/api';
 
 const categories = ['All', 'Handwritten', 'Digital PDF', 'Revision Sheets', 'Topper Special'];
 const noteImages = [

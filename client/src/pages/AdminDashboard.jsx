@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationBell from '../components/NotificationBell';
 import NotificationHandlerPanel from '../components/NotificationHandlerPanel';
+import { API_URL } from '../config/api';
 import {
   GraduationCap, Menu, ArrowRight, ArrowLeft, LogOut,
   LayoutDashboard, UserCircle, BookOpen, FileText, PenTool,
@@ -56,7 +57,6 @@ const DeleteConfirmModal = ({ open, title = 'Delete this item?', message, isDele
     )}
   </AnimatePresence>
 );
-const API_URL = '/api';
 const getIsDesktop = () => typeof window !== 'undefined' && window.innerWidth >= 1024;
 
 const adminFormIcons = {
@@ -98,7 +98,7 @@ const AdminActionForm = ({ activeTab }) => {
   useEffect(() => {
     const loadDepartments = async () => {
       try {
-        const response = await fetch('/api/departments');
+        const response = await fetch(`${API_URL}/departments`);
         const data = await response.json();
         setDepartments(data);
       } catch (error) {
@@ -1364,7 +1364,7 @@ const AdminDashboard = () => {
     setUsersErrorMessage('');
 
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch(`${API_URL}/users`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

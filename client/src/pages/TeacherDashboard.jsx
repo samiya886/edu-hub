@@ -18,8 +18,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-
-const API_URL = '/api';
+import { API_URL } from '../config/api';
 
 const teacherNav = [
   { key: 'notes', label: 'My Notes', icon: BookOpen },

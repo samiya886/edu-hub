@@ -9,8 +9,7 @@ import {
   Star, Share2, AlertCircle, Loader2
 } from 'lucide-react';
 
-const API_URL = '/api';
-const ASSET_URL = '';
+import { API_URL, ASSET_URL } from '../config/api';
 
 const examTypes = ['All', 'Final', 'Mid-term', 'Quiz', 'Assignment'];
 

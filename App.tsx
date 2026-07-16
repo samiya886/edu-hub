@@ -14,7 +14,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import type { WebView as WebViewType } from 'react-native-webview';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 
-const WEBSITE_URL = 'https://edu-hub-production.up.railway.app';
+const WEBSITE_URL = 'https://edu-hub-production-f5d4.up.railway.app';
 const WEBSITE_HOST = new URL(WEBSITE_URL).host;
 const WEBSITE_ORIGIN = new URL(WEBSITE_URL).origin;
 
@@ -1642,7 +1642,7 @@ const MOBILE_OPTIMIZATION_SCRIPT = `
   function absoluteApiUrl(input) {
     if (typeof input !== 'string') return input;
     if (input.indexOf('/api/') === 0) return API_ORIGIN + input;
-    if (input.indexOf('http://edu-hub-production.up.railway.app/api/') === 0) {
+    if (input.indexOf('http://edu-hub-production-f5d4.up.railway.app/api/') === 0) {
       return input.replace('http://', 'https://');
     }
     return input;

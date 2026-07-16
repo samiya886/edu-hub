@@ -8,8 +8,7 @@ import Services from '../components/Services'
 import About from '../components/About'
 import CTA from '../components/Cta'
 
-const API_URL = '/api';
-const ASSET_URL = '';
+import { API_URL, ASSET_URL } from '../config/api';
 
 const formatCount = (value) => {
   const count = Number(value) || 0;

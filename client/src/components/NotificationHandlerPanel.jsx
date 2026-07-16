@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useNotifications } from '../hooks/useNotifications';
 
-const API_URL = '/api';
+import { API_URL } from '../config/api';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const TYPE_OPTIONS = [

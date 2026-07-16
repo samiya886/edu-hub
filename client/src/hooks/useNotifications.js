@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const API_URL = '/api';
+import { API_URL } from '../config/api';
 const POLL_INTERVAL = 30000; // 30 seconds
 
 export function useNotifications() {

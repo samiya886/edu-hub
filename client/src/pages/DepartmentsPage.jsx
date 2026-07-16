@@ -6,9 +6,7 @@ import {
   Search, ArrowRight, Zap, Star, TrendingUp, Loader2, AlertCircle,
   FileText, Download
 } from 'lucide-react';
-
-const API_URL = '/api';
-const ASSET_URL = '';
+import { API_URL, ASSET_URL } from '../config/api';
 
 const getFileUrl = (fileUrl) => {
   if (!fileUrl) return '';

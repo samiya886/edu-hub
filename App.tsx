@@ -1,4 +1,5 @@
-﻿import React, { useCallback, useEffect, useRef, useState } from 'react';
+﻿import { StatusBar } from 'expo-status-bar';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   BackHandler,
@@ -10,9 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { WebView as WebViewType } from 'react-native-webview';
+import { WebView, WebViewNavigation } from 'react-native-webview';
 
 const WEBSITE_URL = 'https://edu-hub-production.up.railway.app';
 const WEBSITE_HOST = new URL(WEBSITE_URL).host;

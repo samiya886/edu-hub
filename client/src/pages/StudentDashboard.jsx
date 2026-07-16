@@ -891,7 +891,7 @@ const StudentDashboard = () => {
       resetUploadForm();
       setFilters({ search: '', department: '', course: '', semester: '', subject: '' });
       setResourceType(type);
-      await fetchItems(type);
+      await fetchResources();
       setActiveSection(type);
     } catch (error) {
       setMessage(error.message);
@@ -941,7 +941,7 @@ const StudentDashboard = () => {
 
       setMessage('Resource deleted successfully.');
       setPendingDelete(null);
-      await fetchItems(pendingDelete.type);
+      await fetchResources();
     } catch (error) {
       setMessage(error.message);
     }
@@ -970,7 +970,7 @@ const StudentDashboard = () => {
       updateUser(data.user);
       setProfileMessage('Academic profile saved. Your library is now filtered to your credentials.');
       setProfileRequired(false);
-      fetchItems(resourceType);
+      fetchResources();
     } catch (error) {
       setProfileMessage(error.message);
     }
@@ -1100,8 +1100,8 @@ const StudentDashboard = () => {
         <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:rounded-[40px] sm:p-8">
           <h3 className="mb-6 text-2xl font-black text-[#0a4a44]">Learning Activity</h3>
           <div className="mobile-carousel mobile-scroll-track md:grid-cols-3 md:gap-5">
-            <StatCard icon={BookOpen} label="Notes Viewed" value={resourceType === 'notes' ? filteredItems.length : items.length} caption="Current result set" />
-            <StatCard icon={FileText} label="Papers Found" value={resourceType === 'papers' ? filteredItems.length : items.length} caption="Available to download" />
+            <StatCard icon={BookOpen} label="Notes Viewed" value={resourceType === 'notes' ? filteredItems.length : notes.length} caption="Current result set" />
+            <StatCard icon={FileText} label="Papers Found" value={resourceType === 'papers' ? filteredItems.length : papers.length} caption="Available to download" />
             <StatCard icon={Upload} label="Uploads" value="Ready" caption="Student publishing enabled" />
           </div>
         </div>

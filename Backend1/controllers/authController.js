@@ -140,8 +140,6 @@ export const signup = async (req, res) => {
     });
 
     const savedUser = await populateUser(User.findById(user._id).select("-password"));
-    savedUser.profileCompleted = hasCompletedStudentProfile(savedUser);
-    await savedUser.save();
 
     const token = signToken(savedUser);
 

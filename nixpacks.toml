@@ -6,7 +6,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm run build --prefix client"
+  "npm run build --prefix client",
+  "mkdir -p Backend1/client-dist && cp -r client/dist/* Backend1/client-dist/"
 ]
 
 [start]

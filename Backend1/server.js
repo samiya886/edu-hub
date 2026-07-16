@@ -24,7 +24,9 @@ dotenv.config();
 
 const app = express();
 const __dirname = import.meta.dirname || path.dirname(fileURLToPath(import.meta.url));
-const clientDistPath = path.resolve(__dirname, "../client/dist");
+const clientDistPath = fs.existsSync(path.resolve(__dirname, "./client-dist"))
+  ? path.resolve(__dirname, "./client-dist")
+  : path.resolve(__dirname, "../client/dist");
 
 // Ensure uploads directory exists at startup (important for ephemeral file systems)
 if (!fs.existsSync(uploadsPath)) {

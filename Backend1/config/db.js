@@ -24,6 +24,7 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
     });
     console.log("MongoDB connected successfully");
+    return true;
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
 
@@ -39,7 +40,7 @@ const connectDB = async () => {
       );
     }
 
-    process.exit(1);
+    return false;
   }
 };
 

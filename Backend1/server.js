@@ -33,7 +33,7 @@ if (!fs.existsSync(uploadsPath)) {
 
 app.set("trust proxy", 1);
 
-// CORS — allow same origin and any configured CLIENT_URL / FRONTEND_URL
+// CORS Ã¢â‚¬â€ allow same origin and any configured CLIENT_URL / FRONTEND_URL
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
@@ -57,7 +57,7 @@ app.use(
   })
 );
 
-// Body parsers — 10 MB limit prevents "Bad Request" on large JSON payloads
+// Body parsers Ã¢â‚¬â€ 10 MB limit prevents "Bad Request" on large JSON payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -105,9 +105,22 @@ app.get("/api/health", (req, res) => {
     status: dbConnected ? "UP" : "DOWN",
     api: "healthy",
     database: dbConnected ? "connected" : "disconnected",
+    databaseError: dbConnected ? undefined : app.locals.databaseError || "Database is not connected",
     timestamp: new Date().toISOString(),
   });
 });
+
+const requireDatabase = (_req, res, next) => {
+  if (mongoose.connection.readyState === 1) return next();
+
+  return res.status(503).json({
+    message: "Database is not connected. Check Railway MongoDB environment variables.",
+    database: "disconnected",
+    details: app.locals.databaseError || "Set MONGO_URI, MONGODB_URI, MONGO_URL, or DATABASE_URL.",
+  });
+};
+
+app.use("/api", requireDatabase);
 
 // API routes
 app.use("/api/auth", authRoutes);
@@ -124,7 +137,7 @@ app.use("/api/notifications", notificationRoutes);
 // Serve React frontend static files
 app.use(express.static(clientDistPath));
 
-// SPA fallback — serve index.html for all non-API routes
+// SPA fallback Ã¢â‚¬â€ serve index.html for all non-API routes
 app.get(/^(?!\/api).*/, (req, res) => {
   const indexPath = path.join(clientDistPath, "index.html");
   if (fs.existsSync(indexPath)) {
@@ -156,7 +169,10 @@ app.use((err, req, res, _next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-await connectDB();
+const databaseReady = await connectDB();
+if (!databaseReady) {
+  app.locals.databaseError = "MongoDB connection failed during startup. Check Railway variables and MongoDB Atlas network access.";
+}
 
 // Auto-seed admin on first startup
 const seedAdmin = async () => {
@@ -183,6 +199,8 @@ const seedAdmin = async () => {
     console.error("Admin seed error:", err.message);
   }
 };
-await seedAdmin();
+if (databaseReady) {
+  await seedAdmin();
+}
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

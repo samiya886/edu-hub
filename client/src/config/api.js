@@ -1,7 +1,12 @@
 const trimTrailingSlash = (value) => value.replace(/\/+$/, '');
 
+const ensureApiPath = (value) => {
+  const trimmed = trimTrailingSlash(value);
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
 const configuredApiUrl = import.meta.env.VITE_API_URL
-  ? trimTrailingSlash(import.meta.env.VITE_API_URL)
+  ? ensureApiPath(import.meta.env.VITE_API_URL)
   : '';
 
 const isLocalHost =

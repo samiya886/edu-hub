@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationBell from '../components/NotificationBell';
 import NotificationHandlerPanel from '../components/NotificationHandlerPanel';
-import { API_URL } from '../config/api';
+import { API_URL, apiUrl } from '../config/api';
 import {
   GraduationCap, Menu, ArrowRight, ArrowLeft, LogOut,
   LayoutDashboard, UserCircle, BookOpen, FileText, PenTool,
@@ -116,7 +116,7 @@ const AdminActionForm = ({ activeTab }) => {
         return;
       }
       try {
-        const response = await fetch(`/api/courses?department=${formData.department}`);
+        const response = await fetch(apiUrl(`/courses?department=${formData.department}`));
         const data = await response.json();
         setCourses(data);
       } catch (error) {
@@ -138,7 +138,7 @@ const AdminActionForm = ({ activeTab }) => {
           department: formData.department,
           course: formData.course,
         }).toString();
-        const response = await fetch(`/api/semesters?${query}`);
+        const response = await fetch(apiUrl(`/semesters?${query}`));
         const data = await response.json();
         setSemesters(data);
       } catch (error) {
@@ -161,7 +161,7 @@ const AdminActionForm = ({ activeTab }) => {
           course: formData.course,
           semester: formData.semester,
         }).toString();
-        const response = await fetch(`/api/subjects?${query}`);
+        const response = await fetch(apiUrl(`/subjects?${query}`));
         const data = await response.json();
         setSubjects(data);
       } catch (error) {
@@ -210,20 +210,20 @@ const AdminActionForm = ({ activeTab }) => {
       };
 
       if (activeTab === 'Add Courses') {
-        endpoint = '/api/courses';
+        endpoint = apiUrl('/courses');
         payload = {
           name: formData.name,
           department: formData.department,
         };
       } else if (activeTab === 'Add Semester') {
-        endpoint = '/api/semesters';
+        endpoint = apiUrl('/semesters');
         payload = {
           name: formData.name,
           department: formData.department,
           course: formData.course,
         };
       } else if (activeTab === 'Add Subject') {
-        endpoint = '/api/subjects';
+        endpoint = apiUrl('/subjects');
         payload = {
           name: formData.name,
           department: formData.department,
@@ -231,7 +231,7 @@ const AdminActionForm = ({ activeTab }) => {
           semester: formData.semester,
         };
       } else if (activeTab === 'Add Notes') {
-        endpoint = '/api/notes';
+        endpoint = apiUrl('/notes');
         if (!file) throw new Error('Please attach a PDF document');
 
         payload = new FormData();
@@ -247,7 +247,7 @@ const AdminActionForm = ({ activeTab }) => {
         payload.append('file', file);
         requestOptions = { method: 'POST', headers: authHeader };
       } else if (activeTab === 'Add Papers') {
-        endpoint = '/api/papers';
+        endpoint = apiUrl('/papers');
         if (!file) throw new Error('Please attach a PDF document');
 
         payload = new FormData();

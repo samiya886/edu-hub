@@ -34,6 +34,19 @@ if (!fs.existsSync(uploadsPath)) {
 }
 
 app.set("trust proxy", 1);
+const getHealthStatus = () => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  return {
+    httpStatus: dbConnected ? 200 : 503,
+    body: {
+      status: dbConnected ? "UP" : "DOWN",
+      api: "healthy",
+      database: dbConnected ? "connected" : "disconnected",
+      databaseError: dbConnected ? undefined : app.locals.databaseError || "Database is not connected",
+      timestamp: new Date().toISOString(),
+    },
+  };
+};
 
 // CORS Ã¢â‚¬â€ allow same origin and any configured CLIENT_URL / FRONTEND_URL
 const allowedOrigins = [
@@ -100,16 +113,10 @@ app.use("/uploads", express.static(uploadsPath, {
   },
 }));
 
-// Health check endpoint
-app.get("/api/health", (req, res) => {
-  const dbConnected = mongoose.connection.readyState === 1;
-  res.status(dbConnected ? 200 : 503).json({
-    status: dbConnected ? "UP" : "DOWN",
-    api: "healthy",
-    database: dbConnected ? "connected" : "disconnected",
-    databaseError: dbConnected ? undefined : app.locals.databaseError || "Database is not connected",
-    timestamp: new Date().toISOString(),
-  });
+// Health check endpoints
+app.get(["/", "/health", "/api/health"], (req, res) => {
+  const health = getHealthStatus();
+  res.status(health.httpStatus).json(health.body);
 });
 
 const requireDatabase = (_req, res, next) => {
@@ -146,7 +153,7 @@ app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(indexPath);
   } else {
     res.status(503).json({
-      message: "Frontend not built. Run: npm run build --prefix client",
+      message: "Backend is running, but this service is not serving the frontend build. Use /api/health for API status and point the frontend VITE_API_URL to this backend URL.",
     });
   }
 });

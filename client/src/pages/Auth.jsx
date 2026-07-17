@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { apiUrl } from '../config/api';
 import {
   Mail,
   Lock,
@@ -120,7 +121,7 @@ const Auth = () => {
   const handleGoogleLogin = () => {
     setErrorMessage('');
     setSuccessMessage('');
-    window.location.href = `/api/auth/google?role=${encodeURIComponent(formData.role)}`;
+    window.location.href = apiUrl(`/auth/google?role=${encodeURIComponent(formData.role)}`);
   };
 
   // HANDLE SUBMIT
@@ -142,8 +143,8 @@ const Auth = () => {
 
       const response = await fetch(
         isLogin
-          ? '/api/auth/login'
-          : '/api/auth/signup',
+          ? apiUrl('/auth/login')
+          : apiUrl('/auth/signup'),
         {
           method: 'POST',
           headers: {
